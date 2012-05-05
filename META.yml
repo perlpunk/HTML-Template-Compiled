@@ -1,0 +1,120 @@
+---
+abstract: 'Template System Compiles HTML::Template files to Perl code'
+author:
+  - 'Tina Mueller'
+build_requires: {}
+configure_requires:
+  Module::Build: 0
+dynamic_config: 1
+generated_by: 'Module::Build version 0.4, CPAN::Meta::Converter version 2.112150'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: HTML-Template-Compiled
+provides:
+  HTML::Template::Compiled:
+    file: lib/HTML/Template/Compiled.pm
+    version: 0.96_004
+  HTML::Template::Compiled::Classic:
+    file: lib/HTML/Template/Compiled/Classic.pm
+    version: 0.05
+  HTML::Template::Compiled::Compiler:
+    file: lib/HTML/Template/Compiled/Compiler.pm
+    version: 0.18
+  HTML::Template::Compiled::Compiler::Classic:
+    file: lib/HTML/Template/Compiled/Compiler/Classic.pm
+    version: 0.04
+  HTML::Template::Compiled::Exception:
+    file: lib/HTML/Template/Compiled/Exception.pm
+    version: 0.01
+  HTML::Template::Compiled::Expr:
+    file: lib/HTML/Template/Compiled/Expr.pm
+    version: 0.05
+  HTML::Template::Compiled::Expression:
+    file: lib/HTML/Template/Compiled/Expression.pm
+    version: 0.02
+  HTML::Template::Compiled::Expression::Conditional:
+    file: lib/HTML/Template/Compiled/Expression.pm
+    version: 0
+  HTML::Template::Compiled::Expression::Defined:
+    file: lib/HTML/Template/Compiled/Expression/Expressions.pm
+    version: 0
+  HTML::Template::Compiled::Expression::Else:
+    file: lib/HTML/Template/Compiled/Expression.pm
+    version: 0
+  HTML::Template::Compiled::Expression::Elsif:
+    file: lib/HTML/Template/Compiled/Expression.pm
+    version: 0
+  HTML::Template::Compiled::Expression::Expressions:
+    file: lib/HTML/Template/Compiled/Expression/Expressions.pm
+    version: 0.01
+  HTML::Template::Compiled::Expression::Function:
+    file: lib/HTML/Template/Compiled/Expression.pm
+    version: 0
+  HTML::Template::Compiled::Expression::If:
+    file: lib/HTML/Template/Compiled/Expression.pm
+    version: 0
+  HTML::Template::Compiled::Expression::Literal:
+    file: lib/HTML/Template/Compiled/Expression/Expressions.pm
+    version: 0
+  HTML::Template::Compiled::Expression::Method:
+    file: lib/HTML/Template/Compiled/Expression.pm
+    version: 0
+  HTML::Template::Compiled::Expression::String:
+    file: lib/HTML/Template/Compiled/Expression/Expressions.pm
+    version: 0
+  HTML::Template::Compiled::Expression::Ternary:
+    file: lib/HTML/Template/Compiled/Expression/Expressions.pm
+    version: 0
+  HTML::Template::Compiled::Expression::Unless:
+    file: lib/HTML/Template/Compiled/Expression.pm
+    version: 0
+  HTML::Template::Compiled::Filter:
+    file: lib/HTML/Template/Compiled/Filter.pm
+    version: 0.03
+  HTML::Template::Compiled::Formatter:
+    file: lib/HTML/Template/Compiled/Formatter.pm
+    version: 0.01
+  HTML::Template::Compiled::Lazy:
+    file: lib/HTML/Template/Compiled/Lazy.pm
+    version: 0.01
+  HTML::Template::Compiled::Parser:
+    file: lib/HTML/Template/Compiled/Parser.pm
+    version: 0.12
+  HTML::Template::Compiled::Plugin::DHTML:
+    file: lib/HTML/Template/Compiled/Plugin/DHTML.pm
+    version: 0.02
+  HTML::Template::Compiled::Plugin::XMLEscape:
+    file: lib/HTML/Template/Compiled/Plugin/XMLEscape.pm
+    version: 0.03
+  HTML::Template::Compiled::Token:
+    file: lib/HTML/Template/Compiled/Token.pm
+    version: 0.02
+  HTML::Template::Compiled::Token::Text:
+    file: lib/HTML/Template/Compiled/Token.pm
+    version: 0
+  HTML::Template::Compiled::Token::close:
+    file: lib/HTML/Template/Compiled/Token.pm
+    version: 0
+  HTML::Template::Compiled::Token::open:
+    file: lib/HTML/Template/Compiled/Token.pm
+    version: 0
+  HTML::Template::Compiled::Token::single:
+    file: lib/HTML/Template/Compiled/Token.pm
+    version: 0
+  HTML::Template::Compiled::Utils:
+    file: lib/HTML/Template/Compiled/Utils.pm
+    version: 0.07
+recommends:
+  URI::Escape: 0
+requires:
+  Carp: 0
+  Digest::MD5: 0
+  File::Basename: 0
+  File::Spec: 0
+  Test::More: 0
+  perl: v5.6.1
+resources:
+  license: http://dev.perl.org/licenses/
+version: 0.96_004
