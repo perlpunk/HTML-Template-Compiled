@@ -30,5 +30,10 @@ my $build = Module::Build->new(
     },
     create_readme      => 1,
     sign               => 0,
+    meta_merge => {
+        resources => {
+            repository  => 'https://github.com/perlpunk/HTML-Template-Compiled',
+        },
+    },
 );
 $build->create_build_script;

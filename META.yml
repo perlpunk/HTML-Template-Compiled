@@ -117,4 +117,5 @@ requires:
   perl: v5.6.1
 resources:
   license: http://dev.perl.org/licenses/
+  repository: https://github.com/perlpunk/HTML-Template-Compiled
 version: 0.96_005
