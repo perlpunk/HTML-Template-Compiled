@@ -70,7 +70,7 @@ EOM
 @{[ $nf->format_bytes($p{nums}->{bytes3}) ]}
 EOM
     }
-    if (1) {
+    if (0) {
         binmode STDOUT, ":encoding(utf-8)";
         print $html;
         print $exp;
