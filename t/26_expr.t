@@ -3,7 +3,8 @@ use warnings;
 use strict;
 use lib 't';
 
-use Test::More tests => 28;
+use constant TESTS => 27;
+use Test::More tests => TESTS + 1;
 eval { require Parse::RecDescent; };
 my $prd = $@ ? 0 : 1;
 use_ok('HTML::Template::Compiled');
@@ -12,7 +13,7 @@ use HTC_Utils qw($cache $tdir &cdir);
 sub HT_Utils::list { my @a = qw/ a b c /; return @a }
 sub HT_Utils::each { my %a = ( a => 1, b => 2 ); return %a }
 SKIP: {
-    skip "No Parse::RecDescent installed", 19 unless $prd;
+    skip "No Parse::RecDescent installed", TESTS unless $prd;
     use_ok('HTML::Template::Compiled::Expr');
     my $htc;
     eval {

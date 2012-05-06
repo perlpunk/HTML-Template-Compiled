@@ -1,5 +1,8 @@
 Revision history for Perl extension HTML::Template::Compiled.
 
+0.96_005 Sun May  6 16:24:54 CEST 2012
+- fix t/25_exor.t number of skip tests
+
 0.96_004 Sat May  5 15:56:27 CEST 2012
 - Minor bugfix USE_VARS, module version numbers
 - Bugfix caching: under certain circumstances some template includes
