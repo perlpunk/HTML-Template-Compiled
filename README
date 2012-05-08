@@ -3,7 +3,7 @@ NAME
     to Perl code
 
 VERSION
-    $VERSION = "0.96_005"
+    $VERSION = "0.97"
 
 SYNOPSIS
       use HTML::Template::Compiled;
@@ -1456,7 +1456,7 @@ CREDITS
     Corion, Limbic~Region, tye, runrig and others from perlmonks.org
 
 COPYRIGHT AND LICENSE
-    Copyright (C) 2005 by Tina Mueller
+    Copyright (C) 2005-2012 by Tina Mueller
 
     This library is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself, either Perl version 5.8.3 or, at

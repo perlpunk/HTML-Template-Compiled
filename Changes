@@ -1,7 +1,10 @@
 Revision history for Perl extension HTML::Template::Compiled.
 
+0.97 Tue May  8 19:19:00 CEST 2012
+- regular release, see changes from dev version below
+
 0.96_005 Sun May  6 16:24:54 CEST 2012
-- fix t/25_exor.t number of skip tests
+- fix t/25_expr.t number of skip tests
 
 0.96_004 Sat May  5 15:56:27 CEST 2012
 - Minor bugfix USE_VARS, module version numbers
