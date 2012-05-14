@@ -2,7 +2,7 @@ package HTML::Template::Compiled;
 # $Id: Compiled.pm 1161 2012-05-05 14:00:22Z tinita $
 # doesn't work with make tardist
 #our $VERSION = ($version_pod =~ m/^\$VERSION = "(\d+(?:\.\d+)+)"/m) ? $1 : "0.01";
-our $VERSION = "0.97";
+our $VERSION = "0.97_001";
 use Data::Dumper;
 BEGIN {
 use constant D => $ENV{HTC_DEBUG} || 0;
@@ -1115,6 +1115,7 @@ sub try_global {
 # end ugly code, phooey
 
 # returns if the var is valid
+# only allow '.', '/', '+', '-' and '_'
 # fix 2007-07-23: HTML::Template allows every character
 # although the documentation says it doesn't.
 sub validate_var {
@@ -1580,7 +1581,7 @@ HTML::Template::Compiled - Template System Compiles HTML::Template files to Perl
 
 =head1 VERSION
 
-$VERSION = "0.97"
+$VERSION = "0.97_001"
 
 =cut
 

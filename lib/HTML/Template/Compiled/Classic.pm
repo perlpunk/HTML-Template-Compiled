@@ -2,7 +2,7 @@ package HTML::Template::Compiled::Classic;
 # $Id: Classic.pm 746 2006-10-11 20:54:09Z tinita $
 use strict;
 use warnings;
-our $VERSION = "0.05";
+our $VERSION = "0.06";
 
 use base 'HTML::Template::Compiled';
 use HTML::Template::Compiled::Compiler::Classic;
@@ -23,8 +23,12 @@ sub _get_var_global_sub {
 }
 
 # returns if the var is valid
+# only allow '.', '/', '+', '-' and '_'
+# fix 2012-05-14: HTML::Template allows every character
+# although the documentation says it doesn't.
 sub validate_var {
-    return $_[1] !~ tr#a-zA-Z0-9._/-##c;
+    return 1;
+#    return $_[1] !~ tr#a-zA-Z0-9._/-##c;
 }
 
 

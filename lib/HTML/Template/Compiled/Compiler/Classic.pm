@@ -9,10 +9,14 @@ use base 'HTML::Template::Compiled::Compiler';
 sub parse_var {
     my ( $self, $t, %args ) = @_;
     my $context = $args{context};
-    # only allow '.', '/', '+', '-' and '_'
     if (!$t->validate_var($args{var})) {
         $t->get_parser->_error_wrong_tag_syntax(
-            $context->get_file, $context->get_line, "", $args{var}
+            {
+                fname => $context->get_file,
+                line  => $context->get_line,
+                token => "",
+            },
+            $args{var}
         );
     }
     my %loop_context = (

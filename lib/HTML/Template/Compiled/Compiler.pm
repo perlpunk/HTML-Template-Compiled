@@ -178,7 +178,6 @@ sub parse_var {
     }
 
 
-    # only allow '.', '/', '+', '-' and '_'
     if (!$t->validate_var($args{var})) {
         $t->get_parser->_error_wrong_tag_syntax(
             {
