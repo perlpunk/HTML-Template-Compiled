@@ -872,8 +872,6 @@ sub init_cache {
 sub init_args {
     my ($class, %args) = @_;
     my %defaults = (
-
-        # defaults
         search_path_on_include => $SEARCHPATH,
         loop_context_vars      => 0,
         case_sensitive         => $CASE_SENSITIVE_DEFAULT,
@@ -899,46 +897,45 @@ sub init_args {
 
 sub init {
     my ( $self, %args ) = @_;
-    my %defaults = %args;
-    $self->set_expire_time($defaults{expire_time});
+    $self->set_expire_time($args{expire_time});
     $self->set_loop_context(1) if $args{loop_context_vars};
-    $self->set_case_sensitive( $defaults{case_sensitive} );
-    $self->set_default_escape( $defaults{default_escape} );
-    $self->set_default_path( $defaults{default_path} );
-    $self->set_use_query( $defaults{use_query} );
+    $self->set_case_sensitive( $args{case_sensitive} );
+    $self->set_default_escape( $args{default_escape} );
+    $self->set_default_path( $args{default_path} );
+    $self->set_use_query( $args{use_query} );
     $self->set_chomp([$args{pre_chomp}, $args{post_chomp}]);
-    #$self->set_use_expressions( $defaults{use_expressions} );
-    if ($defaults{use_expressions}) {
+    #$self->set_use_expressions( $args{use_expressions} );
+    if ($args{use_expressions}) {
         require HTML::Template::Compiled::Expr;
     }
-    if ($defaults{open_mode}) {
-        $defaults{open_mode} =~ s/^[<>]//; # <:utf8
+    if ($args{open_mode}) {
+        $args{open_mode} =~ s/^[<>]//; # <:utf8
     }
-    $self->set_open_mode( $defaults{open_mode} );
-    $self->set_search_path( $defaults{search_path_on_include} );
+    $self->set_open_mode( $args{open_mode} );
+    $self->set_search_path( $args{search_path_on_include} );
     $self->set_includes({});
     if ( $args{filter} ) {
         require HTML::Template::Compiled::Filter;
         $self->set_filter(
             HTML::Template::Compiled::Filter->new( $args{filter} ) );
     }
-    $self->set_debug( $defaults{debug} );
-    $self->set_debug_file( $defaults{debug_file} );
-    $self->set_objects( $defaults{objects} );
-    if ($defaults{objects} and $defaults{objects} eq 'nostrict') {
+    $self->set_debug( $args{debug} );
+    $self->set_debug_file( $args{debug_file} );
+    $self->set_objects( $args{objects} );
+    if ($args{objects} and $args{objects} eq 'nostrict') {
         require Scalar::Util;
     }
-    $self->set_out_fh( $defaults{out_fh} );
-    $self->set_global_vars( $defaults{global_vars} );
+    $self->set_out_fh( $args{out_fh} );
+    $self->set_global_vars( $args{global_vars} );
     my $tagstyle = $args{tagstyle};
     my $parser;
     if (ref $tagstyle eq 'ARRAY') {
         # user specified named styles or regexes
         $parser = $self->parser_class->new(
             tagstyle => $tagstyle,
-            use_expressions => $defaults{use_expressions},
+            use_expressions => $args{use_expressions},
         );
-        $parser->set_perl($defaults{use_perl});
+        $parser->set_perl($args{use_perl});
     }
     $args{parser} = ${$args{parser}} if ref $args{parser} eq 'REF';
     if (UNIVERSAL::isa($args{parser}, 'HTML::Template::Compiled::Parser')) {
@@ -946,25 +943,25 @@ sub init {
     }
     unless ($parser) {
         $parser ||= $self->parser_class->default();
-        $parser->set_perl($defaults{use_perl});
-        $parser->set_expressions($defaults{use_expressions});
+        $parser->set_perl($args{use_perl});
+        $parser->set_expressions($args{use_expressions});
     }
     $parser->set_chomp([$args{pre_chomp}, $args{post_chomp}]);
-    if ($defaults{use_perl}) {
+    if ($args{use_perl}) {
         $parser->add_tagnames({
             HTML::Template::Compiled::Token::OPENING_TAG() => {
                 PERL => [sub { 1 }],
             }
         });
     }
-    if ($defaults{no_includes}) {
+    if ($args{no_includes}) {
         $parser->remove_tags(qw/ INCLUDE INCLUDE_VAR INCLUDE_STRING /);
     }
     $self->set_parser($parser);
     my $compiler = $self->compiler_class->new;
     $self->set_compiler($compiler);
-    if ($defaults{plugin}) {
-        my $plugins = ref $defaults{plugin} eq 'ARRAY' ? $defaults{plugin} : [$defaults{plugin}];
+    if ($args{plugin}) {
+        my $plugins = ref $args{plugin} eq 'ARRAY' ? $args{plugin} : [$args{plugin}];
         $self->init_plugins($plugins);
         $self->set_plugins($plugins);
     }
