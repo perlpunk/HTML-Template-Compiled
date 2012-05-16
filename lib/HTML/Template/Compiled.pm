@@ -1902,24 +1902,82 @@ See L<"CHOMP">
 
 =back
 
-=head2 MISSING FEATURES
+=head2 MISSING AND DIFFERENT FEATURES
 
-There are some features of H::T that are missing.
+There are some features of H::T that are missing or behaving different.
 I'll try to list them here.
+
+=head3 MISSING FEATURES
 
 =over 4
 
-=item C<die_on_bad_params>
+=item die_on_bad_params
 
 I don't think I'll implement that.
 
+=item force_untaint
+
+Not planned at the moment
+
+=item strict
+
+Might be implemented in the future
+
+=item vanguard_compatibility_mode
+
+Not planned.
+
+=item shared_cache, double_cache
+
+Not planned at the moment
+
+=item blind_cache
+
+Not sure if I should implement. In HTC you have the possibility to
+set the expire time of the templates (after that time in memory the
+template file is rechecked if it has changed), so setting a very high
+value for expire_time would have the same effect as blind_cache.
+See L<"CACHING"> C<expire_time>
+
+=item double_file_cache
+
+If I understand correctly, in HT, this enables memory and file cache at
+the same time. In HTC, this is not needed. If you use file_cache and cache,
+both are used.
+
+=item file_cache_dir_mode
+
+Not planned. The cache dir must exist, and subdirectories are
+not created at the moment.
+
+=item cache_lazy_vars, cache_lazy_loops
+
+Not planned at the moment (This would be for HTML::Template::Compiled::Classic,
+since it implements code refs).
+
+=utf8
+
+Might be added in the future, HTC already has C<open_mode>
+
+=item various debug options
+
+Might be implemented in the future
+
+=item associate
+
+Not planned.
+
+=item max_includes
+
+Not planned
+
+=item die_on_missing_include
+
+Maybe
+
 =back
 
-=head2 COMPATIBILITY
-
-=head3 Same behaviour as HTML::Template
-
-At the moment there are four defaults that differ from L<HTML::Template>:
+=head3 DIFFERENT FEATURES
 
 =over 4
 
@@ -1943,7 +2001,6 @@ are converted to lowercase, and the following tags are the same:
     <tmpl_var Foo> prints the value of hash key 'foo'
     <tmpl_var fOO> prints the value of hash key 'foo'
 
-
 =item subref variables
 
 As of version 0.69, subref variables are not supported any more with
@@ -1953,15 +2010,22 @@ of HTC.
 
 =item search_path_on_include
 
-default is now 0, like in HTML::Template. Set it to 1 by
-    HTML::Template::Compiled->SearchPathOnInclude(1);
+In HTML::Template, if you have a file a/b/c/d/template.html and in
+that template you do an include of include.html, and include.html
+is in /a/b/include.html, HTML::Template will find it. As this
+wasn't so clear to me when reading the docs, I implemented
+this differently. You'd either have to include ../../include.html,
+or you should set search_path_on_include to 1 and include a/b/include.html.
 
-=item use_query
+If you really need this feature, write me. I'm still thinking of how
+I would implement this, and I don't like it much, because it
+seems to me like a global_vars for filenames, and I don't like
+global_vars =)
 
-default is 0 (off). Set it via
-    HTML::Template::Compiled->UseQuery(1);
 
 =item open_mode
+
+In HTC you should leave out the C<<> at the beginning.
 
 If you want to have your templates read in utf-8, use
 
@@ -1969,23 +2033,10 @@ If you want to have your templates read in utf-8, use
 
 as an option.
 
-=back
+=item use_query
 
-Note: the following is deprecated:
-
-    To be compatible in all of the above options all use:
- 
-      use HTML::Template::Compiled compatible => 1;
- 
-    If you don't care about these options you should use
- 
-      use HTML::Template::Compiled speed => 1;
-
- which is the default but depending on user wishes that might change.
-
-=head3 Different behaviour from HTML::Template
-
-=over 4
+default is 0 (off). Set it via the option
+C<use_query>
 
 =item Arrayrefs
 
@@ -2008,21 +2059,23 @@ As of L<HTML::Template::Compiled> 0.85 you can use this syntax:
 
 In L<HTML::Template::Compiled::Classic> 0.04 it works as in HTML::Template.
 
-=item Searching the path
-
-In HTML::Template, if you have a file a/b/c/d/template.html and in
-that template you do an include of include.html, and include.html
-is in /a/b/include.html, HTML::Template will find it. As this
-wasn't so clear to me when reading the docs, I implemented
-this differently. You'd either have to include ../../include.html,
-or you should set search_path_on_include to 1 and include a/b/include.html.
-
-If you really need this feature, write me. I'm still thinking of how
-I would implement this, and I don't like it much, because it
-seems to me like a global_vars for filenames, and I don't like
-global_vars =)
-
 =back
+
+
+
+
+
+Note: the following is deprecated:
+
+    To be compatible in all of the above options all use:
+ 
+      use HTML::Template::Compiled compatible => 1;
+ 
+    If you don't care about these options you should use
+ 
+      use HTML::Template::Compiled speed => 1;
+
+ which is the default but depending on user wishes that might change.
 
 =head2 ESCAPING
 
@@ -2509,6 +2562,10 @@ in future versions.
 
 Is 1 by default. If set to 0, no memory cacheing is done. Only recommendable if
 you have a dynamic template content (with scalarref, arrayre for example).
+
+=item expire_time
+
+Recheck template files on disk after C<expire_time> seconds. See L<"CACHING">
 
 =item filename
 
@@ -2999,10 +3056,12 @@ are deprecated since they change a global variable which is then
 visible in the whole process, so in persistent environments other apps
 might be affected.
 
-So and expire time of 600 seconds (default)
+So an expire time of 600 seconds (default)
 will check after 10 minutes if the tmpl file was modified. Set it to a
 very high value will then ignore any changes, until you delete the
 generated code.
+For development you should set it to 0, for a pre-production server
+you can set it to 60 seconds, for example. It can make quite a difference.
 
 =head1 PLUGINS
 
