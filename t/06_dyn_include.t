@@ -5,7 +5,6 @@
 use lib 'blib/lib';
 use Test::More tests => 10;
 BEGIN { use_ok('HTML::Template::Compiled') };
-#$HTML::Template::Compiled::NEW_CHECK = 2;
 
 my $htc = HTML::Template::Compiled->new(
 	path => 't/templates',

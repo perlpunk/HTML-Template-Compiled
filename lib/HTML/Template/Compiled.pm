@@ -59,7 +59,7 @@ BEGIN {
           debug debug_file objects perl out_fh default_escape
           filter formatter
           globalstack use_query parse_tree parser compiler includes
-          plugins open_mode chomp
+          plugins open_mode chomp expire_time
         )
           #use_expressions
     );
@@ -81,6 +81,7 @@ sub HTC { __PACKAGE__->new(@_) }
 sub new {
     my ( $class, %args ) = @_;
     D && $class->log("new()");
+    %args = $class->init_args(%args);
     # handle the "type", "source" parameter format (does anyone use it?)
     if ( exists $args{type} ) {
         exists $args{source} or $class->_error_no_source();
@@ -151,6 +152,7 @@ sub _error_empty_filename {
 
 sub new_from_perl {
     my ($class, %args) = @_;
+    %args = $class->init_args(%args);
     my $self = bless [], $class;
     D && $self->log("new(perl) filename: $args{filename}");
 
@@ -175,6 +177,7 @@ sub new_from_perl {
 
 sub new_file {
     my ($class, $filename, %args) = @_;
+    %args = $class->init_args(%args);
     my $self = bless [], $class;
     $self->_check_deprecated_args(%args);
     $args{path} = $self->build_path($args{path});
@@ -205,6 +208,7 @@ sub new_file {
 
 sub new_filehandle {
     my ($class, $filehandle, %args) = @_;
+    %args = $class->init_args(%args);
     my $self = bless [], $class;
     $self->_check_deprecated_args(%args);
     if (exists $args{scalarref}
@@ -231,6 +235,7 @@ sub new_filehandle {
 
 sub new_array_ref {
     my ($class, $arrayref, %args) = @_;
+    %args = $class->init_args(%args);
     if (exists $args{scalarref}
         || exists $args{filehandle} || exists $args{filename}) {
         $class->_error_template_sources;
@@ -242,6 +247,7 @@ sub new_array_ref {
 
 sub new_scalar_ref {
     my ($class, $scalarref, %args) = @_;
+    %args = $class->init_args(%args);
     my $self = bless [], $class;
     $self->_check_deprecated_args(%args);
     if (exists $args{arrayref}
@@ -283,7 +289,7 @@ sub init_includes {
         # TODO check $cache
         $cache .= '-' . $self->get_md5_path;
         #warn __PACKAGE__.':'.__LINE__.": init_includes() $filename\n";
-        if (not $htc or HTML::Template::Compiled::needs_new_check($cache||'',$filename)
+        if (not $htc or HTML::Template::Compiled::needs_new_check($cache||'',$filename, $self->get_expire_time)
         ) {
             $htc = $self->new_from_object($path,$filename,$fullpath,$cache);
         }
@@ -349,7 +355,7 @@ sub from_cache {
         $dir = '' unless defined $dir;
         $dir .= '-' . $self->get_md5_path;
         my $fname  = $self->get_filename;
-        $t = $self->from_mem_cache($dir,$fname);
+        $t = $self->from_mem_cache($dir,$fname, $args);
         if ($t) {
             $t->set_plugins($plug) if @$plug;
             return $t;
@@ -383,19 +389,19 @@ sub from_cache {
     my $times;
 
     sub needs_new_check {
-        my ($dir, $fname) = @_;
+        my ($dir, $fname, $expire_time) = @_;
         my $times  = $times->{$dir}->{$fname} or return 1;
         my $now = time;
-        return 0 if $now - $times->{checked} < $NEW_CHECK;
+        return 0 if $now - $times->{checked} < $expire_time;
         return 1;
     }
 
     sub from_mem_cache {
-        my ($self, $dir, $fname) = @_;
+        my ($self, $dir, $fname, $args) = @_;
         my $cached = $cache->{$dir}->{$fname};
         my $times  = $times->{$dir}->{$fname};
         D && $self->log("\$cached=$cached \$times=$times \$fname=$fname\n");
-        if ( $cached && $self->uptodate($times) ) {
+        if ( $cached && $self->uptodate($times, $args) ) {
             return $cached->clone;
         }
         D && $self->log("no or old memcache");
@@ -463,8 +469,10 @@ sub from_cache {
     }
 
     sub uptodate {
-        my ( $self, $cached_times ) = @_;
+        my ( $self, $cached_times, $args ) = @_;
         return 1 if $self->get_scalar;
+        my $expire_time = $self->get_expire_time;
+        $expire_time = $args->{expire_time} unless defined $expire_time;
 #         unless ($cached_times) {
 #             my $dir = $self->get_cache_dir;
 #             $dir = '' unless defined $dir;
@@ -474,7 +482,7 @@ sub from_cache {
 #             return unless $cached;
 #         }
         my $now = time;
-        if ( $now - $cached_times->{checked} < $NEW_CHECK ) {
+        if ( $now - $cached_times->{checked} < $expire_time ) {
             return 1;
         }
         else {
@@ -861,8 +869,8 @@ sub init_cache {
     }
 }
 
-sub init {
-    my ( $self, %args ) = @_;
+sub init_args {
+    my ($class, %args) = @_;
     my %defaults = (
 
         # defaults
@@ -883,8 +891,16 @@ sub init {
         no_includes            => 0,
         pre_chomp              => 0,
         post_chomp             => 0,
+        expire_time            => $NEW_CHECK,
         %args,
     );
+    return %defaults;
+}
+
+sub init {
+    my ( $self, %args ) = @_;
+    my %defaults = %args;
+    $self->set_expire_time($defaults{expire_time});
     $self->set_loop_context(1) if $args{loop_context_vars};
     $self->set_case_sensitive( $defaults{case_sensitive} );
     $self->set_default_escape( $defaults{default_escape} );
@@ -2973,11 +2989,20 @@ perl files, and a call to the constructor like above won't parse
 the template, but just use the loaded code. If your template
 file has changed, though, then it will be parsed again.
 
-You can set the expire time of a template by
-  HTML::Template::Compiled->ExpireTime($seconds);
-(C<$HTML::Template::Compiled::NEW_CHECK> is deprecated).
-So
-  HTML::Template::Compiled->ExpireTime(60 * 10);
+You can set the expire time of a template by passing the option
+
+    expire_time => $seconds
+
+Note that
+
+    HTML::Template::Compiled->ExpireTime($seconds);
+    C<$HTML::Template::Compiled::NEW_CHECK>
+
+are deprecated since they change a global variable which is then
+visible in the whole process, so in persistent environments other apps
+might be affected.
+
+So and expire time of 600 seconds (default)
 will check after 10 minutes if the tmpl file was modified. Set it to a
 very high value will then ignore any changes, until you delete the
 generated code.

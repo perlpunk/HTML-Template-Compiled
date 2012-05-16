@@ -8,8 +8,6 @@ HTML::Template::Compiled->clear_filecache('t/cache');
 # test query() (From HTML::Template test suite)
 use HTML::Template::Compiled;
 use HTML::Template::Compiled::Lazy;
-$HTML::Template::Compiled::NEW_CHECK = 1;
-#$HTML::Template::Compiled::NEW_CHECK = 10000;
 use File::Copy;
 use Fcntl qw(:seek);
 my $file_orig = File::Spec->catfile(qw(t templates query-test.tmpl));
@@ -25,6 +23,7 @@ if (1) {
     my $htc = HTML::Template::Compiled::Lazy->new(
         scalarref => \"<%= foo%>",
         use_query => 1,
+        expire_time => 1,
     );
     my @params;
     eval {
@@ -54,6 +53,7 @@ sub query_template {
         filename => 'query-test-copy.tmpl',
         file_cache_dir => 't/cache',
         file_cache => 1,
+        expire_time => 1,
     );
     my %params;
     eval {

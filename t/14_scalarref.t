@@ -9,7 +9,6 @@ use strict;
 use warnings;
 local $Data::Dumper::Indent = 1; local $Data::Dumper::Sortkeys = 1;
 BEGIN { use_ok('HTML::Template::Compiled') };
-$HTML::Template::Compiled::NEW_CHECK = 2;
 my $cache = File::Spec->catfile('t', 'cache');
 
 eval { require Digest::MD5 };

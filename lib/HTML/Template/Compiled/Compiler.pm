@@ -918,7 +918,7 @@ ${indent}  if (defined (my \$file = $varstr)) \{
 ${indent}    my \$include = \$t->get_includes()->{$fullpath};
 ${indent}    my \$new = \$include ? \$include->[2] : undef;
 #print STDERR "+++++++got new? \$new\\n";
-${indent}    if (!\$new || HTML::Template::Compiled::needs_new_check($cache||'',\$file)) {
+${indent}    if (!\$new || HTML::Template::Compiled::needs_new_check($cache||'',\$file,\$t->get_expire_time)) {
 ${indent}      \$new = \$t->new_from_object($path,\$file,$fullpath,$cache);
 ${indent}    }
 #print STDERR "got new? \$new\\n";
