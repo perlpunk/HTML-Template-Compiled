@@ -2,7 +2,7 @@ package HTML::Template::Compiled::Compiler::Classic;
 # $Id: Classic.pm 1128 2011-10-31 19:59:56Z tinita $
 use strict;
 use warnings;
-our $VERSION = "0.04";
+our $VERSION = "0.05";
 
 use base 'HTML::Template::Compiled::Compiler';
 
@@ -26,6 +26,7 @@ sub parse_var {
         __last__    => '$__ix__ == $__size__',
         __odd__     => '!($__ix__ & 1)',
         __inner__   => '$__ix__ != $[ && $__ix__ != $__size__',
+        __outer__   => '$__ix__ == $[ || $__ix__ == $__size__',
         __break__   => '$__break__',
         __filename__ => '$t->get_file',
         __filenameshort__ => '$t->get_filename',

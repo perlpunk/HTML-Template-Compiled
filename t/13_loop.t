@@ -32,6 +32,7 @@ EOM
 }
 my $text1 = <<'EOM';
 <tmpl_loop array>
+<tmpl_if __outer__>(<tmpl_var __outer__>)</tmpl_if>
 <tmpl_var __counter__>
 <tmpl_var _.x>
 </tmpl_loop>
@@ -43,18 +44,18 @@ for (0,1) {
         loop_context_vars => $_,
 	);
 	$htc->param(array => [
-        {x=>"a","__counter__"=>"A"},
+        {x=>"a","__counter__"=>"A","__outer__"=>"OUTER"},
         {x=>"b","__counter__"=>"B"},
-        {x=>"c","__counter__"=>"C"},
+        {x=>"c","__counter__"=>"C","__outer__"=>"OUTER"},
     ]);
 	my $out = $htc->output;
 	$out =~ s/\s+//g;
 	my $exp;
 	if ($_ == 1) {
-		$exp = "1a2b3c";
+		$exp = "(1)1a2b(1)3c";
 	}
 	else {
-		$exp = "AaBbCc";
+		$exp = "(OUTER)AaBb(OUTER)Cc";
 	}
 	#print "($out)($exp)\n";
 	cmp_ok($out, "eq", $exp, "loop context");

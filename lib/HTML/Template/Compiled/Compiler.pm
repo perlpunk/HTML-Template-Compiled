@@ -8,7 +8,7 @@ use HTML::Template::Compiled::Expression qw(:expressions);
 use HTML::Template::Compiled::Utils qw(:walkpath);
 use File::Basename qw(dirname);
 
-our $VERSION = '0.18';
+our $VERSION = '0.19';
 
 use Carp qw(croak carp);
 use constant D             => 0;
@@ -151,6 +151,7 @@ my %loop_context = (
     __last__    => '$__ix__ == $__size__',
     __odd__     => '!($__ix__ & 1)',
     __inner__   => '$__ix__ != $[ && $__ix__ != $__size__',
+    __outer__   => '$__ix__ == $[ || $__ix__ == $__size__',
     __key__     => '$__key__',
     __value__   => '$__value__',
     __break__   => '$__break__',

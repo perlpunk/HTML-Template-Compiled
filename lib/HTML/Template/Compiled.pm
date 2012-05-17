@@ -1731,7 +1731,7 @@ current information.
 
 =item DEFAULT=...
 
-=item C<__first__>, C<__last__>, C<__inner__>, C<__odd__>, C<__counter__>
+=item C<__first__>, C<__last__>, C<__inner__>, C<__outer__>, C<__odd__>, C<__counter__>
 
 =item <!-- TMPL_VAR NAME=PARAM1 -->
 
@@ -1955,7 +1955,7 @@ not created at the moment.
 Not planned at the moment (This would be for HTML::Template::Compiled::Classic,
 since it implements code refs).
 
-=utf8
+=item utf8
 
 Might be added in the future, HTC already has C<open_mode>
 
@@ -1983,8 +1983,9 @@ Maybe
 
 =item case_sensitive
 
-default is 1 (on). Set it via
-    HTML::Template::Compiled->CaseSensitive(0);
+default is 1 (on).
+
+Deactivate by passing option expire_time 0.
 
 Note (again): this will slow down templating a lot (50%).
 
@@ -2597,7 +2598,7 @@ templates created like this.
 =item loop_context_vars (fixed)
 
 Vars like C<__first__>, C<__last__>, C<__inner__>, C<__odd__>, C<__counter__>,
-C<__index__>
+C<__index__>, C<__outer__>
 
 The variable C<__index__> works just like C<__counter__>, only that it starts
 at 0 instead of 1.
