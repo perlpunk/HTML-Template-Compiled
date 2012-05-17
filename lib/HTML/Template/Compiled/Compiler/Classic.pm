@@ -25,6 +25,7 @@ sub parse_var {
         __first__   => '$__ix__ == $[',
         __last__    => '$__ix__ == $__size__',
         __odd__     => '!($__ix__ & 1)',
+        __even__    => '($__ix__ & 1)',
         __inner__   => '$__ix__ != $[ && $__ix__ != $__size__',
         __outer__   => '$__ix__ == $[ || $__ix__ == $__size__',
         __break__   => '$__break__',

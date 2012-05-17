@@ -1731,7 +1731,7 @@ current information.
 
 =item DEFAULT=...
 
-=item C<__first__>, C<__last__>, C<__inner__>, C<__outer__>, C<__odd__>, C<__counter__>
+=item C<__first__>, C<__last__>, C<__inner__>, C<__outer__>, C<__odd__>, C<__counter__>, C<__even__>
 
 =item <!-- TMPL_VAR NAME=PARAM1 -->
 
@@ -2598,7 +2598,7 @@ templates created like this.
 =item loop_context_vars (fixed)
 
 Vars like C<__first__>, C<__last__>, C<__inner__>, C<__odd__>, C<__counter__>,
-C<__index__>, C<__outer__>
+C<__index__>, C<__outer__>, C<__even__>
 
 The variable C<__index__> works just like C<__counter__>, only that it starts
 at 0 instead of 1.
