@@ -2,8 +2,7 @@
 # `make test'. After `make install' it should work as `perl HTML-Template-Compiled.t'
 # $Id: 09_wrong.t 511 2006-08-07 01:41:42Z tinita $
 
-use lib 'blib/lib';
-use Test::More tests => 9;
+use Test::More tests => 11;
 BEGIN { use_ok('HTML::Template::Compiled') };
 eval {
 	my $htc = HTML::Template::Compiled->new(
@@ -72,4 +71,34 @@ ok($@ =~ m/not found/ , "template from include not found");
         print STDERR "Error? $@\n" unless $ENV{HARNESS_ACTIVE};;
         cmp_ok($@, "=~", qr{\Q: Syntax error in <TMPL_*> tag at }, "die when syntax is wrong");
     }
+}
+
+{
+    my $tmpl = <<"EOM";
+<tmpl_var foo>
+<tmpl_foo
+<tmpl_var foo>
+end
+EOM
+    for my $strict (0, 1) {
+        my $out = '';
+        eval {
+            my $htc = HTML::Template::Compiled->new(
+                scalarref => \$tmpl,
+                strict => $strict,
+            );
+            $htc->param(foo => 23);
+            $out = $htc->output;
+        };
+        my $err = $@;
+        if ($strict) {
+            cmp_ok($err, '=~', qr{\Q Syntax error in <TMPL_*> tag at }, "unknown tag strict");
+        }
+        else {
+            $out =~ s/\s+/ /g;
+            my $exp = '23 <tmpl_foo 23 end ';
+            cmp_ok($out, 'eq', $exp, "unknown tag no strict");
+        }
+    }
+
 }

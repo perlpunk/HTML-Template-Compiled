@@ -6,7 +6,7 @@ use warnings;
 use base qw(Exporter);
 use HTML::Template::Compiled::Token qw(:tagtypes);
 my $scalar_util = eval "require Scalar::Util; 1";
-our $VERSION = 0.12;
+our $VERSION = 0.13;
 my @vars;
 BEGIN {
 @vars = qw(
@@ -38,6 +38,7 @@ use constant ATTR_TAGNAMES   => 1;
 use constant ATTR_PERL       => 2;
 use constant ATTR_EXPRESSION => 3;
 use constant ATTR_CHOMP      => 4;
+use constant ATTR_STRICT     => 5;
 
 use constant T_VAR         => 'VAR';
 use constant T_IF          => 'IF';
@@ -83,6 +84,9 @@ sub get_expressions { $_[0]->[ATTR_EXPRESSION] }
 
 sub set_chomp { $_[0]->[ATTR_CHOMP] = $_[1] }
 sub get_chomp { $_[0]->[ATTR_CHOMP] }
+
+sub set_strict { $_[0]->[ATTR_STRICT] = $_[1] }
+sub get_strict { $_[0]->[ATTR_STRICT] }
 
 sub add_tagnames {
     my ($self, $hash) = @_;
@@ -169,6 +173,8 @@ sub init {
     my $tagstyle = $self->_create_tagstyle( $args{tagstyle} );
     $self->[ATTR_TAGSTYLE] = $tagstyle;
     $self->[ATTR_EXPRESSION] = $args{use_expressions};
+    $self->[ATTR_CHOMP] = $args{chomp};
+    $self->[ATTR_STRICT] = $args{strict};
     $self->[ATTR_TAGNAMES] = {
         OPENING_TAG() => {
             %{ $allowed_tagnames{ OPENING_TAG() } },
@@ -468,10 +474,16 @@ sub find_attributes {
                     $arg->{token} .= $1;
                     if ($arg->{name} eq '=') { $arg->{name} = 'VAR' }
                 }
+                elsif ($self->get_strict) {
+                        $self->_error_wrong_tag_syntax(
+                            $arg, $arg->{template}, "Unknown tag"
+                        );
+                        last MATCH_TAGS;
+                }
                 else {
-                    $self->_error_wrong_tag_syntax(
-                        $arg, $arg->{template}
-                    );
+                    $arg->{template} =~ s/^(\w+)//;
+                    $arg->{token} .= $1;
+                    $callbacks_found_text->[0]->($self, $arg);
                     last MATCH_TAGS;
                 }
                 #print STDERR "got ident $arg->{name} ('$arg->{template}')\n";

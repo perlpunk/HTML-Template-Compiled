@@ -4,6 +4,10 @@ Revision history for Perl extension HTML::Template::Compiled.
 - fix HTML::Template::Compiled::Classic: allow every character in template
   var names (RT 70676)
 - New option expire_time instead of global HTML::Template::Compiled->ExpireTime
+- Added loop context vars __even__, __outer__
+- Change: removed documentation of class methods ->CaseSensitive,
+  ->SearchPathOnInclude, ->UseQuery - will be deprecated
+- Added strict option
 
 0.97 Tue May  8 19:19:00 CEST 2012
 - regular release, see changes from dev version below

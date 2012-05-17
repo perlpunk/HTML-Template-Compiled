@@ -59,7 +59,7 @@ BEGIN {
           debug debug_file objects perl out_fh default_escape
           filter formatter
           globalstack use_query parse_tree parser compiler includes
-          plugins open_mode chomp expire_time
+          plugins open_mode chomp expire_time strict
         )
           #use_expressions
     );
@@ -890,6 +890,7 @@ sub init_args {
         pre_chomp              => 0,
         post_chomp             => 0,
         expire_time            => $NEW_CHECK,
+        strict                 => 1,
         %args,
     );
     return %defaults;
@@ -904,6 +905,7 @@ sub init {
     $self->set_default_path( $args{default_path} );
     $self->set_use_query( $args{use_query} );
     $self->set_chomp([$args{pre_chomp}, $args{post_chomp}]);
+    $self->set_strict( $args{strict} );
     #$self->set_use_expressions( $args{use_expressions} );
     if ($args{use_expressions}) {
         require HTML::Template::Compiled::Expr;
@@ -932,8 +934,9 @@ sub init {
     if (ref $tagstyle eq 'ARRAY') {
         # user specified named styles or regexes
         $parser = $self->parser_class->new(
-            tagstyle => $tagstyle,
+            tagstyle        => $tagstyle,
             use_expressions => $args{use_expressions},
+            strict          => $args{strict},
         );
         $parser->set_perl($args{use_perl});
     }
@@ -945,6 +948,7 @@ sub init {
         $parser ||= $self->parser_class->default();
         $parser->set_perl($args{use_perl});
         $parser->set_expressions($args{use_expressions});
+        $parser->set_strict($args{strict});
     }
     $parser->set_chomp([$args{pre_chomp}, $args{post_chomp}]);
     if ($args{use_perl}) {
@@ -1919,10 +1923,6 @@ I don't think I'll implement that.
 
 Not planned at the moment
 
-=item strict
-
-Might be implemented in the future
-
 =item vanguard_compatibility_mode
 
 Not planned.
@@ -2629,6 +2629,14 @@ browse through the stack.
 
 Now everything will be escaped for HTML unless you explicitly specify C<ESCAPE=0> (no escaping)
 or C<ESCAPE=URL>.
+
+=item strict
+
+Default: 1
+
+If set to 0 unknown tags will be ignored and output verbatim:
+
+    <TMPL_FOOBAR anything ... <TMPL_VAR valid>
 
 =item no_includes (since 0.92)
 
