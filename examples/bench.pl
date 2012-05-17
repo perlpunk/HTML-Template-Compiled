@@ -45,7 +45,6 @@ for my $key (sort keys %use) {
 	my $version = $use{$key} ? $key->VERSION : "-";
     printf "using %35s %s\n", $key, $version;
 }
-HTML::Template::Compiled->ExpireTime(100);
 HTML::Template::Compiled->clear_filecache("cache/htc");
 use Benchmark;
 my $debug = 0;
@@ -89,6 +88,7 @@ sub new_htc {
 		out_fh => 1,
         global_vars => $GLOBAL_VARS,
         tagstyle => [qw(-asp -comment)],
+		expire_time => 1000,
 	);
 	return $t1;
 }
@@ -108,6 +108,7 @@ sub new_htcc {
         global_vars => $GLOBAL_VARS,
         debug => 0,
         tagstyle => [qw(-asp -comment)],
+		expire_time => 1000,
         #debug => 1,
 	);
 	return $t1;
@@ -151,6 +152,7 @@ sub new_ht {
         file_cache_dir => 'cache/ht') : (),
         global_vars => $GLOBAL_VARS,
         die_on_bad_params => 0,
+		blind_cache => 1,
 	);
 	return $t2;
 }
