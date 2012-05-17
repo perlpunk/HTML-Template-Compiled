@@ -21,10 +21,10 @@ provides:
     version: 0.06
   HTML::Template::Compiled::Compiler:
     file: lib/HTML/Template/Compiled/Compiler.pm
-    version: 0.18
+    version: 0.19
   HTML::Template::Compiled::Compiler::Classic:
     file: lib/HTML/Template/Compiled/Compiler/Classic.pm
-    version: 0.04
+    version: 0.05
   HTML::Template::Compiled::Exception:
     file: lib/HTML/Template/Compiled/Exception.pm
     version: 0.01
@@ -81,7 +81,7 @@ provides:
     version: 0.01
   HTML::Template::Compiled::Parser:
     file: lib/HTML/Template/Compiled/Parser.pm
-    version: 0.12
+    version: 0.13
   HTML::Template::Compiled::Plugin::DHTML:
     file: lib/HTML/Template/Compiled/Plugin/DHTML.pm
     version: 0.02
