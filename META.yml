@@ -15,7 +15,7 @@ name: HTML-Template-Compiled
 provides:
   HTML::Template::Compiled:
     file: lib/HTML/Template/Compiled.pm
-    version: 0.97_001
+    version: 0.97_002
   HTML::Template::Compiled::Classic:
     file: lib/HTML/Template/Compiled/Classic.pm
     version: 0.06
@@ -118,4 +118,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: https://github.com/perlpunk/HTML-Template-Compiled
-version: 0.97_001
+version: 0.97_002

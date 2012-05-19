@@ -3,7 +3,7 @@ NAME
     to Perl code
 
 VERSION
-    $VERSION = "0.97_001"
+    $VERSION = "0.97_002"
 
 SYNOPSIS
       use HTML::Template::Compiled;
@@ -332,17 +332,19 @@ DESCRIPTION
         of HTC.
 
     search_path_on_include
-        In HTML::Template, if you have a file a/b/c/d/template.html and in
-        that template you do an include of include.html, and include.html is
-        in /a/b/include.html, HTML::Template will find it. As this wasn't so
-        clear to me when reading the docs, I implemented this differently.
-        You'd either have to include ../../include.html, or you should set
-        search_path_on_include to 1 and include a/b/include.html.
+        Default: 0
 
-        If you really need this feature, write me. I'm still thinking of how
-        I would implement this, and I don't like it much, because it seems
-        to me like a global_vars for filenames, and I don't like global_vars
-        =)
+        In the HTML::Template documentation it says, if
+        search_path_on_include is set to 1, the paths of the path option are
+        searched, while the default behaviour is to look "only" in the
+        current template directory.
+
+        It's not clear if it still searches in the current directory if set
+        to 1. I found out that it is not, so you cannot have both.
+
+        In HTML::Template::Compiled, search_path_on_include can have three
+        values: 0: search current template directory 1: search paths
+        specified 2: search paths and current template directory.
 
     open_mode
         In HTC you should leave out the "<" at the beginning.
@@ -814,6 +816,8 @@ DESCRIPTION
     search_path_on_include
         Search the list of paths specified with "path" when including a
         template. Default is 0
+
+        See "DIFFERENT FEATURES" for the additional possible value 2.
 
     file_cache
         Set to 1 if you want to use file caching and specify the path with
@@ -1498,8 +1502,6 @@ SEE ALSO
 
 AUTHOR
     Tina Mueller
-
-    Co-Author Mark Stosberg
 
 CREDITS
     Sam Tregar big thanks for ideas and letting me use his HTML::Template
