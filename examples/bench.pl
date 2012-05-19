@@ -37,6 +37,7 @@ for my $key (sort keys %use) {
     printf "using %35s %s\n", $key, $version;
 }
 HTML::Template::Compiled->clear_filecache("cache/htc");
+HTML::Template::Compiled->clear_filecache("cache/htcc");
 use Benchmark;
 my $debug = 0;
 $ENV{'HTML_TEMPLATE_ROOT'} = "examples";
@@ -58,12 +59,8 @@ GetOptions(
 );
 my $iterations = shift;
 my $ht_file = 'test.htc';
-#$ht_file = 'test.htc.10';
-#$ht_file = 'test.htc.20';
 my $htcc_file = $ht_file . 'c';
 my $tt_file = "test.tt";
-#$tt_file = "test.tt.10";
-#$tt_file = "test.tt.20";
 my $tst_file = "test.tst";
 $template_size =~ tr/0-9//cd;
 if ($template_size > 1) {
@@ -78,9 +75,12 @@ if ($template_size > 1) {
 }
 
 print "running with:
---file-cache $FILE_CACHE --mem-cache $MEM_CACHE --loop-context $LOOP_CONTEXT --global-vars $GLOBAL_VARS --case-sensitive $CASE_SENSITIVE --default-escape $default_escape --template-size=$template_size
+--file-cache $FILE_CACHE --mem-cache $MEM_CACHE --loop-context $LOOP_CONTEXT "
+. "--global-vars $GLOBAL_VARS --case-sensitive $CASE_SENSITIVE "
+. "--default-escape $default_escape --template-size=$template_size
 ";
 
+my $STDOUT = 0;
 sub new_htc {
 	my $t1 = HTML::Template::Compiled->new_file( $ht_file,
 		#path => 'examples',
@@ -92,7 +92,7 @@ sub new_htc {
 		# first, otherwise it will run without cache
         cache_dir => ($FILE_CACHE ? "cache/htc" : undef),
         cache => $MEM_CACHE,
-		out_fh => 1,
+		out_fh => $STDOUT ? 1 : 0,
         global_vars => $GLOBAL_VARS,
         tagstyle => [qw(-asp -comment)],
 		expire_time => 1000,
@@ -111,7 +111,7 @@ sub new_htcc {
 		# first, otherwise it will run without cache
         cache_dir => ($FILE_CACHE ? "cache/htcc" : undef),
         cache => $MEM_CACHE,
-		out_fh => 1,
+		out_fh => $STDOUT ? 1 : 0,
         global_vars => $GLOBAL_VARS,
         debug => 0,
         tagstyle => [qw(-asp -comment)],
@@ -341,38 +341,49 @@ open OUT, ">>/dev/null";
 sub output {
 	my $t = shift;
 	return unless defined $t;
-#	$params{name} = (ref $t).' '.$count++;
 	$t->param(%params);
-	#print $t->{code} if exists $t->{code};
-    my $out = $t=~m/Compiled/?$t->output(\*OUT):$t->output;
-    #my $out = $t=~m/Compiled/?$t->output(\*STDOUT):$t->output;
-	print OUT $out;
+    if ($STDOUT) {
+        my $out;
+        if ($t=~m/Compiled/) {
+            $out = $t->output(\*OUT);
+        }
+        else {
+            $out = $t->output;
+        }
+        print OUT $out;
+    }
+    else {
+        my $out = $t->output();
+    }
 	#print "output():$out\n";
 	#my $size = total_size($t);
 	#print "size $t = $size\n";
-	#print "\nOUT: $out";
 }
 
-#open TT_OUT, ">&STDOUT";
 sub output_tst {
 	my $t = shift;
 	return unless defined $t;
-	#warn Data::Dumper->Dump([\%params], ['params']);
 	$t->setq(%params,tmpl=>$t);
 	my $out = $t->fill;
 	#print "output_tst():$out\n";
-	print OUT $out;
+    if ($STDOUT) {
+        print OUT $out;
+    }
 }
 sub output_tl {
 	my $t = shift;
 	return unless defined $t;
     chdir 'examples';
 	my $filett = $tt_file;
-	#$t->process($filett, \%params, \*OUT);
-	$t->process($filett, \%params, \*OUT) or die $t->error();
+    if ($STDOUT) {
+        $t->process($filett, \%params, \*OUT) or die $t->error();
+    }
+    else {
+        my $out;
+        $t->process($filett, \%params, \$out) or die $t->error();
+    }
 	#my $size = total_size($t);
 	#print "size $t = $size\n";
-	#print $t->{code} if exists $t->{code};
 	#my $out = $t->output;
 	#print "\nOUT: $out";
     chdir '..';
@@ -383,7 +394,13 @@ sub output_tt {
 	return unless defined $t;
 	my $filett = $tt_file;
 	#$t->process($filett, \%params, \*OUT);
-	$t->process($filett, \%params, \*OUT) or die $t->error();
+    if ($STDOUT) {
+        $t->process($filett, \%params, \*OUT) or die $t->error();
+    }
+    else {
+        my $out;
+        $t->process($filett, \%params, \$out) or die $t->error();
+    }
 	#my $size = total_size($t);
 	#print "size $t = $size\n";
 	#print $t->{code} if exists $t->{code};
@@ -396,7 +413,13 @@ sub output_ttaf {
 	return unless defined $t;
 	my $filett = $tt_file;
 	#$t->process($filett, \%params, \*OUT);
-	$t->process($filett, \%params, \*OUT) or die $t->error();
+    if ($STDOUT) {
+        $t->process($filett, \%params, \*OUT) or die $t->error();
+    }
+    else {
+        my $out;
+        $t->process($filett, \%params, \$out) or die $t->error();
+    }
 	#my $size = total_size($t);
 	#print "size $t = $size\n";
 	#print $t->{code} if exists $t->{code};
@@ -415,7 +438,9 @@ sub output_xslate {
 	#print $t->{code} if exists $t->{code};
     my $out = $t->render('test.xslate', \%params);
     #my $out = $t->output;
-    #print "\nOUT: $out";
+    if ($STDOUT) {
+        print OUT $out;
+    }
 }
 
 my $global_htc = $use{'HTML::Template::Compiled'} ? new_htc : undef;
