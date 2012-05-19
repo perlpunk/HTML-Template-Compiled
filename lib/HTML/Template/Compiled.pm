@@ -1225,6 +1225,8 @@ sub prepare_for_cache {
         my ($path, $filename, $htc) = @{ $includes->{$fullpath} };
         $includes->{$fullpath} = [$path, $filename];
     }
+    $self->set_parser(undef);
+    $self->set_compiler(undef);
 }
 
 sub preload {
