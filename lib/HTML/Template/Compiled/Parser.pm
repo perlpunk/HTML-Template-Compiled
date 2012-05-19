@@ -474,6 +474,17 @@ sub find_attributes {
                     $arg->{token} .= $1;
                     if ($arg->{name} eq '=') { $arg->{name} = 'VAR' }
                 }
+                elsif ($comment_info->{NOPARSE}) {
+                    $callbacks_found_text->[0]->($self, $arg);
+                    last MATCH_TAGS;
+                }
+                elsif ($comment_info->{VERBATIM}) {
+                    $encode_tag->($self, $arg);
+                    last MATCH_TAGS;
+                }
+                elsif ($comment_info->{COMMENT}) {
+                    last MATCH_TAGS;
+                }
                 elsif ($self->get_strict) {
                         $self->_error_wrong_tag_syntax(
                             $arg, $arg->{template}, "Unknown tag"

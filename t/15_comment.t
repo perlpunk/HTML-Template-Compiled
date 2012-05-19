@@ -2,8 +2,7 @@
 # `make test'. After `make install' it should work as `perl HTML-Template-Compiled.t'
 # $Id: 15_comment.t 1102 2009-08-21 13:56:24Z tinita $
 
-use lib 'blib/lib';
-use Test::More tests => 4;
+use Test::More tests => 7;
 use Data::Dumper;
 use File::Spec;
 use strict;
@@ -18,6 +17,7 @@ my $cache = File::Spec->catfile('t', 'cache');
 <tmpl_if comment>
 	<tmpl_var wanted>
 	<tmpl_comment outer>
+<tmpl_ foo
 		<tmpl_comment >
 			<tmpl_var unwanted>
 		</tmpl_comment >
@@ -26,6 +26,7 @@ my $cache = File::Spec->catfile('t', 'cache');
 <tmpl_elsif noparse>
 	<tmpl_var wanted>
 	<tmpl_noparse outer>
+<tmpl_ foo
 		<tmpl_noparse inner>
 			<tmpl_var unwanted>
 		</tmpl_noparse inner>
@@ -59,11 +60,10 @@ EOM
 	);
 	$out = $htc->output;
 	#print $out,$/;
-	ok(
-		((() = $out =~ m/unwanted/g) == 2) &&
-		$out !~ m/no thanks/ &&
-		$out =~ m/we want this/,
-		"tmpl_noparse");
+    cmp_ok($out, '=~', qr/unwanted.*unwanted/s, "tmpl_noparse 1");
+    cmp_ok($out, '!~', qr/no thanks/s, "tmpl_noparse 2");
+    cmp_ok($out, '=~', qr/we want this/s, "tmpl_noparse 3");
+    cmp_ok($out, '=~', qr/<tmpl_ foo/s, "tmpl_noparse 4");
     my $unescaped = 'this should be escaped: <tmpl_var test>';
     {
         my $escaped = $unescaped;

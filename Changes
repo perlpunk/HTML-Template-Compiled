@@ -2,6 +2,7 @@ Revision history for Perl extension HTML::Template::Compiled.
 
 0.97_002
 - Improved file cache performance
+- Bugfix: old bug with invalid tags in noparse, verbatim, comment
 
 0.97_001 Thu May 17 14:54:30 CEST 2012
 - fix HTML::Template::Compiled::Classic: allow every character in template
