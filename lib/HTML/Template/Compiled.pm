@@ -579,16 +579,6 @@ sub add_file_cache {
                 checked => $times{checked},
             },
         };
-        # TODO Storable cannot store qr//
-        # but as we don't need those serialized anyway
-        # we let Storable just store a dummy entry
-        local $Storable::forgive_me = 1;
-        local $SIG{__WARN__} = sub {
-            my ($w) = @_;
-            unless ($w =~ m/Can't store item REGEXP/) {
-                warn $w;
-            }
-        };
         Storable::store($to_cache, "$cachefile.storable");
     }
     else {
