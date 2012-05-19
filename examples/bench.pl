@@ -2,20 +2,11 @@
 # $Id: bench.pl 1126 2011-10-31 19:56:35Z tinita $
 use strict;
 use warnings;
-use lib qw(blib/lib ../blib/lib);
 use Getopt::Long;
 use FindBin qw/ $RealBin /;
 chdir "$RealBin/..";
 #use Devel::Size qw(size total_size);
 my $count = 0;
-my $ht_file = 'test.htc';
-#$ht_file = 'test.htc.10';
-#$ht_file = 'test.htc.20';
-my $htcc_file = $ht_file . 'c';
-my $tt_file = "test.tt";
-#$tt_file = "test.tt.10";
-#$tt_file = "test.tt.20";
-my $tst_file = "examples/test.tst";
 mkdir "cache";
 mkdir "cache/htc";
 mkdir "cache/htcc";
@@ -55,6 +46,7 @@ my $LOOP_CONTEXT   = 1;
 my $GLOBAL_VARS    = 0;
 my $CASE_SENSITIVE = 1;
 my $default_escape = 0;
+my $template_size  = 1;
 GetOptions(
     "file-cache=i" => \$FILE_CACHE,
     "mem-cache=i" => \$MEM_CACHE,
@@ -62,16 +54,31 @@ GetOptions(
     "global-vars=i" => \$GLOBAL_VARS,
     "case-sensitive=i" => \$CASE_SENSITIVE,
     "default-escape=i" => \$default_escape,
+    "template-size=i" => \$template_size,
 );
 my $iterations = shift;
+my $ht_file = 'test.htc';
+#$ht_file = 'test.htc.10';
+#$ht_file = 'test.htc.20';
+my $htcc_file = $ht_file . 'c';
+my $tt_file = "test.tt";
+#$tt_file = "test.tt.10";
+#$tt_file = "test.tt.20";
+my $tst_file = "test.tst";
+$template_size =~ tr/0-9//cd;
+if ($template_size > 1) {
+    for my $file ($ht_file, $htcc_file, $tt_file, $tst_file) {
+        open my $fh, "<", "examples/$file" or die "examples/$file: $!";
+        my $data = do { local $/; <$fh> };
+        my $new_file = "$file.n$template_size";
+        open my $out, ">", "examples/$new_file" or die $!;
+        print $out $data x $template_size;
+        $file = $new_file;
+    }
+}
 
 print "running with:
-file-cache:     $FILE_CACHE
-mem-cache:      $MEM_CACHE
-loop-context:   $LOOP_CONTEXT
-global-vars:    $GLOBAL_VARS
-case-sensitive: $CASE_SENSITIVE
-default-escape: $default_escape
+--file-cache $FILE_CACHE --mem-cache $MEM_CACHE --loop-context $LOOP_CONTEXT --global-vars $GLOBAL_VARS --case-sensitive $CASE_SENSITIVE --default-escape $default_escape --template-size=$template_size
 ";
 
 sub new_htc {
@@ -116,7 +123,7 @@ sub new_htcc {
 
 sub new_tst {
 	my $t = Text::ScriptTemplate->new();
-	$t->load($tst_file);
+	$t->load("examples/$tst_file");
 	#my $size = total_size($t1);
 	#print "size htc = $size\n";
 	return $t;
@@ -334,7 +341,7 @@ open OUT, ">>/dev/null";
 sub output {
 	my $t = shift;
 	return unless defined $t;
-	$params{name} = (ref $t).' '.$count++;
+#	$params{name} = (ref $t).' '.$count++;
 	$t->param(%params);
 	#print $t->{code} if exists $t->{code};
     my $out = $t=~m/Compiled/?$t->output(\*OUT):$t->output;
