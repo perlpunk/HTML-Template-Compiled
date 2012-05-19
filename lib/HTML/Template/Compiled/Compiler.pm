@@ -865,16 +865,13 @@ EOM
                 my $cwd;
 				unless ($self->get_scalar) {
 					$dir      = dirname($fname);
-					if ($self->get_search_path) {
-						if ( defined $dir and !grep { $dir eq $_ } @$path ) {
-                            $cwd = $dir;
-							# add the current directory to top of paths
-							# create new $path, don't alter original ref
-#							$path = [ $dir, @$path ] ;
-						}
+					if ($self->get_search_path == 1) {
+					}
+					elsif ($self->get_search_path == 2) {
+						$cwd = $dir;
 					}
 					else {
-							$path = [ $dir ] ;
+						$path = [ $dir ] ;
 					}
 				}
                 # generate included template

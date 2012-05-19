@@ -2,8 +2,7 @@
 # `make test'. After `make install' it should work as `perl HTML-Template-Compiled.t'
 # $Id: 12_path.t 985 2007-11-04 21:03:50Z tinita $
 
-use lib 'blib/lib';
-use Test::More tests => 4;
+use Test::More tests => 5;
 BEGIN { use_ok('HTML::Template::Compiled') };
 use File::Spec ();
 use lib 't';
@@ -39,18 +38,35 @@ ok(
 	
 
 
-TODO: {
-    local $TODO = "path not yet correctly implemented";
+{
+#    local $TODO = "path not yet correctly implemented";
     my $out = '';
     eval {
         my $htc = HTML::Template::Compiled->new(
             path => File::Spec->catfile(qw(t templates)),
             filename => 'subdir/a/path.html',
+			search_path_on_include => 1,
         );
         $out = $htc->output;
         #warn __PACKAGE__.':'.__LINE__.$".Data::Dumper->Dump([\$out], ['out']);
     };
     #warn __PACKAGE__.':'.__LINE__.": error? $@\n";
-    cmp_ok($out, '=~', 'this is t/templates/subdir/b.html', 'search current path on include');
+    cmp_ok($out, '=~', 'this is t/templates/subdir/b.html', 'search path option on include');
+
+}
+
+{
+    my $out = '';
+    eval {
+        my $htc = HTML::Template::Compiled->new(
+            path => File::Spec->catfile(qw(t templates)),
+            filename => 'subdir/a/path2.html',
+			search_path_on_include => 2,
+        );
+        $out = $htc->output;
+#        warn __PACKAGE__.':'.__LINE__.$".Data::Dumper->Dump([\$out], ['out']);
+    };
+#    warn __PACKAGE__.':'.__LINE__.": error? $@\n";
+    cmp_ok($out, '=~', qr{this is t/templates/subdir/b.html.*this is templates/subdir/a/path2_inc.html}s, 'search current path and path option on include');
 
 }
