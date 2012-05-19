@@ -47,13 +47,13 @@ ok(!$ok2, "query 2");
 #exit;
 
 sub query_template {
-    local $HTML::Template::Compiled::DEFAULT_QUERY = 1;
     my $template = HTML::Template::Compiled->new(
         path     => 't/templates',
         filename => 'query-test-copy.tmpl',
         file_cache_dir => 't/cache',
         file_cache => 1,
         expire_time => 1,
+        use_query => 1,
     );
     my %params;
     eval {
@@ -84,11 +84,11 @@ sub query_template {
 }
 
 {
-    local $HTML::Template::Compiled::DEFAULT_QUERY = 1;
     # test query() (From HTML::Template test suite)
     my $template = HTML::Template::Compiled->new(                                
         path     => 't/templates',
         filename => 'query-test2.tmpl',
+        use_query => 1,
     );
     my %p;
     eval { %p = map {$_ => 1} $template->query(loop => ['LOOP_FOO', 'LOOP_BAR']); };
