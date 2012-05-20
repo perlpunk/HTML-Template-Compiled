@@ -35,9 +35,9 @@ for my $filecache (0, 1) {
             plugin => [$plug],
             filename => $file,
             $filecache ?  (
-                file_cache => 0,
+                file_cache => 1,
                 file_cache_dir => $cache,
-                cache => 1,
+                cache => 0,
             ) : (
                 cache => 1,
             ),
@@ -64,3 +64,4 @@ for my $filecache (0, 1) {
 }
 
 
+HTML::Template::Compiled->clear_filecache($cache);
