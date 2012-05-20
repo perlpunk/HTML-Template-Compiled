@@ -357,7 +357,10 @@ sub from_cache {
         my $fname  = $self->get_filename;
         $t = $self->from_mem_cache($dir,$fname, $args);
         if ($t) {
-            $t->set_plugins($plug) if @$plug;
+            if (@$plug) {
+                $t->set_plugins($plug);
+                $t->load_plugins($plug);
+            }
             return $t;
         }
 #        warn __PACKAGE__.':'.__LINE__.": not in mem cache: $fname\n";
@@ -373,7 +376,10 @@ sub from_cache {
         my $dir     = $self->get_cache_dir;
         $t = $self->from_file_cache($dir, $file);
         if ($t) {
-            $t->set_plugins($plug) if @$plug;
+            if (@$plug) {
+                $t->set_plugins($plug);
+                $t->load_plugins($plug);
+            }
             return $t;
         }
     }
@@ -713,7 +719,6 @@ sub include_file {
             checked => $cache->{times}->{checked},
             mtime   => $cache->{times}->{mtime},
         );
-        $t->init_plugins($plug);
     }
     else {
     if ($UNTAINT) {
@@ -861,6 +866,9 @@ sub init_cache {
 
 sub init_args {
     my ($class, %args) = @_;
+    if ($args{plugin} and (ref $args{plugin}) ne 'ARRAY') {
+        $args{plugin} = [$args{plugin}];
+    }
     my %defaults = (
         search_path_on_include => $SEARCHPATH,
         loop_context_vars      => 0,
@@ -919,6 +927,11 @@ sub init {
     }
     $self->set_out_fh( $args{out_fh} );
     $self->set_global_vars( $args{global_vars} );
+    if (my $plugins = $args{plugin}) {
+        $self->set_plugins($plugins);
+    }
+    my $compiler = $self->compiler_class->new;
+    $self->set_compiler($compiler);
     my $tagstyle = $args{tagstyle};
     my $parser;
     if (ref $tagstyle eq 'ARRAY') {
@@ -952,31 +965,40 @@ sub init {
         $parser->remove_tags(qw/ INCLUDE INCLUDE_VAR INCLUDE_STRING /);
     }
     $self->set_parser($parser);
-    my $compiler = $self->compiler_class->new;
-    $self->set_compiler($compiler);
-    if ($args{plugin}) {
-        my $plugins = ref $args{plugin} eq 'ARRAY' ? $args{plugin} : [$args{plugin}];
+    if (my $plugins = $self->get_plugins) {
         $self->init_plugins($plugins);
         $self->set_plugins($plugins);
     }
 }
 
+{
+    my %_plugins;
+    sub load_plugins {
+        my ($self, $plugins) = @_;
+        for my $plug (@$plugins) {
+            next if ref $plug;
+            next if $_plugins{$plug};
+            if ($plug =~ m/^::/) {
+                $plug = "HTML::Template::Compiled::Plugin$plug";
+            }
+            next if $_plugins{$plug};
+            unless ($plug->can('register')) {
+                eval "require $plug";
+                if ($@) {
+                    carp "Could not load plugin $plug\n";
+                }
+            }
+            $_plugins{$plug} = 1;
+        }
+    }
+}
+
 sub init_plugins {
     my ($self, $plugins) = @_;
+    $self->load_plugins($plugins);
     my $parser = $self->get_parser;
     my $compiler = $self->get_compiler;
     for my $plug (@$plugins) {
-        if (ref $plug) {
-        }
-        elsif ($plug =~ m/^::/) {
-            $plug = "HTML::Template::Compiled::Plugin$plug";
-        }
-        unless ($plug->can('register')) {
-            eval "require $plug";
-            if ($@) {
-                carp "Could not load plugin $plug\n";
-            }
-        }
         my $actions = $self->get_plugin_actions($plug);
         if (my $tagnames = $actions->{tagnames}) {
             $parser->add_tagnames($tagnames);
@@ -999,6 +1021,7 @@ sub init_plugins {
         for my $plug (@$plugins) {
             my $actions = $plug->register;
             $classes->{ref $plug || $plug} = $actions;
+            HTML::Template::Compiled::Compiler->setup_escapes($actions->{escape}||{});
         }
     }
 

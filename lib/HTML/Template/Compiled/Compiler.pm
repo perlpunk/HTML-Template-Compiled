@@ -68,6 +68,18 @@ sub delete_subs {
     }
 }
 
+sub setup_escapes {
+	my ($class, $escapes) = @_;
+    for my $key (%$escapes) {
+        my $sub = $escapes->{$key};
+        if (ref $sub eq 'CODE') {
+            my $subname = "HTML::Template::Compiled::Compiler::subs::$key";
+            no strict 'refs';
+            *$subname = $sub;
+        }
+    }
+}
+
 sub add_escapes {
     my ($self, $new_escapes) = @_;
     my $escapes = $self->get_escapes;

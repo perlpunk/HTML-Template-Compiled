@@ -2,14 +2,13 @@
 # `make test'. After `make install' it should work as `perl HTML-Template-Compiled.t'
 # $Id: 11_dhtml.t 952 2007-07-30 20:42:25Z tinita $
 
-use lib 'blib/lib';
 use Test::More tests => 3;
 BEGIN { use_ok('HTML::Template::Compiled') };
 use lib 't';
 use HTC_Utils qw($cache $tdir &cdir);
 
 eval {
-    require HTML::Template::Compiled::Plugin::DHTML;
+	require Data::TreeDumper::Renderer::DHTML;
 };
 my $dhtml = $@ ? 0 : 1;
 	my %hash = (
@@ -38,7 +37,7 @@ SKIP: {
         ok($out =~ m/data_treedumper_dhtml/, 'DHTML plugin');
     }
     {
-        HTML::Template::Compiled::Compiler->delete_subs;
+#        HTML::Template::Compiled::Compiler->delete_subs;
         # from cache
         my $htc = HTML::Template::Compiled->new(
             filename => "t/templates/dhtml.htc",
@@ -50,8 +49,8 @@ SKIP: {
         );
         $htc->param(%hash);
         my $out = $htc->output;
-        #print $out;
+#        print $out;
         ok($out =~ m/data_treedumper_dhtml/, 'DHTML plugin with file cache');
     }
 }
-
+HTML::Template::Compiled->clear_filecache($cache);

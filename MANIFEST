@@ -78,6 +78,7 @@ t/templates/songs.html
 t/templates/wrong.html
 t/templates/include.html
 t/templates/dhtml.htc
+t/templates/inc.html
 t/templates/out_fh.htc
 t/templates/filter.htc
 t/templates/filter_included.htc
