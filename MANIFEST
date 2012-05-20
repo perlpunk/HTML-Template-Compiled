@@ -90,6 +90,10 @@ t/templates/precompiled1.tmpl
 t/templates/include_w_global.htc
 t/templates/subdir/a/file1.html
 t/templates/subdir/a/file2.html
+t/templates/subdir/a/path.html
+t/templates/subdir/a/path2.html
+t/templates/subdir/a/path2_inc.html
+t/templates/subdir/b.html
 t/templates/query-test.tmpl
 t/templates/query-include.tmpl
 t/templates/query-include2.tmpl

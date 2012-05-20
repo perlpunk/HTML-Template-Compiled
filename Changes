@@ -1,5 +1,8 @@
 Revision history for Perl extension HTML::Template::Compiled.
 
+0.97_003 Sun May 20 12:09:29 CEST 2012
+- forgot to add new templates to manifest
+
 0.97_002 Sat May 19 23:32:32 CEST 2012
 - Change: Implemented searching the path and search_path_on_include like
   in HTML::Template (finally) and add an additional value. PLEASE TEST!
