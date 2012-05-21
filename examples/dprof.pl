@@ -1,8 +1,9 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use lib 'blib/lib';
-$ARGV[0] ||= 'htc';
+my ($type, $num) = @ARGV;
+$type ||= 'htc';
+$num ||= 2000;
 
 my %params = (
   name => 'merlyn',
@@ -23,9 +24,9 @@ my %params = (
 );
 
 
-if ($ARGV[0] eq 'htc') {
+if ($type eq 'htc') {
 	require HTML::Template::Compiled;
-	for (0..2000) {
+	for (1 .. $num) {
 		my $htc = HTML::Template::Compiled->new_file('test.htc',
 			path => 'examples',
             tagstyle => [qw(-classic -comment +asp)],
@@ -35,7 +36,7 @@ if ($ARGV[0] eq 'htc') {
             #filename => 'test.htc',
             #file_cache_dir => "cache/htc",
             # file_cache => 1,
-            cache => 0,
+            cache => 1,
 		);
 		$htc->param(%params);
 
@@ -43,12 +44,11 @@ if ($ARGV[0] eq 'htc') {
 }
 else {
 	require HTML::Template;
-	for (0..1000) {
-		my $ht = HTML::Template->new(
+	for (1 .. $num) {
+		my $ht = HTML::Template->new_file('test.htc',
 			path => 'examples',
 			#case_sensitive => 0, # slow down
 			loop_context_vars => 1,
-			filename => 'test.htc',
 			cache => 1,
 		);
 		$ht->param(%params);
