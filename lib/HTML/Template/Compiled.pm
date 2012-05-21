@@ -81,7 +81,7 @@ sub HTC { __PACKAGE__->new(@_) }
 sub new {
     my ( $class, %args ) = @_;
     D && $class->log("new()");
-    %args = $class->init_args(%args);
+    $class->init_args(\%args);
     # handle the "type", "source" parameter format (does anyone use it?)
     if ( exists $args{type} ) {
         exists $args{source} or $class->_error_no_source();
@@ -152,7 +152,7 @@ sub _error_empty_filename {
 
 sub new_from_perl {
     my ($class, %args) = @_;
-    %args = $class->init_args(%args);
+    $class->init_args(\%args);
     my $self = bless [], $class;
     D && $self->log("new(perl) filename: $args{filename}");
 
@@ -177,7 +177,7 @@ sub new_from_perl {
 
 sub new_file {
     my ($class, $filename, %args) = @_;
-    %args = $class->init_args(%args);
+    $class->init_args(\%args);
     my $self = bless [], $class;
     $self->_check_deprecated_args(%args);
     $args{path} = $self->build_path($args{path});
@@ -193,7 +193,6 @@ sub new_file {
     $self->init_cache(\%args);
     #$self->set_cache_dir( $args{cache_dir} );
     my $md5path = md5_hex(@{ $args{path} || [] });
-    my $test = $args{path};
     $self->set_path( $args{path} );
     $self->set_md5_path( $md5path );
     if (my $t = $self->from_cache(\%args)) {
@@ -208,7 +207,7 @@ sub new_file {
 
 sub new_filehandle {
     my ($class, $filehandle, %args) = @_;
-    %args = $class->init_args(%args);
+    $class->init_args(\%args);
     my $self = bless [], $class;
     $self->_check_deprecated_args(%args);
     if (exists $args{scalarref}
@@ -235,7 +234,7 @@ sub new_filehandle {
 
 sub new_array_ref {
     my ($class, $arrayref, %args) = @_;
-    %args = $class->init_args(%args);
+    $class->init_args(\%args);
     if (exists $args{scalarref}
         || exists $args{filehandle} || exists $args{filename}) {
         $class->_error_template_sources;
@@ -247,7 +246,7 @@ sub new_array_ref {
 
 sub new_scalar_ref {
     my ($class, $scalarref, %args) = @_;
-    %args = $class->init_args(%args);
+    $class->init_args(\%args);
     my $self = bless [], $class;
     $self->_check_deprecated_args(%args);
     if (exists $args{arrayref}
@@ -865,11 +864,11 @@ sub init_cache {
 }
 
 sub init_args {
-    my ($class, %args) = @_;
-    if ($args{plugin} and (ref $args{plugin}) ne 'ARRAY') {
-        $args{plugin} = [$args{plugin}];
+    my ($class, $args) = @_;
+    if ($args->{plugin} and (ref $args->{plugin}) ne 'ARRAY') {
+        $args->{plugin} = [$args->{plugin}];
     }
-    my %defaults = (
+    %$args = (
         search_path_on_include => $SEARCHPATH,
         loop_context_vars      => 0,
         case_sensitive         => $CASE_SENSITIVE_DEFAULT,
@@ -889,9 +888,9 @@ sub init_args {
         post_chomp             => 0,
         expire_time            => $NEW_CHECK,
         strict                 => 1,
-        %args,
+        %$args,
     );
-    return %defaults;
+#    return %defaults;
 }
 
 sub init {
