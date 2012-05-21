@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 use Getopt::Long;
+use Benchmark qw/ timethese cmpthese /;
 use FindBin qw/ $RealBin /;
 chdir "$RealBin/..";
 #use Devel::Size qw(size total_size);
@@ -38,7 +39,6 @@ for my $key (sort keys %use) {
 }
 HTML::Template::Compiled->clear_filecache("cache/htc");
 HTML::Template::Compiled->clear_filecache("cache/htcc");
-use Benchmark;
 my $debug = 0;
 $ENV{'HTML_TEMPLATE_ROOT'} = "examples";
 my $FILE_CACHE     = 0;
@@ -48,6 +48,7 @@ my $GLOBAL_VARS    = 0;
 my $CASE_SENSITIVE = 1;
 my $default_escape = 0;
 my $template_size  = 1;
+my $bench          = 'timethese';
 GetOptions(
     "file-cache=i" => \$FILE_CACHE,
     "mem-cache=i" => \$MEM_CACHE,
@@ -56,6 +57,7 @@ GetOptions(
     "case-sensitive=i" => \$CASE_SENSITIVE,
     "default-escape=i" => \$default_escape,
     "template-size=i" => \$template_size,
+    "bench=s" => \$bench,
 );
 my $iterations = shift;
 my $ht_file = 'test.htc';
@@ -457,9 +459,8 @@ my $global_tl = $use{'Template::Like'} ? new_tl : undef;
 my $global_cet = $use{'CGI::Ex::Template'} ? new_cet : undef;
 my $global_tst = $use{'Text::ScriptTemplate'} ? new_tst : undef;
 if(1) {
-    #Benchmark::cmpthese ($iterations||-1, {
-    timethese ($iterations||-1, {
-        $use{'HTML::Template::Compiled'} ? (
+my %args = (
+       $use{'HTML::Template::Compiled'} ? (
             # deactivate memory cache
             #new_htc_w_clear_cache => sub {my $t = new_htc();$t->clear_cache},
             # normal, with memory cache
@@ -548,6 +549,16 @@ if(1) {
                     #output_tst => sub {output_tst($global_tst)},
 						all_tst => sub {my $t = new_tst();output_tst($t)},
         ): (),
-	});
+);
+if ($bench eq 'timethese') {
+    timethese ($iterations||-1, {
+        %args
+ 	});
+}
+elsif ($bench eq 'cmpthese') {
+    cmpthese ($iterations||-1, {
+        %args
+ 	});
+}
 }
 __END__
