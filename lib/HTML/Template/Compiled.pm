@@ -66,9 +66,9 @@ BEGIN {
 
     for my $i ( 1 .. $#map ) {
         my $method = "_$map[$i]";
-        my $get    = eval qq#sub { return \$_[0]->[$i] }#;
+        my $get    = sub { return $_[0]->[$i] };
         my $set;
-            $set = eval qq#sub { \$_[0]->[$i] = \$_[1] }#;
+            $set = sub { $_[0]->[$i] = $_[1] };
         no strict 'refs';
         *{"get$method"} = $get;
         *{"set$method"} = $set;
