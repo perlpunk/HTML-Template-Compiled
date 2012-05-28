@@ -43,6 +43,13 @@ use constant CHECKED  => 1;
 use constant LMTIME   => 2;
 use constant LCHECKED => 3;
 
+use constant DEBUG_COMPILED => 0b001;
+
+use constant DEBUG_CACHE_FILE_MISS => 0b0001;
+use constant DEBUG_CACHE_FILE_HIT  => 0b0010;
+use constant DEBUG_CACHE_MEM_MISS  => 0b0100;
+use constant DEBUG_CACHE_MEM_HIT   => 0b1000;
+
 our $DEBUG = 0;
 our $LAST_EXCEPTION;
 
@@ -81,7 +88,6 @@ sub HTC { __PACKAGE__->new(@_) }
 sub new {
     my ( $class, %args ) = @_;
     D && $class->log("new()");
-    $class->init_args(\%args);
     # handle the "type", "source" parameter format (does anyone use it?)
     if ( exists $args{type} ) {
         exists $args{source} or $class->_error_no_source();
@@ -234,7 +240,6 @@ sub new_filehandle {
 
 sub new_array_ref {
     my ($class, $arrayref, %args) = @_;
-    $class->init_args(\%args);
     if (exists $args{scalarref}
         || exists $args{filehandle} || exists $args{filename}) {
         $class->_error_template_sources;
@@ -348,6 +353,7 @@ sub from_cache {
 
     $args ||= {};
     my $plug = $args->{plugin} || [];
+    my $debug = $self->get_debug || $args->{debug};
     # try to get memory cache
     if ( $self->get_cache ) {
         my $dir = $self->get_cache_dir;
@@ -360,9 +366,15 @@ sub from_cache {
                 $t->set_plugins($plug);
                 $t->load_plugins($plug);
             }
+            if ($debug->{cache} & DEBUG_CACHE_MEM_HIT) {
+                warn "### HTML::Template::Compiled Cache Debug ### MEM CACHE HIT: $fname\n";
+            }
             return $t;
         }
 #        warn __PACKAGE__.':'.__LINE__.": not in mem cache: $fname\n";
+        if ($debug->{cache} & DEBUG_CACHE_MEM_MISS) {
+            warn "### HTML::Template::Compiled Cache Debug ### MEM CACHE MISS: @{[ $self->get_filename ]}\n";
+        }
     }
     D && $self->log( "from_cache() 2 filename=" . $self->get_filename );
 
@@ -379,7 +391,13 @@ sub from_cache {
                 $t->set_plugins($plug);
                 $t->load_plugins($plug);
             }
+            if ($debug->{cache} & DEBUG_CACHE_FILE_HIT) {
+                warn "### HTML::Template::Compiled Cache Debug ### FILE CACHE HIT: @{[ $self->get_filename ]}\n";
+            }
             return $t;
+        }
+        if ($debug->{cache} & DEBUG_CACHE_FILE_MISS) {
+            warn "### HTML::Template::Compiled Cache Debug ### FILE CACHE MISS: @{[ $self->get_filename ]}\n";
         }
     }
     D && $self->log( "from_cache() 3 filename=" . $self->get_filename );
@@ -610,7 +628,7 @@ sub add_file_cache {
     #$includes_to_string =~ s/\$includes = //;
     my $search_path = $self->get_search_path || 0;
     my $gl = $self->get_global_vars;
-    my $debug_file = $self->get_debug_file;
+    my $debug_file = $self->get_debug->{file};
     $debug_file =~ tr/a-z0,//cd;
     my $use_objects = $self->get_objects;
     $use_objects =~ tr/a-z0//cd;
@@ -868,12 +886,55 @@ sub init_args {
     if ($args->{plugin} and (ref $args->{plugin}) ne 'ARRAY') {
         $args->{plugin} = [$args->{plugin}];
     }
+    my $debug_cache_args = delete $args->{cache_debug} || 0;
+    my $debug_cache = 0;
+    if ($debug_cache_args) {
+        for my $opt (@$debug_cache_args) {
+            if ($opt eq 'all') {
+                $debug_cache |= DEBUG_CACHE_FILE_MISS | DEBUG_CACHE_FILE_HIT | DEBUG_CACHE_MEM_MISS | DEBUG_CACHE_MEM_HIT;
+            }
+            elsif ($opt eq 'file_all') {
+                $debug_cache |= DEBUG_CACHE_FILE_MISS | DEBUG_CACHE_FILE_HIT;
+            }
+            elsif ($opt eq 'mem_all') {
+                $debug_cache |= DEBUG_CACHE_MEM_MISS | DEBUG_CACHE_MEM_HIT;
+            }
+            elsif ($opt eq 'miss_all') {
+                $debug_cache |= DEBUG_CACHE_MEM_MISS | DEBUG_CACHE_FILE_MISS;
+            }
+            elsif ($opt eq 'hit_all') {
+                $debug_cache |= DEBUG_CACHE_MEM_HIT | DEBUG_CACHE_FILE_HIT;
+            }
+            elsif ($opt eq 'file_miss') {
+                $debug_cache |= DEBUG_CACHE_FILE_MISS;
+            }
+            elsif ($opt eq 'file_hit') {
+                $debug_cache |= DEBUG_CACHE_FILE_HIT;
+            }
+            elsif ($opt eq 'mem_miss') {
+                $debug_cache |= DEBUG_CACHE_MEM_MISS;
+            }
+            elsif ($opt eq 'mem_hit') {
+                $debug_cache |= DEBUG_CACHE_MEM_HIT;
+            }
+        }
+    }
+    my $debug_file = delete $args->{debug_file} || 0;
+    my $debug_compiled = delete $args->{debug} ? 1 : 0;
+    my $debug = 0;
+    $debug |= DEBUG_COMPILED if $debug_compiled;
+
+    $args->{debug} = {
+        options => $debug,
+        file    => $debug_file,
+        cache   => $debug_cache,
+    };
+
     %$args = (
         search_path_on_include => $SEARCHPATH,
         loop_context_vars      => 0,
         case_sensitive         => $CASE_SENSITIVE_DEFAULT,
-        debug                  => $DEBUG_DEFAULT,
-        debug_file             => 0,
+#        debug_file             => 0,
         objects                => 'strict',
         out_fh                 => 0,
         global_vars            => 0,
@@ -2957,6 +3018,22 @@ write me. If enough people write me, I'll think abou it =)
 =item use_perl
 
 Set to 1 if you want to use the perl-tag. See L<"TMPL_PERL">. Default is 0.
+
+=item cache_debug
+
+Default: 0
+
+You can debug hits and misses for file cache and memory cache:
+
+    my $htc = HTML::Template::Compiled->new(
+        cache_debug => [qw/ file_miss mem_miss /],
+        ...
+    );
+
+Possible values: all file_all mem_all file_miss file_hit mem_miss mem_hit
+
+Output looks similar to HTML::Template cache_debug and will be output
+to STDERR via warn().
 
 =back
 

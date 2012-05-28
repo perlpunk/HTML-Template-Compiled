@@ -1,9 +1,8 @@
 # $Id: 27_chomp.t 977 2007-10-09 18:24:59Z tinita $
 use warnings;
 use strict;
-use blib;
 use lib 't';
-use Test::More tests => 3;
+use Test::More tests => 9;
 use_ok('HTML::Template::Compiled');
 use HTC_Utils qw($cache $tdir &cdir);
 
@@ -14,7 +13,7 @@ sub HTML::Template::Compiled::Test::baz {
     return $_[0]->[1]
 }
 
-local $HTML::Template::Compiled::DEBUG = 1;
+local $HTML::Template::Compiled::DEBUG = 0;
 {
     local $HTML::Template::Compiled::DEBUG = 1;
     my $htc = HTML::Template::Compiled->new(
@@ -45,5 +44,69 @@ EOM
     }
 }
 
-
+{
+    my %exp = (
+        mc => {
+            0 => {
+                count => {
+                    1 => '### HTML::Template::Compiled Cache Debug ### FILE CACHE MISS: simple.tmpl',
+                    2 => '### HTML::Template::Compiled Cache Debug ### FILE CACHE HIT: simple.tmpl',
+                },
+            },
+            1 => {
+                count => {
+                    1 => '### HTML::Template::Compiled Cache Debug ### MEM CACHE MISS: simple.tmpl',
+                    2 => '### HTML::Template::Compiled Cache Debug ### MEM CACHE HIT: simple.tmpl',
+                },
+            },
+            2 => {
+                count => {
+                    1 => '### HTML::Template::Compiled Cache Debug ### MEM CACHE MISS: simple.tmpl'
+. '### HTML::Template::Compiled Cache Debug ### FILE CACHE MISS: simple.tmpl',
+                    2 => '### HTML::Template::Compiled Cache Debug ### MEM CACHE HIT: simple.tmpl',
+                },
+            },
+        },
+    );
+    for my $mc (0, 1, 2) {
+        my $memcache = 0;
+        my $file_cache = 1;
+        my $file_cache_dir = $cache;
+        if ($mc == 1) {
+            $memcache = 1;
+            $file_cache = 0;
+            $file_cache_dir = '';
+        }
+        elsif ($mc == 2) {
+            $memcache = 1;
+        }
+        my %args = (
+            filename => "simple.tmpl",
+            path => $tdir,
+            cache       => $memcache,
+            file_cache  => $file_cache,
+            file_cache_dir  => $file_cache_dir,
+            cache_debug => [qw/ all /],
+        );
+        for my $count (1..2) {
+            my $warn = '';
+            {
+                local $SIG{__WARN__} = sub {
+                    $warn .= shift;
+                };
+                my $htc = HTML::Template::Compiled->new(
+                    %args,
+                );
+                if ($count == 2) {
+                    $htc->clear_cache();
+                    HTML::Template::Compiled->clear_filecache($cache);
+                }
+            }
+            $warn =~ s/[\r\n]//g;
+            my $exp = $exp{mc}->{$mc}->{count}->{$count};
+            my $cache_string = $mc == 0 ? "file cache" : $mc == 1 ? "mem cache" : "file and mem cache";
+            cmp_ok($warn, 'eq', $exp, "cache=$cache_string count=$count");
+        }
+    }
+}
 

@@ -407,7 +407,7 @@ sub compile {
     }
     my $parser = $self->get_parser;
     my @p = $parser->parse($fname, $text);
-    if (my $df = $self->get_debug_file) {
+    if (my $df = $self->get_debug->{file}) {
         my $debugfile = $df =~ m/short/ ? $self->get_filename : $self->get_file;
         if ($df =~ m/start/) {
             unshift @p, 
@@ -428,9 +428,10 @@ sub compile {
     my $info = {}; # for query()
     my $info_stack = [$info];
 
+my $test = $self->get_debug->{options};
     # got this trick from perlmonks.org
     my $anon = D
-      || $self->get_debug ? qq{local *__ANON__ = "htc_$fname";\n} : '';
+      || ($self->get_debug->{options} & HTML::Template::Compiled::DEBUG_COMPILED()) ? qq{local *__ANON__ = "htc_$fname";\n} : '';
 
     no warnings 'uninitialized';
     my $output = '$OUT .= ';
@@ -1035,7 +1036,7 @@ EOM
     $code = $header . $code . "\n} # end of sub\n";
 
     #$code .= "\n} # end of sub\n";
-    print STDERR "# ----- code \n$code\n# end code\n" if $self->get_debug;
+    print STDERR "# ----- code \n$code\n# end code\n" if $self->get_debug->{options} & HTML::Template::Compiled::DEBUG_COMPILED();
 
     # untaint code
     if ( $code =~ m/(\A.*\z)/ms ) {
