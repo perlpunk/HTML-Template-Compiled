@@ -1,3 +1,6 @@
 *.swp
 Build
 blib
+MYMETA.json
+MYMETA.yml
+Makefile
