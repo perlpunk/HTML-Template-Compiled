@@ -876,33 +876,24 @@ sub init_args {
     my $debug_cache_args = delete $args->{cache_debug} || 0;
     my $debug_cache = 0;
     if ($debug_cache_args) {
-        for my $opt (@$debug_cache_args) {
-            if ($opt eq 'all') {
-                $debug_cache |= DEBUG_CACHE_FILE_MISS | DEBUG_CACHE_FILE_HIT | DEBUG_CACHE_MEM_MISS | DEBUG_CACHE_MEM_HIT;
-            }
-            elsif ($opt eq 'file_all') {
-                $debug_cache |= DEBUG_CACHE_FILE_MISS | DEBUG_CACHE_FILE_HIT;
-            }
-            elsif ($opt eq 'mem_all') {
-                $debug_cache |= DEBUG_CACHE_MEM_MISS | DEBUG_CACHE_MEM_HIT;
-            }
-            elsif ($opt eq 'miss_all') {
-                $debug_cache |= DEBUG_CACHE_MEM_MISS | DEBUG_CACHE_FILE_MISS;
-            }
-            elsif ($opt eq 'hit_all') {
-                $debug_cache |= DEBUG_CACHE_MEM_HIT | DEBUG_CACHE_FILE_HIT;
-            }
-            elsif ($opt eq 'file_miss') {
-                $debug_cache |= DEBUG_CACHE_FILE_MISS;
-            }
-            elsif ($opt eq 'file_hit') {
-                $debug_cache |= DEBUG_CACHE_FILE_HIT;
-            }
-            elsif ($opt eq 'mem_miss') {
-                $debug_cache |= DEBUG_CACHE_MEM_MISS;
-            }
-            elsif ($opt eq 'mem_hit') {
-                $debug_cache |= DEBUG_CACHE_MEM_HIT;
+        unless (ref $debug_cache_args) {
+            # no array ref, just a true value
+            $debug_cache |= DEBUG_CACHE_FILE_MISS | DEBUG_CACHE_FILE_HIT | DEBUG_CACHE_MEM_MISS | DEBUG_CACHE_MEM_HIT;
+        }
+        else {
+            for my $opt (@$debug_cache_args) {
+                if ($opt eq 'file_miss') {
+                    $debug_cache |= DEBUG_CACHE_FILE_MISS;
+                }
+                elsif ($opt eq 'file_hit') {
+                    $debug_cache |= DEBUG_CACHE_FILE_HIT;
+                }
+                elsif ($opt eq 'mem_miss') {
+                    $debug_cache |= DEBUG_CACHE_MEM_MISS;
+                }
+                elsif ($opt eq 'mem_hit') {
+                    $debug_cache |= DEBUG_CACHE_MEM_HIT;
+                }
             }
         }
     }
@@ -2123,6 +2114,11 @@ As of L<HTML::Template::Compiled> 0.85 you can use this syntax:
 
 In L<HTML::Template::Compiled::Classic> 0.04 it works as in HTML::Template.
 
+=item debug_cache
+
+Additional to 0 or 1 it can take an array ref for debugging only specific
+cache operations.
+
 =back
 
 
@@ -3012,12 +3008,18 @@ Default: 0
 
 You can debug hits and misses for file cache and memory cache:
 
+    # debug all cache
+    my $htc = HTML::Template::Compiled->new(
+        cache_debug => 1,
+        ...
+    );
+    # only debug misses
     my $htc = HTML::Template::Compiled->new(
         cache_debug => [qw/ file_miss mem_miss /],
         ...
     );
 
-Possible values: all file_all mem_all file_miss file_hit mem_miss mem_hit
+Possible values when passing an array ref: file_miss file_hit mem_miss mem_hit
 
 Output looks similar to HTML::Template cache_debug and will be output
 to STDERR via warn().

@@ -86,7 +86,7 @@ EOM
             cache       => $memcache,
             file_cache  => $file_cache,
             file_cache_dir  => $file_cache_dir,
-            cache_debug => [qw/ all /],
+            cache_debug => [qw/ mem_hit mem_miss file_hit file_miss /],
         );
         for my $count (1..2) {
             my $warn = '';
