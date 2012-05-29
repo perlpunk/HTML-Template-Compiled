@@ -3,7 +3,7 @@ use warnings;
 use strict;
 use lib 't';
 
-use constant TESTS => 27;
+use constant TESTS => 28;
 use Test::More tests => TESTS + 1;
 eval { require Parse::RecDescent; };
 my $prd = $@ ? 0 : 1;
@@ -50,6 +50,7 @@ EOM
         [ q#[%= expr="3 * 4 / 2 + 7" %]#, '13'],
         [ q#[%= expr="('2' . '5' ) / 5" %]#, '5'],
         [ q#[%= expr="('2' . '4' ) % 20" %]#, '4'],
+        [ q#[%= expr=".foobar" default="default value" %]#, 'default value'],
         [ q#[%loop list %][%= expr=".foo{_}" %] [%/loop %]#, 'foo a foo b foo c foo d '],
         [ q#[%loop list alias=item %][%= expr=".foo{item}" %] [%/loop %]#, 'foo a foo b foo c foo d '],
         [ q#[%loop bands alias=band %][%= expr="band{'name'}" %] [%/loop %]#, 'bauhaus deine lakaien '],

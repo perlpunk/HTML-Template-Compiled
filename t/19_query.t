@@ -1,8 +1,6 @@
-# $Id: 19_query.t 1088 2009-07-04 18:52:56Z tinita $
 use warnings;
 use strict;
-use lib 'blib/lib';
-use Test::More tests => 4;
+use Test::More tests => 5;
 
 HTML::Template::Compiled->clear_filecache('t/cache');
 # test query() (From HTML::Template test suite)
@@ -85,7 +83,7 @@ sub query_template {
 
 {
     # test query() (From HTML::Template test suite)
-    my $template = HTML::Template::Compiled->new(                                
+    my $template = HTML::Template::Compiled->new(
         path     => 't/templates',
         filename => 'query-test2.tmpl',
         use_query => 1,
@@ -93,7 +91,22 @@ sub query_template {
     my %p;
     eval { %p = map {$_ => 1} $template->query(loop => ['LOOP_FOO', 'LOOP_BAR']); };
     ok(exists $p{foo} and exists $p{bar} and exists $p{bash}, "foo bar");
+    $template->clear_cache;
 }
+{
+    my $template = HTML::Template::Compiled->new(
+        path     => 't/templates',
+        filename => 'query-test2.tmpl',
+        use_query => 0,
+    );
+    my $warn = '';
+    {
+        local $SIG{__WARN__} = sub { $warn .= shift };
+        my $test = $template->query(loop  => ['LOOP_FOO', 'LOOP_BAR']);
+    }
+    cmp_ok($warn, '=~', qr{\QYou are using query() but have not specified that you want to use it}, "no use_query but using query()");
+}
+
 
 HTML::Template::Compiled->clear_filecache('t/cache');
 
