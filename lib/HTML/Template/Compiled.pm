@@ -315,18 +315,6 @@ sub build_path {
     return $path;
 }
 
-
-sub init_runtime_args {
-    my ($self, %args) = @_;
-    D && $self->log("init_runtime_args()");
-    if ( my $filter = $args{filter} ) {
-        unless ( $self->get_filter ) {
-            $self->set_filter($filter);
-        }
-    }
-    return $self;
-}
-
 sub from_scratch {
     my ($self) = @_;
     D && $self->log("from_scratch filename=".$self->get_filename);
@@ -380,7 +368,6 @@ sub from_cache {
 
     # not in memory cache, try file cache
     if ( $self->get_cache_dir ) {
-        #$self->init_runtime_args(%args);
         my $file = $self->get_scalar || $self->get_filehandle
             ? $self->get_filename
             : $self->createFilename( $self->get_path, $self->get_filename );

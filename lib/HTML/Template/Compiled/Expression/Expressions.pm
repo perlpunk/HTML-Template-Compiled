@@ -3,7 +3,7 @@ package HTML::Template::Compiled::Expression::Expressions;
 use strict;
 use warnings;
 
-our $VERSION = 0.01;
+our $VERSION = 0.02;
 
 package HTML::Template::Compiled::Expression::Defined;
 use base qw(HTML::Template::Compiled::Expression);
@@ -30,23 +30,6 @@ sub to_string {
     my ($self) = @_;
     my ($op) = $self->get_operands;
     return "$op";
-}
-
-package HTML::Template::Compiled::Expression::String;
-use Data::Dumper;
-use base qw(HTML::Template::Compiled::Expression);
-
-sub init {
-    my ($self, $op) = @_;
-    $self->set_operands([$op]);
-}
-sub to_string {
-    my ($self) = @_;
-    my ($op) = $self->get_operands;
-    my $dump = Data::Dumper->Dump([\$op], ['op']);
-    $dump =~ s#^\$op *= *\\##;
-    $dump =~ s/;$//;
-    return $dump;
 }
 
 package HTML::Template::Compiled::Expression::Ternary;

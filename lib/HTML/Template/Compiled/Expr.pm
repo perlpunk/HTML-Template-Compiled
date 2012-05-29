@@ -3,93 +3,10 @@ package HTML::Template::Compiled::Expr;
 use strict;
 use warnings;
 use Carp qw(croak carp);
-use HTML::Template::Compiled::Expression qw(:expressions);
+#use HTML::Template::Compiled::Expression qw(:expressions);
 use HTML::Template::Compiled;
 use Parse::RecDescent;
-our $VERSION = '0.05';
-HTML::Template::Compiled->register('HTML::Template::Compiled::Expr');
-
-my $default_validate = sub { exists $_[1]->{NAME} or exists $_[1]->{EXPR} };
-sub register {
-    my ($class) = @_;
-    my %plugs = (
-        tagnames => {
-            HTML::Template::Compiled::Token::OPENING_TAG() => {
-                VAR => [ $default_validate, qw(NAME EXPR ESCAPE DEFAULT) ],
-                '=' => [ $default_validate, qw(NAME EXPR ESCAPE DEFAULT) ],
-                IF  => [ $default_validate, qw(NAME EXPR) ],
-                IF_DEFINED => [ $default_validate, qw(NAME EXPR) ],
-                ELSIF      => [ $default_validate, qw(NAME EXPR) ],
-                UNLESS     => [ $default_validate, qw(NAME EXPR) ],
-                WITH       => [ $default_validate, qw(NAME EXPR) ],
-                LOOP       => [ $default_validate, qw(NAME EXPR ALIAS) ],
-                WHILE      => [ $default_validate, qw(NAME EXPR ALIAS) ],
-            },
-            HTML::Template::Compiled::Token::CLOSING_TAG() => {
-                IF         => [ undef, qw(NAME) ],
-                IF_DEFINED => [ undef, qw(NAME) ],
-                ELSIF      => [ undef, qw(NAME) ],
-                UNLESS     => [ undef, qw(NAME) ],
-                WITH       => [ undef, qw(NAME) ],
-                LOOP       => [ undef, qw(NAME) ],
-                WHILE      => [ undef, qw(NAME) ],
-            },
-        },
-        compile => {
-            VAR => {
-                open => sub {
-                    #            my ($htc, $token, $args) = @_;
-    my ($compiler, $htc, $args) = @_;
-    my $token = $args->{context};
-    my $attr = $token->get_attributes;
-    if (exists $attr->{NAME}) {
-        return $compiler->_compile_OPEN_VAR($htc, $args);
-    }
-    my $var = $attr->{EXPR};
-    my @tokens = parse_expr($var);
-    my $OUT = $args->{out};
-    for (@tokens) {
-        next if $_->[0] ne 'var';
-        my $varstr = $compiler->parse_var($htc,
-            %$args,
-            var   => $_->[1],
-            context => $token,
-        );
-        $_->[1] = _expr_literal($varstr)->to_string;
-    }
-    my $string = '';
-    for (@tokens) {
-        $string .= $_->[1];
-    }
-    my $exp = _expr_literal($string);
-    #print "line: $text var: $var ($varstr)\n";
-    # ---- default
-    my $default;
-    if (exists $attr->{DEFAULT}) {
-        $default = _expr_string($attr->{DEFAULT});
-    }
-    if ( defined $default ) {
-        $exp = _expr_ternary(
-            _expr_defined($exp),
-            $exp,
-            $default,
-        );
-    }
-    # ---- escapes
-    my $escape = $htc->get_default_escape;
-    if (exists $attr->{ESCAPE}) {
-        $escape = $attr->{ESCAPE};
-    }
-    $exp = $compiler->_escape_expression($exp, $escape);
-    return $exp;
-
-
-                },
-            },
-        },
-    );
-    return \%plugs;
-}
+our $VERSION = '0.06';
 
 my $re = qr# (?:
     \b(?:eq | ne | ge | le | gt | lt )\b
