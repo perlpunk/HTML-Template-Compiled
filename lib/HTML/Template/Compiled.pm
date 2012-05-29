@@ -165,9 +165,7 @@ sub new_from_perl {
     $self->init_cache(\%args);
     $self->init(%args);
     $self->set_perl( $args{perl} );
-    $self->set_cache( exists $args{cache} ? $args{cache} : 1 );
     $self->set_filename( $args{filename} );
-    $self->set_cache_dir( $args{cache_dir} );
     my $md5path = md5_hex(@{ $args{path} || [] });
     $self->set_path( $args{path} );
     $self->set_md5_path( $md5path );
@@ -185,7 +183,6 @@ sub new_file {
     my ($class, $filename, %args) = @_;
     $class->init_args(\%args);
     my $self = bless [], $class;
-    $self->_check_deprecated_args(%args);
     $args{path} = $self->build_path($args{path});
     $self->_error_empty_filename()
         if (!defined $filename or !length $filename);
@@ -195,9 +192,7 @@ sub new_file {
         $self->_error_template_sources;
     }
     $self->set_filename( $filename );
-    $self->set_cache( exists $args{cache} ? $args{cache} : 1 );
     $self->init_cache(\%args);
-    #$self->set_cache_dir( $args{cache_dir} );
     my $md5path = md5_hex(@{ $args{path} || [] });
     $self->set_path( $args{path} );
     $self->set_md5_path( $md5path );
@@ -215,7 +210,6 @@ sub new_filehandle {
     my ($class, $filehandle, %args) = @_;
     $class->init_args(\%args);
     my $self = bless [], $class;
-    $self->_check_deprecated_args(%args);
     if (exists $args{scalarref}
         || exists $args{arrayref} || exists $args{filename}) {
         $self->_error_template_sources;
@@ -223,9 +217,8 @@ sub new_filehandle {
     $args{filehandle} = $filehandle;
     $args{path} = $self->build_path($args{path});
     $self->set_filehandle( $args{filehandle} );
-    $self->set_cache(0);
+    $args{cache} = 0;
     $self->init_cache(\%args);
-    #$self->set_cache_dir( $args{cache_dir} );
     my $md5path = md5_hex(@{ $args{path} || [] });
     $self->set_path( $args{path} );
     $self->set_md5_path( $md5path );
@@ -253,16 +246,13 @@ sub new_scalar_ref {
     my ($class, $scalarref, %args) = @_;
     $class->init_args(\%args);
     my $self = bless [], $class;
-    $self->_check_deprecated_args(%args);
     if (exists $args{arrayref}
         || exists $args{filehandle} || exists $args{filename}) {
         $self->_error_template_sources;
     }
     $args{scalarref} = $scalarref;
     $args{path} = $self->build_path($args{path});
-    $self->set_cache( exists $args{cache} ? $args{cache} : 1 );
     $self->init_cache(\%args);
-    #$self->set_cache_dir( $args{cache_dir} );
     $self->set_scalar( $args{scalarref} );
     my $text = $self->get_scalar;
     my $md5  = md5($$text);
@@ -836,40 +826,30 @@ sub dump {
     return Data::Dumper->Dump( [$var], ['DUMP'] );
 }
 
-sub _check_deprecated_args {
-    my ($self, %args) = @_;
-    for (qw(method_call deref formatter_path)) {
-        if (exists $args{$_}) {
-            croak "Option $_ is deprecated";
-        }
-    }
-    if (exists $args{dumper}) {
-        croak "Option dumper is deprecated, use a plugin instead";
-    }
-    if (exists $args{formatter}) {
-        croak "Option formatter is deprecated, see documentation";
-    }
-}
-
 sub init_cache {
     my ($self, $args) = @_;
+    my $cachedir = $args->{file_cache_dir};
+    if ($args->{file_cache}) {
+        $self->set_cache_dir($cachedir) if $args->{file_cache};
+        if (defined $cachedir and not -d $cachedir) {
+            croak "Cachedir '$cachedir' does not exist";
+        }
+    }
+    $self->set_cache( exists $args->{cache} ? $args->{cache} : 1 );
+}
+
+sub init_args {
+    my ($class, $args) = @_;
+
     if (exists $args->{cache_dir}) {
         # will soon be deprecated
-        $args->{file_cache_dir} = $args->{cache_dir};
+        $args->{file_cache_dir} = delete $args->{cache_dir};
         unless (exists $args->{file_cache}) {
             # warn in future versions
             $args->{file_cache} = 1;
         }
     }
-    $self->set_cache_dir($args->{file_cache_dir}) if $args->{file_cache};
-    my $cachedir = $self->get_cache_dir;
-    if ($args->{file_cache} and defined $cachedir and not -d $cachedir) {
-        croak "Cachedir '$cachedir' does not exist";
-    }
-}
 
-sub init_args {
-    my ($class, $args) = @_;
     if ($args->{plugin} and (ref $args->{plugin}) ne 'ARRAY') {
         $args->{plugin} = [$args->{plugin}];
     }
@@ -897,6 +877,19 @@ sub init_args {
             }
         }
     }
+    # check deprecated
+    for (qw(method_call deref formatter_path)) {
+        if (exists $args->{$_}) {
+            croak "Option $_ is deprecated";
+        }
+    }
+    if (exists $args->{dumper}) {
+        croak "Option dumper is deprecated, use a plugin instead";
+    }
+    if (exists $args->{formatter}) {
+        croak "Option formatter is deprecated, see documentation";
+    }
+
     my $debug_file = delete $args->{debug_file} || 0;
     my $debug_compiled = delete $args->{debug} ? 1 : 0;
     my $debug = 0;
@@ -3070,7 +3063,7 @@ If you don't do preloading in mod_perl, memory usage might go up if you have a l
 of templates.
 
 Note: the directory is *not* the template directory. It should be the directory
-which you give as the cache_dir option.
+which you give as the file_cache_dir option.
 
 =item precompile
 
@@ -3127,7 +3120,8 @@ You create a template almost like in HTML::Template:
     loop_context_vars   => 1,
     filename            => 'test.html',
     # for testing without cache comment out
-    cache_dir           => "cache",
+    file_cache          => 1,
+    file_cache_dir      => "cache",
   );
 
 The next time you start your application and create a new template, HTC will read all generated
@@ -3226,11 +3220,11 @@ precompile class method.
 It works like this:
 
   HTML::Template::Compiled->precompile(
-    # usual options like path, default_escape, global_vars, cache_dir, ...
+    # usual options like path, default_escape, global_vars, file_cache_dir, ...
     filenames => [ list of template-filenames ],
   );
 
-This will then pre-compile all templates into cache_dir. Now you would just put this
+This will then pre-compile all templates into file_cache_dir. Now you would just put this
 directory onto the server, and it doesn't need any write-permissions, as it
 will be never changed (until you update it because templates have changed).
 
