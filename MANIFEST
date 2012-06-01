@@ -107,5 +107,8 @@ t/templates/subdir/file_debug.html
 t/templates/loop_included.tmpl
 t/templates/user_template.html
 t/templates/var_include.html
+t/templates/wrapped.html
+t/templates/wrapper.html
+t/templates/wrapper2.html
 META.yml                                 Module meta-data (added by MakeMaker)
 META.json

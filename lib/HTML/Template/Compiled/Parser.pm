@@ -149,6 +149,7 @@ my %allowed_tagnames = (
         INCLUDE     => [$default_validation, qw(NAME)],
         USE_VARS    => [$default_validation, qw(NAME)],
         SET_VAR     => [$default_validation, qw(NAME VALUE EXPR)],
+        WRAPPER     => [$default_validation, qw(NAME)],
     },
     CLOSING_TAG() => {
         IF_DEFINED  => [undef, qw(NAME)],
@@ -163,6 +164,7 @@ my %allowed_tagnames = (
         WHILE       => [undef, qw(NAME)],
         EACH        => [undef, qw(NAME)],
         SWITCH      => [undef, qw(NAME)],
+        WRAPPER     => [undef, qw(NAME)],
     }
 );
 

@@ -31,6 +31,7 @@ use constant T_INCLUDE_VAR => 'INCLUDE_VAR';
 use constant T_INCLUDE_STRING => 'INCLUDE_STRING';
 use constant T_USE_VARS    => 'USE_VARS';
 use constant T_SET_VAR     => 'SET_VAR';
+use constant T_WRAPPER     => 'WRAPPER';
 
 use constant INDENT        => '    ';
 
@@ -170,6 +171,7 @@ my %loop_context = (
     __break__   => '$__break__',
     __filename__ => '$t->get_file',
     __filenameshort__ => '$t->get_filename',
+    __wrapped__ => '$args->{wrapped}',
 );
 
 sub parse_var {
@@ -434,18 +436,21 @@ my $test = $self->get_debug->{options};
       || ($self->get_debug->{options} & HTML::Template::Compiled::DEBUG_COMPILED()) ? qq{local *__ANON__ = "htc_$fname";\n} : '';
 
     no warnings 'uninitialized';
-    my $output = '$OUT .= ';
+    my $string_output = '$OUT .= ';
+    my $fh_output = 'print $OFH ';
+    my $output = $string_output;
     my $out_fh = $self->get_out_fh;
     if ($out_fh) {
-        $output = 'print $OFH ';
+        $output = $fh_output;
     }
+    my @outputs = ($output);
     my $header = <<"EOM";
 sub {
     use vars qw/ \$__ix__ \$__key__ \$__value__ \$__break__ \$__size__ /;
     use strict;
     no warnings;
 $anon
-    my (\$t, \$P, \$C, \$OFH) = \@_;
+    my (\$t, \$P, \$C, \$OFH, \$args) = \@_;
     my \$OUT = '';
 EOM
 
@@ -467,6 +472,7 @@ EOM
         lexicals       => \@lexicals,
     );
     my %use_vars;
+    my @wrapped;
     for my $token (@p) {
         @use_vars{ @lexicals } = () if @lexicals;
         my ($text, $line, $open_close, $tname, $attr, $f, $nlevel) = @$token;
@@ -846,7 +852,7 @@ EOM
         }
 
         # --------- TMPL_INCLUDE_VAR
-        elsif ($tname eq T_INCLUDE_VAR or $tname eq T_INCLUDE) {
+        elsif ($tname eq T_INCLUDE_VAR or $tname eq T_INCLUDE or $tname eq T_WRAPPER) {
             my $filename;
             my $varstr;
             my $path = $self->get_path();
@@ -941,6 +947,47 @@ ${indent}  \}
 ${indent}\}
 EOM
             }
+            elsif ($tname eq T_WRAPPER) {
+                push @outputs, '$OUT' . (1 + scalar @outputs) . ' .= ';
+                $output = $outputs[-1];
+                my $wrapped = '';
+                $code .= <<"EOM";
+${indent}\{
+${indent}  my \$OUT@{[ scalar @outputs ]};
+EOM
+                my $argument_fh = 'undef';
+                if ($out_fh) {
+                    $wrapped .= <<"EOM";
+my \$tmp_var = '';
+open my \$tmp_fh, '>', \\\$tmp_var;
+EOM
+                    $argument_fh = "\$tmp_fh";
+                }
+                $wrapped .= <<"EOM";
+${indent}  my \$_WRAPPED = \$OUT@{[ scalar @outputs ]};
+${indent}  my \$recursed = ++\$HTML::Template::Compiled::FILESTACK{$fullpath};
+${indent}  \$HTML::Template::Compiled::FILESTACK{$fullpath} = 0, die "HTML::Template: recursive include of " . $fullpath . " \$recursed times (max \$HTML::Template::Compiled::MAX_RECURSE)"
+${indent}  if \$recursed > \$HTML::Template::Compiled::MAX_RECURSE;
+${indent}    my \$include = \$t->get_includes()->{$fullpath};
+${indent}    my \$new = \$include ? \$include->[2] : undef;
+${indent}    if (!\$new) {
+${indent}      \$new = \$t->new_from_object($path,$varstr,$fullpath,$cache);
+${indent}    }
+${indent}    \$new->set_globalstack(\$t->get_globalstack);
+${indent}    $outputs[-2] \$new->get_code()->(\$new,\$P,\$C, $argument_fh, { wrapped => \$_WRAPPED });
+            --\$HTML::Template::Compiled::FILESTACK{$fullpath} or delete \$HTML::Template::Compiled::FILESTACK{$fullpath};
+${indent}  \$OUT@{[ scalar @outputs ]} = '';
+EOM
+                if ($out_fh) {
+                    $wrapped .= <<"EOM";
+$outputs[-2] \$tmp_var;
+EOM
+                }
+                $wrapped .= <<"EOM";
+${indent}\}
+EOM
+                push @wrapped, $wrapped;
+            }
             else {
                 $code .= <<"EOM";
 ${indent}\{
@@ -1009,6 +1056,14 @@ EOM
 ${indent}\$t->popGlobalstack;
 EOM
             }
+        }
+        elsif ($tname eq T_WRAPPER) {
+            $code .= $wrapped[-1];
+            pop @wrapped;
+pop @outputs;
+$output = $outputs[-1];
+            $code .= <<"EOM";
+EOM
         }
         else {
             # user defined

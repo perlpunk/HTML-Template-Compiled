@@ -1,9 +1,5 @@
-# Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl HTML-Template-Compiled.t'
-# $Id: 06_dyn_include.t 1069 2008-07-26 11:04:03Z tinita $
 
-use lib 'blib/lib';
-use Test::More tests => 10;
+use Test::More tests => 12;
 BEGIN { use_ok('HTML::Template::Compiled') };
 
 my $htc = HTML::Template::Compiled->new(
@@ -64,6 +60,60 @@ EOM
     };
     my $error = "$@";
     cmp_ok($error, '=~', 'Syntax error.*near.*include', "no_includes");
+}
+
+{
+    my $htc = HTML::Template::Compiled->new(
+        filename => "wrapped.html",
+        path => 't/templates',
+#        debug => 1,
+        loop_context_vars => 1,
+        cache => 0,
+    );
+    $htc->param(
+        foo => 23,
+    );
+    my $out = $htc->output;
+    my $exp = <<"EOM";
+wrapper:
+<head>
+wrapped in wrapper.html: foo: 23
+  <head2>wrapped in wrapper2.html: foo2: 23</head2>
+
+    <head>wrapped in wrapper1.html: foo1: 23</head>
+
+</head>
+EOM
+    #warn __PACKAGE__.':'.__LINE__.": $out\n";
+    for ($out, $exp) {
+        s/[\r\n]/ /g;
+        tr/ / /s;
+    }
+    cmp_ok($out, 'eq', $exp, "wrapper");
+    my $out = File::Spec->catfile('t', 'templates', 'out_fh.htc.output');
+	open my $fh, '>', $out or die $!;
+    my $htc = HTML::Template::Compiled->new(
+        filename => "wrapped.html",
+        path => 't/templates',
+#        debug => 1,
+        loop_context_vars => 1,
+        cache => 0,
+        out_fh => 1,
+    );
+    $htc->param(
+        foo => 23,
+    );
+	$htc->output($fh);
+    close $fh;
+    open $fh, "<", $out or die $!;
+    my $out2 = do { local $/; <$fh> };
+    #warn __PACKAGE__.':'.__LINE__.": $out2\n";
+    for ($out2) {
+        s/[\r\n]/ /g;
+        tr/ / /s;
+    }
+    cmp_ok($out2, 'eq', $exp, "wrapper out_fh");
+    unlink $out;
 }
 
 __END__
