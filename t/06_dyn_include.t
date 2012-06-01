@@ -1,4 +1,5 @@
-
+use strict;
+use warnings;
 use Test::More tests => 12;
 BEGIN { use_ok('HTML::Template::Compiled') };
 
@@ -90,9 +91,9 @@ EOM
         tr/ / /s;
     }
     cmp_ok($out, 'eq', $exp, "wrapper");
-    my $out = File::Spec->catfile('t', 'templates', 'out_fh.htc.output');
+    $out = File::Spec->catfile('t', 'templates', 'out_fh.htc.output');
 	open my $fh, '>', $out or die $!;
-    my $htc = HTML::Template::Compiled->new(
+    $htc = HTML::Template::Compiled->new(
         filename => "wrapped.html",
         path => 't/templates',
 #        debug => 1,
