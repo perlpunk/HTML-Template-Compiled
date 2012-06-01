@@ -1838,6 +1838,10 @@ see L<"USE_VARS">
 
 see L<"TMPL_COMMENT">, L<"TMPL_NOPARSE">, L<"TMPL_VERBATIM">
 
+=item tag TMPL_WRAPPER
+
+see L<"WRAPPER">
+
 =item C<__index__>
 
 Additional loop variable (C<__counter__ -1>)
@@ -2512,6 +2516,40 @@ so that the compiler recognizes them as user defined vars and not parameters
 from the stash.
 This statement is valid until the end of the template so you cannot
 "overwrite" parameters of the stash locally.
+
+=head2 WRAPPER
+
+Since 0.97_005. Experimental. Please test.
+
+Needs option C<loop_context_vars>.
+
+Works similar to WRAPPER in Template-Toolkit.
+
+Is similar to TMPL_INCLUDE, just that the included wrapper is wrapped
+around the content. It can be used to avoid including head and foot seperately.
+
+    <tmpl_wrapper wrapper.html >
+    content: some var: <tmpl_var foo >
+    </tmpl_wrapper>
+
+In wrapper.html the special loop context var C<__wrapper__> is used for
+the included content:
+
+    wrapper.html:
+    <some><layout>
+    <tmpl_var __wrapped__ >
+    </layout></some>
+
+Important notes:
+
+If you are using C<out_fh> to print directly to a filehandle instead of
+returning to a string, this feature might not be useful, since it is
+appending the content inside of the wrapper to a string and prints it
+when it comes to the end of the wrapper tag.
+So if you are using C<out_fh> to avoid generating long strings in
+memory, you should rather use TMPL_INCLUDE instead.
+
+Also you need perl 5.8 or higher to use it in combination with out_fh.
 
 =head2 TMPL_COMMENT
 
