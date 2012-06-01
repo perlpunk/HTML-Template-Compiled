@@ -3,7 +3,7 @@ NAME
     to Perl code
 
 VERSION
-    $VERSION = "0.97_004"
+    $VERSION = "0.97_005"
 
 SYNOPSIS
       use HTML::Template::Compiled;
@@ -153,6 +153,9 @@ DESCRIPTION
 
     tags TMPL_COMMENT, TMPL_NOPARSE, TMPL_VERBATIM
         see "TMPL_COMMENT", "TMPL_NOPARSE", "TMPL_VERBATIM"
+
+    tag TMPL_WRAPPER
+        see "WRAPPER"
 
     "__index__"
         Additional loop variable ("__counter__ -1")
@@ -378,6 +381,10 @@ DESCRIPTION
 
         In HTML::Template::Compiled::Classic 0.04 it works as in
         HTML::Template.
+
+    debug_cache
+        Additional to 0 or 1 it can take an array ref for debugging only
+        specific cache operations.
 
     Note: the following is deprecated:
 
@@ -740,6 +747,40 @@ DESCRIPTION
     so that the compiler recognizes them as user defined vars and not
     parameters from the stash. This statement is valid until the end of the
     template so you cannot "overwrite" parameters of the stash locally.
+
+  WRAPPER
+    Since 0.97_005. Experimental. Please test.
+
+    Needs option "loop_context_vars".
+
+    Works similar to WRAPPER in Template-Toolkit.
+
+    Is similar to TMPL_INCLUDE, just that the included wrapper is wrapped
+    around the content. It can be used to avoid including head and foot
+    seperately.
+
+        <tmpl_wrapper wrapper.html >
+        content: some var: <tmpl_var foo >
+        </tmpl_wrapper>
+
+    In wrapper.html the special loop context var "__wrapper__" is used for
+    the included content:
+
+        wrapper.html:
+        <some><layout>
+        <tmpl_var __wrapped__ >
+        </layout></some>
+
+    Important notes:
+
+    If you are using "out_fh" to print directly to a filehandle instead of
+    returning to a string, this feature might not be useful, since it is
+    appending the content inside of the wrapper to a string and prints it
+    when it comes to the end of the wrapper tag. So if you are using
+    "out_fh" to avoid generating long strings in memory, you should rather
+    use TMPL_INCLUDE instead.
+
+    Also you need perl 5.8 or higher to use it in combination with out_fh.
 
   TMPL_COMMENT
     For debugging purposes you can temporarily comment out regions:
@@ -1192,6 +1233,28 @@ DESCRIPTION
         Set to 1 if you want to use the perl-tag. See "TMPL_PERL". Default
         is 0.
 
+    cache_debug
+        Default: 0
+
+        You can debug hits and misses for file cache and memory cache:
+
+            # debug all cache
+            my $htc = HTML::Template::Compiled->new(
+                cache_debug => 1,
+                ...
+            );
+            # only debug misses
+            my $htc = HTML::Template::Compiled->new(
+                cache_debug => [qw/ file_miss mem_miss /],
+                ...
+            );
+
+        Possible values when passing an array ref: file_miss file_hit
+        mem_miss mem_hit
+
+        Output looks similar to HTML::Template cache_debug and will be
+        output to STDERR via warn().
+
   METHODS
     clear_cache ([DIR])
         Class method. It will clear the memory cache either of a specified
@@ -1230,7 +1293,7 @@ DESCRIPTION
         you have a lot of templates.
 
         Note: the directory is *not* the template directory. It should be
-        the directory which you give as the cache_dir option.
+        the directory which you give as the file_cache_dir option.
 
     precompile
         Class method. It will precompile a list of template files into the
@@ -1280,7 +1343,8 @@ CACHING
         loop_context_vars   => 1,
         filename            => 'test.html',
         # for testing without cache comment out
-        cache_dir           => "cache",
+        file_cache          => 1,
+        file_cache_dir      => "cache",
       );
 
     The next time you start your application and create a new template, HTC
@@ -1372,12 +1436,12 @@ PRECOMPILE
     method. It works like this:
 
       HTML::Template::Compiled->precompile(
-        # usual options like path, default_escape, global_vars, cache_dir, ...
+        # usual options like path, default_escape, global_vars, file_cache_dir, ...
         filenames => [ list of template-filenames ],
       );
 
-    This will then pre-compile all templates into cache_dir. Now you would
-    just put this directory onto the server, and it doesn't need any
+    This will then pre-compile all templates into file_cache_dir. Now you
+    would just put this directory onto the server, and it doesn't need any
     write-permissions, as it will be never changed (until you update it
     because templates have changed).
 

@@ -8,7 +8,7 @@ use HTML::Template::Compiled::Expression qw(:expressions);
 use HTML::Template::Compiled::Utils qw(:walkpath);
 use File::Basename qw(dirname);
 
-our $VERSION = '0.19';
+our $VERSION = '0.20';
 
 use Carp qw(croak carp);
 use constant D             => 0;

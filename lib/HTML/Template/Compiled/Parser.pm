@@ -6,7 +6,7 @@ use warnings;
 use base qw(Exporter);
 use HTML::Template::Compiled::Token qw(:tagtypes);
 my $scalar_util = eval "require Scalar::Util; 1";
-our $VERSION = 0.13;
+our $VERSION = 0.14;
 my @vars;
 BEGIN {
 @vars = qw(
