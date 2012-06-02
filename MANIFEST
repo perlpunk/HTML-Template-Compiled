@@ -34,7 +34,7 @@ examples/bench_mem.pl
 examples/test.tt
 examples/test.tst
 examples/dhtml.html
-t/cache/lock
+t/cache/.gitignore
 t/HTC_Utils.pm
 t/HTC_Plugin.pm
 t/01_HTML-Template-Compiled.t
@@ -75,6 +75,7 @@ t/36_default.t
 t/37_with.t
 t/38_vars.t
 t/39_number_format.t
+t/templates/simple.tmpl
 t/templates/songs.html
 t/templates/wrong.html
 t/templates/include.html
