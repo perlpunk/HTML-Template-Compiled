@@ -1,15 +1,21 @@
 use strict;
 use warnings;
-use Test::More tests => 12;
+use Test::More tests => 19;
 BEGIN { use_ok('HTML::Template::Compiled') };
 
+use lib 't';
+use HTC_Utils qw($cache $tdir &cdir);
 my $htc = HTML::Template::Compiled->new(
 	path => 't/templates',
 	filename => 'dyn_include.htc',
-	debug => 0,
+#	debug => 1,
+#    cache_debug => 1,
+    file_cache => 1,
+    file_cache_dir => $cache,
 );
 #exit;
 for my $ix (1..2,undef) {
+    for my $count (1..2) {
 	$htc->param(
         file => (defined $ix? "dyn_included$ix.htc" : undef),
 		test => 23,
@@ -31,6 +37,7 @@ for my $ix (1..2,undef) {
         #print "out: $out\n";
         cmp_ok($out, "=~", 'Dynamic include:\s+$', "undefined filename");
     }
+}
 }
 
 {
@@ -116,6 +123,8 @@ EOM
     cmp_ok($out2, 'eq', $exp, "wrapper out_fh");
     unlink $out;
 }
+
+HTML::Template::Compiled->clear_filecache($cache);
 
 __END__
 Dynamic include:

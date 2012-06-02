@@ -1,9 +1,10 @@
 # $Id: 04_out_fh.t 1144 2012-04-21 18:59:13Z tinita $
 use Test::More tests => 5;
 BEGIN { use_ok('HTML::Template::Compiled') };
-
+use lib 't';
 use File::Spec;
-my $cache = File::Spec->catfile('t', 'cache');
+use HTC_Utils qw($cache $tdir &cdir);
+#my $cache = File::Spec->catfile('t', 'cache');
 my $out = File::Spec->catfile('t', 'templates', 'out_fh.htc.output');
 HTML::Template::Compiled->clear_filecache($cache);
 test('compile', 'clearcache');
@@ -41,3 +42,4 @@ sub test {
 }
 
 unlink $out;
+HTML::Template::Compiled->clear_filecache($cache);

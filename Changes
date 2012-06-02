@@ -3,6 +3,7 @@ Revision history for Perl extension HTML::Template::Compiled.
 0.97_005
 - New feature: option cache_debug
 - New feature: TMPL_WRAPPER
+- Another bugfix for search_path_on_include
 
 0.97_004 Sun May 20 18:38:32 CEST 2012
 - Change: Implemented searching the path and search_path_on_include like

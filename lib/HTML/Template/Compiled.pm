@@ -173,7 +173,7 @@ sub new_from_perl {
 
     unless ( $self->get_scalar ) {
         my $file =
-          $self->createFilename( $self->get_path, $self->get_filename );
+          $self->createFilename( $self->get_path, \$self->get_filename );
         $self->set_file($file);
     }
     return $self;
@@ -312,7 +312,7 @@ sub from_scratch {
     if ( defined $fname and !$self->get_scalar and !$self->get_filehandle ) {
 
         #D && $self->log("tried from_cache() filename=".$fname);
-        my $file = $self->createFilename( $self->get_path, $fname );
+        my $file = $self->createFilename( $self->get_path, \$fname );
         D && $self->log("set_file $file ($fname)");
         $self->set_file($file);
     }
@@ -360,7 +360,7 @@ sub from_cache {
     if ( $self->get_cache_dir ) {
         my $file = $self->get_scalar || $self->get_filehandle
             ? $self->get_filename
-            : $self->createFilename( $self->get_path, $self->get_filename );
+            : $self->createFilename( $self->get_path, \$self->get_filename );
         my $dir     = $self->get_cache_dir;
         $t = $self->from_file_cache($dir, $file);
         if ($t) {
@@ -486,7 +486,7 @@ sub from_cache {
             return 1;
         }
         else {
-            my $file = $self->createFilename( $self->get_path, $self->get_filename );
+            my $file = $self->createFilename( $self->get_path, \$self->get_filename );
             $self->set_file($file);
             #print STDERR "uptodate($file)\n";
             my @times = $self->_checktimes($file);
@@ -764,11 +764,13 @@ sub include_file {
 }
 
 sub createFilename {
-    my ( $self, $path, $filename, $cwd ) = @_;
+    my ( $self, $path, $filename_ref, $cwd ) = @_;
+    my $filename = $$filename_ref;
     D && $self->log("createFilename($path,$filename)");
     D && $self->stack(1);
+#warn __PACKAGE__.':'.__LINE__.": ---- createFilename($path, $$filename_ref, $cwd)\n";
     if ($path) {
-        local $" = "\\";
+        local $" = "\0";
         my $cached = $PATHS{"@$path"}->{$filename};
         return $cached if defined $cached;
     }
@@ -781,29 +783,27 @@ sub createFilename {
         D && $self->log( "file: " . File::Spec->catfile( $path, $filename ) );
         if ($path && @$path) {
             my @search = @$path;
-            push @search, $cwd if defined $cwd;
             for ( @search ) {
-                #if (ref $_) {
-                #    my $foo = basename $$_;
-                #    my ($dir, $f) = (dirname($$_), basename($$_));
-                #    my $found = 0;
-                #    while (defined $f) {
-                #        ($dir, $f) = (dirname($dir), basename($dir));
-                #        #sleep 1;
-                #        my $fp = File::Spec->catfile( $dir, $filename );
-                #        #warn __PACKAGE__.':'.__LINE__.": fp=$fp\n";
-                #        if (-f $fp) {
-                #            local $" = "\\";
-                #            $PATHS{"@$path"}->{$filename} = $fp;
-                #            return $fp;
-                #        }
-                #        last if $dir eq '.';
-                #    }
-                #}
                 my $fp = File::Spec->catfile( $_, $filename );
                 if (-f $fp) {
-                    local $" = "\\";
+                    local $" = "\0";
                     $PATHS{"@$path"}->{$filename} = $fp;
+                    return $fp;
+                }
+            }
+            # not found in $path, try current template dir
+            if (defined $cwd) {
+                my $fp = File::Spec->catfile( $cwd, $filename );
+                if (-f $fp) {
+                    for my $p (@search) {
+                        if ($fp =~ m{^\Q$p\E(.*)}) {
+                            my $rest = $1;
+                            my (undef, @p) = File::Spec->splitdir($rest);
+                            $rest = File::Spec->catfile(@p);
+                            $$filename_ref = $rest;
+                            $PATHS{"@$path"}->{$rest} = $fp;
+                        }
+                    }
                     return $fp;
                 }
             }
