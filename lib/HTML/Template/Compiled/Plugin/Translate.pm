@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use Carp qw(croak carp);
 use HTML::Template::Compiled;
+use Data::Dumper;
 use base 'Class::Accessor::Fast';
 __PACKAGE__->mk_ro_accessors(qw/ map lang /);
 __PACKAGE__->follow_best_practice;
@@ -37,10 +38,7 @@ sub clone {
 
 sub serialize {
     my ($self) = @_;
-    my $clone = $self->clone;
-    $clone->set_map({});
-    $clone->set_lang(undef);
-    return $clone;
+    return ref $self;
 }
 
 our $MAP = {
@@ -61,23 +59,13 @@ sub make_translate {
         $count = 1;
     }
     elsif ($count =~ tr/0-9//c) {
-        $count = $htc->get_compiler->parse_var($htc,
-            var => $count,
-            method_call => $htc->method_call,
-            deref => $htc->deref,
-            formatter_path => $htc->formatter_path,
-        );
+        $count = $htc->var2expression($count);
     }
 
     my $arg = $attr->{ARGS};
     my @arg = defined $arg ? split m/,/, $arg : ();
     for my $arg (@arg) {
-        $arg = $htc->get_compiler->parse_var($htc,
-            var => $arg,
-            method_call => $htc->method_call,
-            deref => $htc->deref,
-            formatter_path => $htc->formatter_path,
-        );
+        $arg = $htc->var2expression($arg);
     }
     my $d_arg = join ",", @arg;
     my $d_id = Data::Dumper->Dump([\$id], ['id']);
