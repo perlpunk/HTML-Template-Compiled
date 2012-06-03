@@ -4,6 +4,7 @@ package HTML::Template::Compiled;
 #our $VERSION = ($version_pod =~ m/^\$VERSION = "(\d+(?:\.\d+)+)"/m) ? $1 : "0.01";
 our $VERSION = "0.97_006";
 use Data::Dumper;
+use Scalar::Util;
 BEGIN {
 use constant D => $ENV{HTC_DEBUG} || 0;
 }
@@ -255,9 +256,9 @@ sub new_scalar_ref {
     $self->set_scalar( $args{scalarref} );
     my $text = $self->get_scalar;
     my $md5  = md5($$text);
-    if ($args{cache} and !$md5) {
-        croak "For caching scalarrefs you need Digest::MD5";
-    }
+#    if ($args{cache} and !$md5) {
+#        croak "For caching scalarrefs you need Digest::MD5";
+#    }
     $self->set_filename($md5);
     D && $self->log("md5: $md5");
     my $md5path = md5_hex(@{ $args{path} || [] });
@@ -966,9 +967,6 @@ sub init {
     $self->set_debug( $args{debug} );
     $self->set_debug_file( $args{debug_file} );
     $self->set_objects( $args{objects} );
-    if ($args{objects} and $args{objects} eq 'nostrict') {
-        require Scalar::Util;
-    }
     $self->set_out_fh( $args{out_fh} );
     $self->set_global_vars( $args{global_vars} );
     if (my $plugins = $args{plugin}) {

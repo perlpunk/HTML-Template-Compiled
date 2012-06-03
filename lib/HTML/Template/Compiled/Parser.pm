@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use base qw(Exporter);
 use HTML::Template::Compiled::Token qw(:tagtypes);
-my $scalar_util = eval "require Scalar::Util; 1";
+use Scalar::Util;
 our $VERSION = 0.14;
 my @vars;
 BEGIN {
@@ -569,7 +569,7 @@ sub find_attributes {
             }
 
         }
-        Scalar::Util::weaken($callback_found_tag) if $scalar_util;
+        Scalar::Util::weaken($callback_found_tag);
         $self->checkstack({
                 %$arg, name => T_END, open_or_close => CLOSING_TAG
             } );
