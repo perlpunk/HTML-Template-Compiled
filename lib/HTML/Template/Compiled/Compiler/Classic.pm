@@ -31,6 +31,7 @@ sub parse_var {
         __break__   => '$__break__',
         __filename__ => '$t->get_file',
         __filenameshort__ => '$t->get_filename',
+        __wrapped__ => '$args->{wrapped}',
     );
 
     if ( $t->get_loop_context && $args{var} =~ m/^__(\w+)__$/ ) {
