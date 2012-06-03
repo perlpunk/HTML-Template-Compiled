@@ -1508,6 +1508,17 @@ sub import {
     }
 }
 
+sub var2expression {
+    my ($self, $var) = @_;
+    $var = $self->get_compiler->parse_var($self,
+        var             => $var,
+        method_call     => $self->method_call,
+        deref           => $self->deref,
+        formatter_path => $self->formatter_path,
+    );
+    return $var;
+}
+
 sub ExpireTime {
     my ($class, $seconds) = @_;
     $NEW_CHECK = $seconds;
@@ -3143,6 +3154,11 @@ not the name of an included template. I'll try to fix that.
 Returns the plugin object of that classname. If the plugin is only a string
 (the classname itself), it returns this string, so this method is only
 useful for plugin objects.
+
+=item var2expression
+
+Useful for plugins. Parses a template var (C<name="foo.bar.baz"> and returns
+the perl expression for the compiler.
 
 =back
 
