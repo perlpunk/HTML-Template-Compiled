@@ -3,7 +3,6 @@
 # `make test'. After `make install' it should work as `perl HTML-Template-Compiled.t'
 # $Id: 25_translate.t 1151 2012-04-21 21:46:30Z tinita $
 
-use lib 'blib/lib';
 use Test::More tests => 6;
 BEGIN { use_ok('HTML::Template::Compiled') };
 use lib 't';
