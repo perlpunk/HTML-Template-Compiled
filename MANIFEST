@@ -14,6 +14,7 @@ lib/HTML/Template/Compiled/Exception.pm
 lib/HTML/Template/Compiled/Expr.pm
 lib/HTML/Template/Compiled/Compiler/Classic.pm
 lib/HTML/Template/Compiled/Plugin/DHTML.pm
+lib/HTML/Template/Compiled/Plugin/NumberFormat.pm
 lib/HTML/Template/Compiled/Plugin/XMLEscape.pm
 lib/HTML/Template/Compiled/Expression/Expressions.pm
 lib/HTML/Template/Compiled/Expression.pm
