@@ -22,10 +22,10 @@ use HTML::Template::Compiled::Compiler;
 eval {
     require URI::Escape;
 };
-eval {
-    require Encode;
-};
-my $Encode = $@ ? 0 : 1;
+#eval {
+#    require Encode;
+#};
+#my $Encode = $@ ? 0 : 1;
 
 use base 'Exporter';
 our @EXPORT_OK = qw(&HTC);

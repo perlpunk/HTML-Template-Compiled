@@ -66,11 +66,12 @@ otherwise returns the empty string.
 
 =cut
 
-eval { require Encode };
-my $encode = $@ ? 0 : 1;
+use Encode ();
 sub md5 {
     my ($text) = @_;
-    $encode and Encode::_utf8_off($text);
+    if (Encode::is_utf8($text)) {
+        $text = Encode::encode_utf8($text);
+    }
     return Digest::MD5::md5_base64($text);
 }
 
@@ -169,7 +170,7 @@ URI-escapes the input string and returns it;
 
 sub escape_uri {
     # if we want to use utf8 we require Encode.pm to be installed
-    my $x = ($encode and Encode::is_utf8($_[0]))
+    my $x = (Encode::is_utf8($_[0]))
         ? URI::Escape::uri_escape_utf8( $_[0] )
         : URI::Escape::uri_escape( $_[0] );
     return $x;
