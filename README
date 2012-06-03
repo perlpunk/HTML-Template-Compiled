@@ -3,7 +3,7 @@ NAME
     to Perl code
 
 VERSION
-    $VERSION = "0.97_005"
+    $VERSION = "0.97_006"
 
 SYNOPSIS
       use HTML::Template::Compiled;
@@ -1332,6 +1332,10 @@ DESCRIPTION
         string (the classname itself), it returns this string, so this
         method is only useful for plugin objects.
 
+    var2expression
+        Useful for plugins. Parses a template var ("name="foo.bar.baz"" and
+        returns the perl expression for the compiler.
+
 EXPORT
     None.
 
@@ -1420,7 +1424,7 @@ SECURITY
 
     In this case it is the safest option to generate your compiled templates
     on a local machine and just put the compiled templates onto the server,
-    with no write access for the http server. Set the "ExpireTime" variable
+    with no write access for the http server. Set the "expire_time" option
     to a high value so that HTC never attempts to check the template
     timestamp to force a regenerating of the code.
 

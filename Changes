@@ -1,5 +1,8 @@
 Revision history for Perl extension HTML::Template::Compiled.
 
+0.97_006 Sun Jun  3 19:26:50 CEST 2012
+- new plugin HTML::Template::Compiled::Plugin::NumberFormat
+
 0.97_005 Sat Jun  2 12:47:06 CEST 2012
 - New feature: option cache_debug
 - New feature: TMPL_WRAPPER
