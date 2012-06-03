@@ -6,7 +6,7 @@ use warnings;
 use constant OPERANDS => 0;
 use constant ATTRIBUTES => 1;
 use base 'Exporter';
-our $VERSION = 0.03;
+our $VERSION = 0.04;
 use  HTML::Template::Compiled::Expression::Expressions;
 my @expressions = qw(
     &_expr_literal
@@ -80,6 +80,23 @@ sub to_string {
     my $indent = $self->level2indent($level);
     my ($op) = $self->get_operands;
     return $indent . '}' . $/ . $indent . 'elsif ( ' . $op->to_string . ' ) {';
+}
+
+package HTML::Template::Compiled::Expression::SubrefCall;
+our @ISA = qw(HTML::Template::Compiled::Expression);
+
+sub init {
+    my ($self, @ops) = @_;
+    $self->set_operands([@ops]);
+}
+sub to_string {
+    my ($self, $level) = @_;
+    my $indent = $self->level2indent($level);
+    my ($subref, @ops) = $self->get_operands;
+    my @strings = map {
+        ref $_ ? $_->to_string($level) : $_
+    } @ops;
+    return "$indent$subref->( " . (join ',', @strings). ')';
 }
 
 package HTML::Template::Compiled::Expression::Function;

@@ -55,46 +55,41 @@ sub get_tags       { $_[0]->[ATTR_TAGS] }
 sub set_name_re    { $_[0]->[ATTR_NAME_RE] = $_[1] }
 sub get_name_re    { $_[0]->[ATTR_NAME_RE] }
 
+our %ESCAPES;
+
 sub delete_subs {
     # delete all userdefined subs
-    my ($class) = @_;
-    no strict 'refs';
-    #warn __PACKAGE__." finding all subs\n";
-    for my $key (keys %{'HTML::Template::Compiled::Compiler::subs::'} ) {
-        my $sym = ${'HTML::Template::Compiled::Compiler::subs::'}{$key};
-        if (defined *{$sym}{CODE}) {
-            #warn __PACKAGE__." $key is code\n";
-            delete ${'HTML::Template::Compiled::Compiler::subs::'}{$key}
-        }
-    }
+    %ESCAPES = ();
 }
 
 sub setup_escapes {
-	my ($class, $escapes) = @_;
-    for my $key (%$escapes) {
-        my $sub = $escapes->{$key};
+    my ($class, $plug_class, $escapes) = @_;
+    for my $key (keys %$escapes) {
+        my $def = $escapes->{$key};
+        my $sub;
+        if (ref $def eq 'HASH') {
+            $sub = $def->{code};
+            if (my $arguments = $def->{arguments} ) {
+                $ESCAPES{ $plug_class }->{ $key }->{arguments} = $arguments;
+            }
+        }
+        else {
+            $sub = $def;
+        }
         if (ref $sub eq 'CODE') {
-            my $subname = "HTML::Template::Compiled::Compiler::subs::$key";
-            no strict 'refs';
-            *$subname = $sub;
+            $ESCAPES{ $plug_class }->{ $key }->{code} = $sub;
+        }
+        else {
+            $ESCAPES{ $plug_class }->{ $key }->{code} = \&{ $sub };
         }
     }
 }
 
 sub add_escapes {
-    my ($self, $new_escapes) = @_;
+    my ($self, $plug_class, $new_escapes) = @_;
     my $escapes = $self->get_escapes;
-    for my $key (%$new_escapes) {
-        my $sub = $new_escapes->{$key};
-        if (ref $sub eq 'CODE') {
-            my $subname = "HTML::Template::Compiled::Compiler::subs::$key";
-            no strict 'refs';
-            *$subname = $sub;
-            $escapes->{$key} = $subname;
-        }
-        else {
-            $escapes->{$key} = $sub;
-        }
+    for my $key (keys %$new_escapes) {
+        $escapes->{ $key } = $plug_class;
     }
 }
 
@@ -140,12 +135,26 @@ sub _escape_expression {
         elsif ( $_ eq 'DUMP' ) {
             $exp = _expr_method( 'dump', _expr_literal('$t'), $exp, );
         }
-        elsif (my $sub = $escapes->{$_}) {
-            $exp = _expr_function( $sub, $exp );
+        elsif (my $plug_class = $escapes->{$_}) {
+            my $subref = "\$HTML::Template::Compiled::Compiler::ESCAPES\{'$plug_class'\}->\{'$_'\}->\{code\}";
+            my @args = $exp;
+            if (my $arguments = $ESCAPES{ $plug_class }->{ $_ }->{arguments}) {
+                @args = ();
+                for my $arg (@$arguments) {
+                    if ($arg eq 'var') {
+                        push @args, $exp;
+                    }
+                    elsif ($arg eq 'self') {
+                        push @args, "\$t->get_plugin('$plug_class')";
+                        #push @args, 23;
+                    }
+                }
+            }
+            $exp = HTML::Template::Compiled::Expression::SubrefCall->new( $subref, @args );
         }
-    } ## end for (@escapes)
+    }
     return ref $exp ? $exp->to_string : $exp;
-} ## end sub _escape_expression
+}
 
 sub init_name_re {
     my ($self, %args) = @_;
