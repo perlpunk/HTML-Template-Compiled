@@ -1,5 +1,8 @@
 Revision history for Perl extension HTML::Template::Compiled.
 
+0.98
+
+
 0.97_006 Sun Jun  3 19:26:50 CEST 2012
 - new plugin HTML::Template::Compiled::Plugin::NumberFormat
 - Change: use aliases (alias=..., SET_VAR) via $aliasname. USE_VARS will
