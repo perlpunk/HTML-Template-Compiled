@@ -4,6 +4,7 @@ package HTML::Template::Compiled;
 #our $VERSION = ($version_pod =~ m/^\$VERSION = "(\d+(?:\.\d+)+)"/m) ? $1 : "0.01";
 our $VERSION = "0.98";
 use Data::Dumper;
+use Scalar::Util;
 BEGIN {
 use constant D => $ENV{HTC_DEBUG} || 0;
 }
@@ -11,7 +12,6 @@ use strict;
 use warnings;
 use Digest::MD5 qw/ md5_hex /;
 
-our $Storable = 1;
 use Carp;
 use Fcntl qw(:seek :flock);
 use File::Spec;
@@ -23,10 +23,10 @@ use HTML::Template::Compiled::Compiler;
 eval {
     require URI::Escape;
 };
-eval {
-    require Encode;
-};
-my $Encode = $@ ? 0 : 1;
+#eval {
+#    require Encode;
+#};
+#my $Encode = $@ ? 0 : 1;
 
 use base 'Exporter';
 our @EXPORT_OK = qw(&HTC);
@@ -257,9 +257,9 @@ sub new_scalar_ref {
     $self->set_scalar( $args{scalarref} );
     my $text = $self->get_scalar;
     my $md5  = md5($$text);
-    if ($args{cache} and !$md5) {
-        croak "For caching scalarrefs you need Digest::MD5";
-    }
+#    if ($args{cache} and !$md5) {
+#        croak "For caching scalarrefs you need Digest::MD5";
+#    }
     $self->set_filename($md5);
     D && $self->log("md5: $md5");
     my $md5path = md5_hex(@{ $args{path} || [] });
@@ -568,7 +568,7 @@ sub add_file_cache {
     my $lchecked = localtime $times{checked};
     my $cachefile = "$cache/$plfile";
     D && $self->log("add_file_cache() $cachefile");
-    if ($Storable and require_storable()) {
+    if (require_storable()) {
         #require Storable;
         local $Storable::Deparse = 1;
         my $clone = $self->clone;
@@ -585,6 +585,9 @@ sub add_file_cache {
         Storable::store($to_cache, "$cachefile.storable");
     }
     else {
+
+=pod
+
     my $utf8 = $Encode && Encode::is_utf8($source);
     my $use_utf8 = $utf8 ? 'use utf8;' : '';
     open my $fh, ">" . ($utf8 ? ':utf8' : ''), "$cachefile.pl" or die $!;    # TODO File::Spec
@@ -668,6 +671,9 @@ $file_args
 EOM
     print $fh $package;
     D && $self->log("$cache/$plfile.pl generated");
+
+=cut
+
     }
     $self->unlock;
 }
@@ -686,7 +692,8 @@ sub from_file_cache {
     D && $self->log("include file: $file");
 
     my $escaped = $self->escape_filename($file);
-    my $req     = File::Spec->catfile( $dir, "$escaped.".($Storable && require_storable()?"storable":"pl") );
+    croak "Storable and B::Deparse needed for file cache" unless require_storable();
+    my $req     = File::Spec->catfile( $dir, "$escaped.storable" );
     return unless -f $req;
     return $self->include_file($req);
 }
@@ -696,7 +703,7 @@ sub include_file {
     D && $self->log("do $req");
     my $r;
     my $t;
-    if ($Storable && require_storable()) {
+    if (require_storable()) {
         #require Storable;
         local $Storable::Eval = 1;
         my $cache;
@@ -718,6 +725,10 @@ sub include_file {
         );
     }
     else {
+        croak "Storable and B::Deparse needed for file cache";
+
+=pod
+
     if ($UNTAINT) {
         # you said explicitly that you can trust your compiled code
         open my $fh, '<:utf8', $req or die "Could not open '$req': $!";
@@ -762,6 +773,9 @@ sub include_file {
         checked => $r->{times}->{checked},
         mtime   => $r->{times}->{mtime},
     );
+
+=cut
+
     }
     return $t;
 }
@@ -957,9 +971,6 @@ sub init {
     $self->set_debug( $args{debug} );
     $self->set_debug_file( $args{debug_file} );
     $self->set_objects( $args{objects} );
-    if ($args{objects} and $args{objects} eq 'nostrict') {
-        require Scalar::Util;
-    }
     $self->set_out_fh( $args{out_fh} );
     $self->set_global_vars( $args{global_vars} );
     if (my $plugins = $args{plugin}) {
