@@ -67,6 +67,7 @@ BEGIN {
           filter formatter
           globalstack use_query parse_tree parser compiler includes
           plugins open_mode chomp expire_time strict
+          args
         )
           #use_expressions
     );
@@ -158,8 +159,8 @@ sub _error_empty_filename {
 
 sub new_from_perl {
     my ($class, %args) = @_;
-    $class->init_args(\%args);
     my $self = bless [], $class;
+    $self->init_args(\%args);
     D && $self->log("new(perl) filename: $args{filename}");
 
     $self->init_cache(\%args);
@@ -181,8 +182,8 @@ sub new_from_perl {
 
 sub new_file {
     my ($class, $filename, %args) = @_;
-    $class->init_args(\%args);
     my $self = bless [], $class;
+    $self->init_args(\%args);
     $args{path} = $self->build_path($args{path});
     $self->_error_empty_filename()
         if (!defined $filename or !length $filename);
@@ -208,8 +209,8 @@ sub new_file {
 
 sub new_filehandle {
     my ($class, $filehandle, %args) = @_;
-    $class->init_args(\%args);
     my $self = bless [], $class;
+    $self->init_args(\%args);
     if (exists $args{scalarref}
         || exists $args{arrayref} || exists $args{filename}) {
         $self->_error_template_sources;
@@ -244,8 +245,8 @@ sub new_array_ref {
 
 sub new_scalar_ref {
     my ($class, $scalarref, %args) = @_;
-    $class->init_args(\%args);
     my $self = bless [], $class;
+    $self->init_args(\%args);
     if (exists $args{arrayref}
         || exists $args{filehandle} || exists $args{filename}) {
         $self->_error_template_sources;
@@ -340,6 +341,7 @@ sub from_cache {
         my $fname  = $self->get_filename;
         $t = $self->from_mem_cache($dir,$fname, $args);
         if ($t) {
+            $t->set_args($args);
             if (@$plug) {
                 $t->set_plugins($plug);
                 $t->load_plugins($plug);
@@ -364,6 +366,7 @@ sub from_cache {
         my $dir     = $self->get_cache_dir;
         $t = $self->from_file_cache($dir, $file);
         if ($t) {
+            $t->set_args($args);
             if (@$plug) {
                 $t->set_plugins($plug);
                 $t->load_plugins($plug);
@@ -839,7 +842,7 @@ sub init_cache {
 }
 
 sub init_args {
-    my ($class, $args) = @_;
+    my ($self, $args) = @_;
 
     if (exists $args->{cache_dir}) {
         # will soon be deprecated
@@ -922,6 +925,7 @@ sub init_args {
         strict                 => 1,
         %$args,
     );
+    $self->set_args($args);
 #    return %defaults;
 }
 
@@ -1248,6 +1252,10 @@ sub new_from_object {
         $cached->init_includes;
         return $cached
     }
+    unless ($new->get_compiler) {
+        my %args = %{ $self->get_args || {} };
+        $new->init(%args);
+    }
     $new = $new->from_scratch;
     $new->init_includes;
     return $new;
@@ -1272,6 +1280,7 @@ sub prepare_for_cache {
     }
     $self->set_parser(undef);
     $self->set_compiler(undef);
+    $self->set_args(undef);
 }
 
 sub preload {
