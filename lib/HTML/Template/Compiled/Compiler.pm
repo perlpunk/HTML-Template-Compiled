@@ -215,12 +215,13 @@ sub parse_var {
         );
     }
     if ( grep { defined $_ && $args{var} eq $_ } @$lexicals ) {
-        my $varstr = "\$lexi_$args{var}";
+        my $varstr = "\$HTML::Template::Compiled::_lexi_$args{var}";
         return $varstr;
     }
     my $lexi = join '|', grep defined, @$lexicals;
     my $varname = '$var';
     my $re = $self->get_name_re;
+#    warn __PACKAGE__.':'.__LINE__.": re: $re\n";
     #warn __PACKAGE__.':'.__LINE__.": ========== ($args{var})\n";
     my $root         = 0;
     my $up_stack = 0;
@@ -231,8 +232,12 @@ sub parse_var {
             return $lc;
         }
     }
-    if ($lexi and $args{var} =~ s/^($lexi)($re)/$2/) {
-        $initial_var = "\$lexi_$1";
+    # explicitly use aliases with '$' at the beginning
+    if ($args{var} =~ s/^\$(\w+)//) {
+        $initial_var = "\$HTML::Template::Compiled::_lexi_$1";
+    }
+    elsif ($lexi and $args{var} =~ s/^($lexi)($re)/$2/) {
+        $initial_var = "\$HTML::Template::Compiled::_lexi_$1";
     }
     elsif ( $args{var} =~ m/^_/ && $args{var} !~ m/^__(\w+)__$/ ) {
         $args{var} =~ s/^_//;
@@ -629,7 +634,7 @@ EOM
                 expr        => $expr,
             );
             $code .= <<"EOM";
-${indent}local \$lexi_$var = $varstr;
+${indent}local \$HTML::Template::Compiled::_lexi_$var = $varstr;
 EOM
         }
         # --------- TMPL_LOOP TMPL_WHILE TMPL_EACH
@@ -681,7 +686,7 @@ EOM
             }
             my $global = '';
             my $lexi =
-              defined $lexical ? "${indent}local \$lexi_$lexical = \$\$C;\n" : "";
+              defined $lexical ? "${indent}local \$HTML::Template::Compiled::_lexi_$lexical = \$\$C;\n" : "";
             if ($self->get_global_vars) {
                 my $pop_global = _expr_method(
                     'pushGlobalstack',
@@ -1086,7 +1091,7 @@ EOM
     }
     my @use_vars = grep length, keys %use_vars;
     if (@use_vars) {
-        $header .= qq#use vars qw/ @{[ map { '$lexi_'.$_ } @use_vars ]} /;\n#;
+#        $header .= qq#use vars qw/ @{[ map { '$_lexi_'.$_ } @use_vars ]} /;\n#;
     }
     #warn Data::Dumper->Dump([\$info], ['info']);
     $code .= qq#return \$OUT;\n#;

@@ -13,9 +13,11 @@ HTC_Utils qw($cache $tdir &cdir);
 		scalarref => \<<'EOM',
 <tmpl_loop array alias=iterator>
 <tmpl_var iterator>
+<tmpl_var $iterator>
 </tmpl_loop>
 <tmpl_loop array2 alias=iterator>
 <tmpl_var iterator.foo>
+<tmpl_var $iterator.foo>
 </tmpl_loop>
 EOM
 		debug => 0,
@@ -27,7 +29,7 @@ EOM
     );
 	my $out = $htc->output;
 	$out =~ s/\s+//g;
-	cmp_ok($out, "eq", "abcabc", "tmpl_loop array alias=iterator");
+	cmp_ok($out, "eq", "aabbccaabbcc", "tmpl_loop array alias=iterator");
 	#print "out: $out\n";
 }
 my $text1 = <<'EOM';

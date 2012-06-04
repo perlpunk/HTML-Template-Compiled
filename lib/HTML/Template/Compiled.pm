@@ -1935,18 +1935,21 @@ Check for definedness instead of truth:
 
 =item ALIAS
 
-Set an alias for a loop variable. For example, these two loops are
-functionally equivalent:
+Set an alias for a loop variable. You can use the alias then with C<$alias>.
+The syntax without the C<$> is also possible but not recommended any more.
+
+For example, these two loops are functionally equivalent:
 
  <tmpl_loop foo>
    <tmpl_var _>
  </tmpl_loop foo>
  <tmpl_loop foo alias=current>
-   <tmpl_var current>
+   <tmpl_var $current>
  </tmpl_loop foo>
 
-This works only with C<TMPL_LOOP> at the moment. I probably will
-implement this for C<TMPL_WITH>, C<TMPL_WHILE> too.
+This works with C<TMPL_LOOP> and C<TMPL_WHILE> at the moment.
+
+You can also se aliases with the C<SET_VAR> tag. See L<"SET_VAR">
 
 =item Chained escaping
 
@@ -2403,9 +2406,7 @@ The special name C<_> gives you the current parameter. In loops you can use it l
   Current item: <tmpl_var _ >
  </tmpl_loop>
 
-Also you can give the current item an alias. See L<"ALIAS">. I also would like
-to add a loop_context variable C<__current__>, if that makes sense.
-Seems more readable to non perlers than C<_>.
+Also you can give the current item an alias. See L<"ALIAS">.
 
 The LOOP tag allows you to define a JOIN attribute:
 
@@ -2505,18 +2506,28 @@ Sets a local variable to the value given in C<value> or C<expr>
     <tmpl_set name=bar expr=23>
     <tmpl_set boo value=var.boo>
     <tmpl_set oof expr="21*2">
-    <tmpl_var foo>
-    <tmpl_var bar>
+    <tmpl_var $foo>
+    <tmpl_var $bar>
     ...
 
 C<value=..> behaves like a variable name from the parameter stash.
 The variable name to set must match /[0-9a-z_]+/i
 
-Note that you cannot use those vars by default in includes.
-If you set a var with SET_VAR and want to use it in an include, use must
-use the L<"USE_VARS"> tag.
+You can refer to an alias via C<$alias> or simply C<alias>. Note that
+the latter syntax is not recommeded any more since it can conflict
+with parameters from the stash.
+
+If you want to use aliases in includes, you need to use the C<$alias>
+syntax.
 
 =head2 USE_VARS
+
+deprecated. Was added in 0.96_004 to make it possible to use aliases
+set with C<alias=...> or C<SET_VAR> in includes. Now you should rather
+use the <$alias> syntax.
+
+The following explanation is just there for history and will be removed
+some time in the future. For now it still works.
 
 Necessary if you want vars like SET_VAR and loop aliases from outside
 in includes.

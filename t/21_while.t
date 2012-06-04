@@ -80,7 +80,7 @@ __DATA__
     <%= __counter__ %><%if __odd__ %>odd<%/if%>
 <%/while%>
 <%while next alias=hiThere%>
-    <%VAR NAME="hiThere" %>
+    <%VAR NAME="$hiThere" %>
     <%= __counter__ %><%if __odd__ %>odd<%/if%>
 <%/while%>
 <%/with iterator%>

@@ -53,6 +53,7 @@ function_name : /[A-Za-z_][A-Za-z0-9_]*/
 args          : <leftop: paren ',' paren>
 
 var           : /[.\/A-Za-z_][.\/A-Za-z0-9_]*/ { [ 'VAR', $item[1] ] }
+              | /\$[.\/A-Za-z_][.\/A-Za-z0-9_]*/ { [ 'VAR', $item[1] ] }
 
 var_deref     : var deref(s)  { [ 'VAR_DEREF', $item[1], $item[2] ] }
               | var deref(s)  { [ 'VAR_DEREF', $item[1], $item[2] ] }

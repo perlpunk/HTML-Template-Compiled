@@ -52,13 +52,13 @@ EOM
         [ q#[%= expr="('2' . '4' ) % 20" %]#, '4'],
         [ q#[%= expr=".foobar" default="default value" %]#, 'default value'],
         [ q#[%loop list %][%= expr=".foo{_}" %] [%/loop %]#, 'foo a foo b foo c foo d '],
-        [ q#[%loop list alias=item %][%= expr=".foo{item}" %] [%/loop %]#, 'foo a foo b foo c foo d '],
-        [ q#[%loop bands alias=band %][%= expr="band{'name'}" %] [%/loop %]#, 'bauhaus deine lakaien '],
+        [ q#[%loop list alias=item %][%= expr=".foo{$item}" %] [%/loop %]#, 'foo a foo b foo c foo d '],
+        [ q#[%loop bands alias=band %][%= expr="$band{'name'}" %] [%/loop %]#, 'bauhaus deine lakaien '],
         [ q#[%loop bands %][%= expr="_{'name'}" %] [%/loop %]#, 'bauhaus deine lakaien '],
         [ q#[%loop bands alias=band %]
 [%= __counter__ %]. 
 [%loop .columns alias=column %]
-[%= column %]: [%= expr="band{column}" %] 
+[%= column %]: [%= expr="$band{column}" %] 
 [%/loop %]
 [%/loop %]#, '1. name: bauhaus founded: 1978 2. name: deine lakaien founded: 1985 '],
     );

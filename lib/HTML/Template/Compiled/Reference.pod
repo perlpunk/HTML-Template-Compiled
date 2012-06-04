@@ -119,7 +119,7 @@ Can be used in C<VAR>-tags.
 
 =item ALIAS
 
-    <%loop cds alias="cd" %><%= cd.title %><%/loop cds %>
+    <%loop cds alias="cd" %><%= $cd.title %><%/loop cds %>
 
 Can be used in C<LOOP> and C<WHILE>. Works like L<"SET_VAR"> and is short for
 
@@ -132,8 +132,7 @@ Useful for nested loops.
     <%set_var myvar value=.another.var %>
     <%set_var myvar2 expr="60 * 60 * 24" %>
 
-This creates a variable similar to local() in perl. To use such a var or
-an alias in includes, you must use L<"USE_VARS"> in the include.
+This creates a variable similar to a package var with local() in perl.
 
 =item USE_VARS
 
