@@ -1,5 +1,9 @@
 Revision history for Perl extension HTML::Template::Compiled.
 
+0.98_001 Mon Jun  4 23:53:45 CEST 2012
+- require perl 5.8.1
+- Hotfix for include_var and file caching
+
 0.98 Mon Jun  4 18:18:40 CEST 2012
 - IMPORTANT: Change: use aliases (alias=..., SET_VAR) via $aliasname.
   USE_VARS will be removed in the future. Old alias syntax still works

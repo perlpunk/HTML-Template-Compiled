@@ -2,7 +2,7 @@ package HTML::Template::Compiled;
 # $Id: Compiled.pm 1161 2012-05-05 14:00:22Z tinita $
 # doesn't work with make tardist
 #our $VERSION = ($version_pod =~ m/^\$VERSION = "(\d+(?:\.\d+)+)"/m) ? $1 : "0.01";
-our $VERSION = "0.98";
+our $VERSION = "0.98_001";
 use Data::Dumper;
 use Scalar::Util;
 BEGIN {
@@ -584,97 +584,6 @@ sub add_file_cache {
         };
         Storable::store($to_cache, "$cachefile.storable");
     }
-    else {
-
-=pod
-
-    my $utf8 = $Encode && Encode::is_utf8($source);
-    my $use_utf8 = $utf8 ? 'use utf8;' : '';
-    open my $fh, ">" . ($utf8 ? ':utf8' : ''), "$cachefile.pl" or die $!;    # TODO File::Spec
-    my $path     = $self->get_path;
-    my $path_str = '['
-      . ( join ', ', map { $self->quote_file($_) } @$path )
-      . ']';
-    my $isScalar = $self->get_scalar ? 1 : 0;
-    my $query_info = $self->get_parse_tree;
-    $query_info = Data::Dumper->Dump([$query_info], ['query_info']);
-    my $parser =$self->get_parser;
-    $parser = Data::Dumper->Dump([\$parser], ['parser']);
-    local $Data::Dumper::Deepcopy = 1;
-    my $includes = $self->get_includes;
-    my $includes_empty = {map {
-            $_ => [$includes->{$_}->[0], $includes->{$_}->[1], 0],
-        } keys %$includes};
-    my $includes_to_string = Data::Dumper->Dump(
-        [$includes_empty], ['includes']
-    );
-    #$includes_to_string =~ s/\$includes = //;
-    my $search_path = $self->get_search_path || 0;
-    my $gl = $self->get_global_vars;
-    my $debug_file = $self->get_debug->{file};
-    $debug_file =~ tr/a-z0,//cd;
-    my $use_objects = $self->get_objects;
-    $use_objects =~ tr/a-z0//cd;
-    my $plugins = $self->get_plugins;
-    my $plugin_dump = Data::Dumper->Dump([\@$plugins], ['plugin_dump']);
-    my $file_args = $isScalar
-      ? <<"EOM"
-        scalarref => $isScalar,
-        filename => '@{[$self->get_filename]}',
-EOM
-      : <<"EOM";
-        filename => '@{[$self->get_filename]}',
-EOM
-    my $package = <<"EOM";
-    $use_utf8
-    package HTML::Template::Compiled;
-# file date $lmtime
-# last checked date $lchecked
-# @$plugins
-my $plugin_dump;
-my $query_info;
-my \$parser;
-$parser;
-my $includes_to_string;
-my \$args = {
-    # HTC version
-    class => '@{[ref $self]}',
-    version => '$VERSION',
-    times => {
-        mtime => $times{mtime},
-        checked => $times{checked},
-    },
-    htc => {
-        case_sensitive => @{[$self->get_case_sensitive]},
-        cache_dir => '$cache',
-        cache => '@{[$self->get_cache]}',
-$file_args
-    path => $path_str,
-    out_fh => @{[$self->get_out_fh]},
-    default_path   => '@{[$self->get_default_path]}',
-    default_escape => '@{[$self->get_default_escape]}',
-    loop_context_vars => '@{[$self->get_loop_context||0]}',
-    use_query => \$query_info,
-    parser => \$parser,
-    global_vars => $gl,
-    debug_file => '$debug_file',
-    objects => '$use_objects',
-    includes => \$includes,
-    search_path_on_include => $search_path,
-    plugin => \$plugin_dump,
-    # TODO
-    # dumper => ...
-    # template subroutine
-    perl => $source,
-    },
-};
-EOM
-    print $fh $package;
-    D && $self->log("$cache/$plfile.pl generated");
-
-=cut
-
-    }
     $self->unlock;
 }
 
@@ -726,56 +635,6 @@ sub include_file {
     }
     else {
         croak "Storable and B::Deparse needed for file cache";
-
-=pod
-
-    if ($UNTAINT) {
-        # you said explicitly that you can trust your compiled code
-        open my $fh, '<:utf8', $req or die "Could not open '$req': $!";
-        my $code = <$fh>;
-        if ($code =~ m/use utf8/) {
-            binmode $fh, ':utf8';
-            $Encode and Encode::_utf8_on($code);
-        }
-        local $/;
-        $code .= <$fh>;
-        my $utf8 = $Encode && Encode::is_utf8($code);
-        if ( $code =~ m/(\A.*\z)/ms ) {
-            $code = $1;
-        }
-        else {
-            $code = "";
-        }
-        if ($utf8) {
-            Encode::_utf8_on($code);
-        }
-        $r = eval $code;
-    }
-    else {
-        $r = do $req;
-    }
-    if ($@) {
-        # we had an error while including
-        die "Error while including '$req': $@";
-    }
-    my $cached_version = $r->{version};
-    my $class = $r->{class} || 'HTML::Template::Compiled';
-    my $args = $r->{htc};
-    # we first just create from cached perl-code
-    $t = $class->new_from_perl(%$args);
-    if ($VERSION ne $cached_version || !$t->uptodate( $r->{times} )) {
-        # is not uptodate
-        return;
-    }
-    $t->set_includes( $args->{includes} );
-    $t->init_includes;
-    $t->get_cache and $t->add_mem_cache(
-        checked => $r->{times}->{checked},
-        mtime   => $r->{times}->{mtime},
-    );
-
-=cut
-
     }
     return $t;
 }
@@ -1676,7 +1535,7 @@ HTML::Template::Compiled - Template System Compiles HTML::Template files to Perl
 
 =head1 VERSION
 
-$VERSION = "0.98"
+$VERSION = "0.98_001"
 
 =cut
 
