@@ -2722,6 +2722,15 @@ at 0 instead of 1.
 
 If set to 1, every outer variable can be accessed from anywhere in the enclosing scope.
 
+Default is 0.
+
+Note that I don't recommend using global_vars. For referring to parameters
+up in the stash you can use aliases via C<alias=...> or C<SET_VAR>.
+See L<"ALIAS"> and L<"SET_VAR">.
+
+If yoy still would like to be able to navigate up the parameter stash, you
+have the following option:
+
 If set to 2, you don't have global vars, but have the possibility to go
 up the stack one level. Example:
 
