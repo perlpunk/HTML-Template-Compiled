@@ -3,7 +3,7 @@ NAME
     to Perl code
 
 VERSION
-    $VERSION = "0.97_006"
+    $VERSION = "0.98"
 
 SYNOPSIS
       use HTML::Template::Compiled;
@@ -225,18 +225,22 @@ DESCRIPTION
         Check for definedness instead of truth: <TMPL_IF_DEFINED NAME="var">
 
     ALIAS
-        Set an alias for a loop variable. For example, these two loops are
-        functionally equivalent:
+        Set an alias for a loop variable. You can use the alias then with
+        $alias. The syntax without the "$" is also possible but not
+        recommended any more.
+
+        For example, these two loops are functionally equivalent:
 
          <tmpl_loop foo>
            <tmpl_var _>
          </tmpl_loop foo>
          <tmpl_loop foo alias=current>
-           <tmpl_var current>
+           <tmpl_var $current>
          </tmpl_loop foo>
 
-        This works only with "TMPL_LOOP" at the moment. I probably will
-        implement this for "TMPL_WITH", "TMPL_WHILE" too.
+        This works with "TMPL_LOOP" and "TMPL_WHILE" at the moment.
+
+        You can also se aliases with the "SET_VAR" tag. See "SET_VAR"
 
     Chained escaping
         See "ESCAPING"
@@ -629,9 +633,7 @@ DESCRIPTION
       Current item: <tmpl_var _ >
      </tmpl_loop>
 
-    Also you can give the current item an alias. See "ALIAS". I also would
-    like to add a loop_context variable "__current__", if that makes sense.
-    Seems more readable to non perlers than "_".
+    Also you can give the current item an alias. See "ALIAS".
 
     The LOOP tag allows you to define a JOIN attribute:
 
@@ -727,18 +729,28 @@ DESCRIPTION
         <tmpl_set name=bar expr=23>
         <tmpl_set boo value=var.boo>
         <tmpl_set oof expr="21*2">
-        <tmpl_var foo>
-        <tmpl_var bar>
+        <tmpl_var $foo>
+        <tmpl_var $bar>
         ...
 
     "value=.." behaves like a variable name from the parameter stash. The
     variable name to set must match /[0-9a-z_]+/i
 
-    Note that you cannot use those vars by default in includes. If you set a
-    var with SET_VAR and want to use it in an include, use must use the
-    "USE_VARS" tag.
+    You can refer to an alias via $alias or simply "alias". Note that the
+    latter syntax is not recommeded any more since it can conflict with
+    parameters from the stash.
+
+    If you want to use aliases in includes, you need to use the $alias
+    syntax.
 
   USE_VARS
+    deprecated. Was added in 0.96_004 to make it possible to use aliases set
+    with "alias=..." or "SET_VAR" in includes. Now you should rather use the
+    <$alias> syntax.
+
+    The following explanation is just there for history and will be removed
+    some time in the future. For now it still works.
+
     Necessary if you want vars like SET_VAR and loop aliases from outside in
     includes. Before the first use in the include, add:
 
@@ -914,6 +926,15 @@ DESCRIPTION
     global_vars (fixed)
         If set to 1, every outer variable can be accessed from anywhere in
         the enclosing scope.
+
+        Default is 0.
+
+        Note that I don't recommend using global_vars. For referring to
+        parameters up in the stash you can use aliases via "alias=..." or
+        "SET_VAR". See "ALIAS" and "SET_VAR".
+
+        If yoy still would like to be able to navigate up the parameter
+        stash, you have the following option:
 
         If set to 2, you don't have global vars, but have the possibility to
         go up the stack one level. Example:
