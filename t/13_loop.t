@@ -2,34 +2,51 @@
 # `make test'. After `make install' it should work as `perl HTML-Template-Compiled.t'
 # $Id: 13_loop.t 1077 2008-09-01 19:02:06Z tinita $
 
-use Test::More tests => 9;
+use Test::More tests => 10;
 BEGIN { use_ok('HTML::Template::Compiled') };
 use lib 't';
 use
 HTC_Utils qw($cache $tdir &cdir);
 
-{
+for my $new_alias (0,1) {
+    local $HTML::Template::Compiled::Compiler::DISABLE_NEW_ALIAS = 1 unless ($new_alias);
 	my $htc = HTML::Template::Compiled->new(
-		scalarref => \<<'EOM',
+		scalarref => \<<"EOM",
 <tmpl_loop array alias=iterator>
 <tmpl_var iterator>
-<tmpl_var $iterator>
+<tmpl_var \$iterator>
 </tmpl_loop>
 <tmpl_loop array2 alias=iterator>
 <tmpl_var iterator.foo>
-<tmpl_var $iterator.foo>
+<tmpl_var \$iterator.foo>
 </tmpl_loop>
 EOM
 		debug => 0,
         loop_context_vars => 1,
+        cache => 0,
 	);
+    my $array = [];
+    my $array2 = [];
+    if ($new_alias) {
+        $array = [qw(a b c)];
+        $array2 = [{ foo => 'a' }, { foo => 'b' }, { foo => 'c' }];
+    }
+    else {
+        $array = [{ '$iterator' => 'a' }, { '$iterator' => 'b' }, { '$iterator' => 'c' }];
+        $array2 = [{ '$iterator' => { foo => 'a' } }, { '$iterator' => { foo => 'b' } }, { '$iterator' => { foo => 'c' } }];
+    }
 	$htc->param(
-        array => [qw(a b c)],
-        array2 => [{ foo => 'a' }, { foo => 'b' }, { foo => 'c' }],
+        array => $array,
+        array2 => $array2,
     );
 	my $out = $htc->output;
 	$out =~ s/\s+//g;
-	cmp_ok($out, "eq", "aabbccaabbcc", "tmpl_loop array alias=iterator");
+    if ($new_alias) {
+        cmp_ok($out, "eq", "aabbccaabbcc", "tmpl_loop array alias=iterator");
+    }
+    else {
+        cmp_ok($out, "=~", qr{HASH\(.*\)aHASH\(.*\)bHASH\(.*\)cabc}, "tmpl_loop array alias=iterator");
+    }
 	#print "out: $out\n";
 }
 my $text1 = <<'EOM';

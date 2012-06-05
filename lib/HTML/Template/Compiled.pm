@@ -1828,7 +1828,14 @@ For example, these two loops are functionally equivalent:
 
 This works with C<TMPL_LOOP> and C<TMPL_WHILE> at the moment.
 
-You can also se aliases with the C<SET_VAR> tag. See L<"SET_VAR">
+You can also set aliases with the C<SET_VAR> tag. See L<"SET_VAR">
+
+To use template parameters with a C<$> at the beginning (which is not
+officially suppported, but some are abviously using it), you can set:
+
+    local $HTML::Template::Compiled::Compiler::DISABLE_NEW_ALIAS = 1;
+
+This is only a temporary workaround.
 
 =item Chained escaping
 

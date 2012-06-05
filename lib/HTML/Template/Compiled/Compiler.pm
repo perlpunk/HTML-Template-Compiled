@@ -10,6 +10,8 @@ use File::Basename qw(dirname);
 
 our $VERSION = '0.20';
 
+our $DISABLE_NEW_ALIAS = 0;
+
 use Carp qw(croak carp);
 use constant D             => 0;
 
@@ -233,7 +235,7 @@ sub parse_var {
         }
     }
     # explicitly use aliases with '$' at the beginning
-    if ($args{var} =~ s/^\$(\w+)//) {
+    if (not $DISABLE_NEW_ALIAS and $args{var} =~ s/^\$(\w+)//) {
         $initial_var = "\$HTML::Template::Compiled::_lexi_$1";
     }
     elsif ($lexi and $args{var} =~ s/^($lexi)($re)/$2/) {
