@@ -3,7 +3,7 @@ NAME
     to Perl code
 
 VERSION
-    $VERSION = "0.98_001"
+    $VERSION = "0.98_002"
 
 SYNOPSIS
       use HTML::Template::Compiled;
@@ -240,7 +240,15 @@ DESCRIPTION
 
         This works with "TMPL_LOOP" and "TMPL_WHILE" at the moment.
 
-        You can also se aliases with the "SET_VAR" tag. See "SET_VAR"
+        You can also set aliases with the "SET_VAR" tag. See "SET_VAR"
+
+        To use template parameters with a "$" at the beginning (which is not
+        officially suppported, but some are abviously using it), you can
+        set:
+
+            local $HTML::Template::Compiled::Compiler::DISABLE_NEW_ALIAS = 1;
+
+        This is only a temporary workaround.
 
     Chained escaping
         See "ESCAPING"
