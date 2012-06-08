@@ -4,7 +4,8 @@ use strict;
 use lib 't';
 use Test::More tests => 9;
 use_ok('HTML::Template::Compiled');
-use HTC_Utils qw($cache $tdir &cdir);
+use HTC_Utils qw($cache $cache_lock $tdir &cdir &remove_cache);
+mkdir($cache);
 
 sub HTML::Template::Compiled::Test::bar {
     return $_[0]->[0]
@@ -110,3 +111,5 @@ EOM
     }
 }
 
+HTML::Template::Compiled->clear_filecache($cache);
+remove_cache();

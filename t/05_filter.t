@@ -1,8 +1,10 @@
 # $Id: 05_filter.t 1135 2011-11-21 19:25:16Z tinita $
-use lib 'blib/lib';
 use Test::More tests => 5;
 BEGIN { use_ok('HTML::Template::Compiled') };
 HTML::Template::Compiled->ExpireTime(1);
+use lib 't';
+use HTC_Utils qw($cache $cache_lock $tdir &cdir &remove_cache);
+mkdir($cache);
 
 my $filter = sub {
 	for (${$_[0]}) {
@@ -74,5 +76,9 @@ EOM
     no strict 'refs';
     undef *{ 'HTML::Template::Compiled::Filter::filter' };
 }
+
+HTML::Template::Compiled->clear_filecache($cache);
+remove_cache();
+
 
 __END__

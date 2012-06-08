@@ -3,7 +3,8 @@ use Test::More tests => 5;
 BEGIN { use_ok('HTML::Template::Compiled') };
 use lib 't';
 use File::Spec;
-use HTC_Utils qw($cache $tdir &cdir);
+use HTC_Utils qw($cache $cache_lock $tdir &cdir &remove_cache);
+mkdir($cache);
 #my $cache = File::Spec->catfile('t', 'cache');
 my $out = File::Spec->catfile('t', 'templates', 'out_fh.htc.output');
 HTML::Template::Compiled->clear_filecache($cache);
@@ -43,3 +44,4 @@ sub test {
 
 unlink $out;
 HTML::Template::Compiled->clear_filecache($cache);
+remove_cache();

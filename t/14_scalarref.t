@@ -2,6 +2,9 @@
 # `make test'. After `make install' it should work as `perl HTML-Template-Compiled.t'
 # $Id: 14_scalarref.t 1144 2012-04-21 18:59:13Z tinita $
 
+use lib 't';
+use HTC_Utils qw($cache $cache_lock $tdir &cdir &remove_cache);
+mkdir($cache);
 use Test::More tests => 6;
 use Data::Dumper;
 use File::Spec;
@@ -66,3 +69,5 @@ SKIP: {
     #print $out, $/;
     cmp_ok($out, 'eq', "\x{263A} \x{263A}", "scalarref with utf8");
 }
+HTML::Template::Compiled->clear_filecache($cache);
+remove_cache();

@@ -9,9 +9,9 @@ local $Data::Dumper::Indent = 1; local $Data::Dumper::Sortkeys = 1;
 BEGIN { use_ok('HTML::Template::Compiled') };
 use Fcntl qw(:seek);
 use File::Copy qw(copy);
-
-# Insert your test code below, the Test::More module is use()ed here so read
-# its man page ( perldoc Test::More ) for help writing this test script.
+use lib 't';
+use HTC_Utils qw($cache $cache_lock $tdir &cdir &remove_cache);
+mkdir($cache);
 
 my $hash = {
 	SELF => '/path/to/script.pl',
@@ -38,10 +38,6 @@ my $hash = {
 };
 sub HTC::Test::key { return $_[0]->{"_key"} }
 
-#my $cache = File::Spec->catfile('t', 'cache');
-use lib 't';
-use HTC_Utils qw($cache $tdir &cdir);
-mkdir $cache unless -d $cache;
 my $include_orig = cdir($tdir,'include.html');
 my $include = cdir($tdir,'include_copy.html');
 copy($include_orig, $include) or die $!;
@@ -159,4 +155,6 @@ EOM
 
 }
 
+HTML::Template::Compiled->clear_filecache($cache);
+remove_cache();
 unlink $include;

@@ -1,10 +1,11 @@
 # $Id: 20_precompile.t 952 2007-07-30 20:42:25Z tinita $
 use warnings;
 use strict;
-use lib qw(blib/lib t);
 use Test::More tests => 4;
 use_ok('HTML::Template::Compiled');
-use HTC_Utils qw($cache $tdir &cdir);
+use lib 't';
+use HTC_Utils qw($cache $cache_lock $tdir &cdir &remove_cache);
+mkdir($cache);
 
 
 HTML::Template::Compiled->clear_filecache('t/cache');
@@ -36,7 +37,6 @@ EOM
     #print `ls t/cache/`;
 
 }
-HTML::Template::Compiled->clear_filecache('t/cache');
 
-
-
+HTML::Template::Compiled->clear_filecache($cache);
+remove_cache();

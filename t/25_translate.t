@@ -6,7 +6,8 @@
 use Test::More tests => 6;
 BEGIN { use_ok('HTML::Template::Compiled') };
 use lib 't';
-use HTC_Utils qw($cache $tdir &cdir);
+use HTC_Utils qw($cache $cache_lock $tdir &cdir &remove_cache);
+mkdir($cache);
 use strict;
 use warnings;
 my $class_accessor = eval "use Class::Accessor::Fast; 1";
@@ -64,3 +65,4 @@ for my $filecache (0, 1) {
 
 
 HTML::Template::Compiled->clear_filecache($cache);
+remove_cache();

@@ -5,7 +5,8 @@
 use Test::More tests => 3;
 BEGIN { use_ok('HTML::Template::Compiled') };
 use lib 't';
-use HTC_Utils qw($cache $tdir &cdir);
+use HTC_Utils qw($cache $cache_lock $tdir &cdir &remove_cache);
+mkdir($cache);
 
 eval {
 	require Data::TreeDumper::Renderer::DHTML;
@@ -54,3 +55,4 @@ SKIP: {
     }
 }
 HTML::Template::Compiled->clear_filecache($cache);
+remove_cache();

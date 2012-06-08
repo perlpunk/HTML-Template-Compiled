@@ -2,7 +2,9 @@ use warnings;
 use strict;
 use Test::More tests => 5;
 
-HTML::Template::Compiled->clear_filecache('t/cache');
+use lib 't';
+use HTC_Utils qw($cache $cache_lock $tdir &cdir &remove_cache);
+mkdir($cache);
 # test query() (From HTML::Template test suite)
 use HTML::Template::Compiled;
 use HTML::Template::Compiled::Lazy;
@@ -108,6 +110,7 @@ sub query_template {
 }
 
 
-HTML::Template::Compiled->clear_filecache('t/cache');
 
 unlink $file_copy;
+HTML::Template::Compiled->clear_filecache($cache);
+remove_cache();

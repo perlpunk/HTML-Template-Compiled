@@ -5,8 +5,8 @@
 use Test::More tests => 10;
 BEGIN { use_ok('HTML::Template::Compiled') };
 use lib 't';
-use
-HTC_Utils qw($cache $tdir &cdir);
+use HTC_Utils qw($cache $cache_lock $tdir &cdir &remove_cache);
+mkdir($cache);
 
 for my $new_alias (0,1) {
     local $HTML::Template::Compiled::Compiler::DISABLE_NEW_ALIAS = 1 unless ($new_alias);
@@ -163,4 +163,5 @@ EOM
     cmp_ok($out, 'eq',' 1 2 3 ', "loop " . ($_ ? "after" : "before") . " caching");
 }
 
-HTML::Template::Compiled->clear_filecache('t/cache');
+HTML::Template::Compiled->clear_filecache($cache);
+remove_cache();
