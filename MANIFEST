@@ -35,7 +35,6 @@ examples/bench_mem.pl
 examples/test.tt
 examples/test.tst
 examples/dhtml.html
-t/cache/.gitignore
 t/HTC_Utils.pm
 t/HTC_Plugin.pm
 t/01_HTML-Template-Compiled.t

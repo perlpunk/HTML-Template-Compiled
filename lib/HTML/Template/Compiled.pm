@@ -2435,7 +2435,7 @@ Needs option C<loop_context_vars>.
 Works similar to WRAPPER in Template-Toolkit.
 
 Is similar to TMPL_INCLUDE, just that the included wrapper is wrapped
-around the content. It can be used to avoid including head and foot seperately.
+around the content. It can be used to avoid including head and foot separately.
 
     <tmpl_wrapper wrapper.html >
     content: some var: <tmpl_var foo >
