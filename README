@@ -777,7 +777,7 @@ DESCRIPTION
 
     Is similar to TMPL_INCLUDE, just that the included wrapper is wrapped
     around the content. It can be used to avoid including head and foot
-    seperately.
+    separately.
 
         <tmpl_wrapper wrapper.html >
         content: some var: <tmpl_var foo >
