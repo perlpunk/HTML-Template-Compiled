@@ -1,34 +1,34 @@
 use strict;
 use warnings;
-require 5.006001;
+require 5.008001;
 use Module::Build;
 
 my $build = Module::Build->new(
     create_makefile_pl => 'traditional',
     license            => 'perl',
-    resources => {
-        repository => {
-            url => 'https://htcompiled.svn.sourceforge.net/svnroot/htcompiled',
-            type => 'svn',
-        },
-    },
     configure_requires => {
-        'Module::Build' => 0,
+        'Module::Build' => 0.28,
     },
     module_name        => 'HTML::Template::Compiled',
     dist_author        => 'Tina Mueller',
+    build_requires => {
+        'Test::More' => 0,
+        'Module::Build' => 0.28,
+    },
     requires => {
-        perl             => '5.8.1',
-        Carp             => 0,
+        'perl'           => '5.8.1',
+        'Carp'           => 0,
         'Digest::MD5'    => 0,
         'File::Basename' => 0,
         'File::Spec'     => 0,
         'Test::More'     => 0,
-    },
-    recommends         => {
         'B::Deparse'     => 0.61,
         'Storable'       => 2,
         'URI::Escape' => 0,
+    },
+    recommends         => {
+        'Parse::RecDescent'                 => 0,
+        'Data::TreeDumper::Renderer::DHTML' => 0,
     },
     create_readme      => 1,
     sign               => 0,
@@ -39,3 +39,4 @@ my $build = Module::Build->new(
     },
 );
 $build->create_build_script;
+

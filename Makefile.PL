@@ -9,11 +9,15 @@ WriteMakefile
   'EXE_FILES' => [],
   'VERSION_FROM' => 'lib/HTML/Template/Compiled.pm',
   'PREREQ_PM' => {
-                   'Test::More' => 0,
+                   'URI::Escape' => 0,
+                   'B::Deparse' => '0.61',
                    'File::Spec' => 0,
+                   'Storable' => 2,
+                   'Carp' => 0,
+                   'Test::More' => 0,
                    'Digest::MD5' => 0,
-                   'File::Basename' => 0,
-                   'Carp' => 0
+                   'Module::Build' => '0.28',
+                   'File::Basename' => 0
                  }
 )
 ;
