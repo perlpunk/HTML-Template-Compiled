@@ -3,7 +3,7 @@ NAME
     to Perl code
 
 VERSION
-    $VERSION = "0.98_002"
+    $VERSION = "0.98_003"
 
 SYNOPSIS
       use HTML::Template::Compiled;
@@ -59,10 +59,10 @@ SYNOPSIS
 
 DESCRIPTION
     HTML::Template::Compiled is a template system which can be used for
-    HTML::Template templates with the same API. It offers more flexible
-    template delimiters, additional tags and features, and by compiling the
-    template into perl code it can run significantly faster in persistent
-    environments such as FastCGI or mod_perl.
+    HTML::Template templates with almost the same API. It offers more
+    flexible template delimiters, additional tags and features, and by
+    compiling the template into perl code it can run significantly faster in
+    persistent environments such as FastCGI or mod_perl.
 
     For a quick reference, see HTML::Template::Compiled::Reference.
 
@@ -248,7 +248,16 @@ DESCRIPTION
 
             local $HTML::Template::Compiled::Compiler::DISABLE_NEW_ALIAS = 1;
 
-        This is only a temporary workaround.
+        This is only a temporary workaround and will be removed some day!
+
+        Note that you are also able to access variables with dollar signs
+        like this:
+
+            <tmpl_var _.$foo >
+
+        since underscore means current position in the parameter stash, and
+        aliases are only recognized at the beginning of a template var. But
+        note that dollar signs are still not officially supported.
 
     Chained escaping
         See "ESCAPING"
@@ -409,6 +418,15 @@ DESCRIPTION
           use HTML::Template::Compiled speed => 1;
 
      which is the default but depending on user wishes that might change.
+
+  DEPRECATED
+    class methods ExpireTime, EnableSub, CaseSensitive, SearchPathOnInclude,
+    UseQuery
+    option formatter_path
+    tag USE_VARS, not needed anymore
+    option cache_dir (replaced by file_cache_dir)
+    options method_call, deref, default_path, dumper
+    import tags short, compatible, speed
 
   ESCAPING
     Like in HTML::Template, you have "ESCAPE=HTML", "ESCAPE=URL" and
