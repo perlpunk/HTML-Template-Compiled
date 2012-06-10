@@ -1,5 +1,9 @@
 Revision history for Perl extension HTML::Template::Compiled.
 
+0.98_003 Sun Jun 10 19:25:15 CEST 2012
+- removed test cache directory fro m distribution
+- added some modules to recommends
+
 0.98_002 Wed Jun  6 20:43:05 CEST 2012
 - Workaround for using var names with dollars:
   local $HTML::Template::Compiled::Compiler::DISABLE_NEW_ALIAS = 1;
