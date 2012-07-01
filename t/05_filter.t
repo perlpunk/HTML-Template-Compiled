@@ -8,10 +8,10 @@ mkdir($cache);
 
 my $filter = sub {
 	for (${$_[0]}) {
-		s#{{{ nomen est (\w+) }}}#<tmpl_var name="$1">#gi;
-		s#{{{ iterate over (\w+) }}}#<tmpl_loop name="$1">#gi;
-		s#{{{ end of iterate }}}#</tmpl_loop>#gi;
-		s#{{{ occupy (\S+) }}}#<tmpl_include $1>#gi;
+		s#\{\{\{ nomen est (\w+) \}\}\}#<tmpl_var name="$1">#gi;
+		s#\{\{\{ iterate over (\w+) \}\}\}#<tmpl_loop name="$1">#gi;
+		s#\{\{\{ end of iterate \}\}\}#</tmpl_loop>#gi;
+		s#\{\{\{ occupy (\S+) \}\}\}#<tmpl_include $1>#gi;
 	};
 };
 
