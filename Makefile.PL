@@ -3,21 +3,21 @@ require 5.008001;
 use ExtUtils::MakeMaker;
 WriteMakefile
 (
-  'PL_FILES' => {},
-  'INSTALLDIRS' => 'site',
   'NAME' => 'HTML::Template::Compiled',
-  'EXE_FILES' => [],
   'VERSION_FROM' => 'lib/HTML/Template/Compiled.pm',
   'PREREQ_PM' => {
-                   'URI::Escape' => 0,
                    'B::Deparse' => '0.61',
-                   'File::Spec' => 0,
-                   'Storable' => 2,
                    'Carp' => 0,
-                   'Test::More' => 0,
                    'Digest::MD5' => 0,
+                   'File::Basename' => 0,
+                   'File::Spec' => 0,
                    'Module::Build' => '0.28',
-                   'File::Basename' => 0
-                 }
+                   'Storable' => 2,
+                   'Test::More' => 0,
+                   'URI::Escape' => 0
+                 },
+  'INSTALLDIRS' => 'site',
+  'EXE_FILES' => [],
+  'PL_FILES' => {}
 )
 ;
