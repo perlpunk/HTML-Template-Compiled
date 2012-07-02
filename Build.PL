@@ -29,6 +29,7 @@ my $build = Module::Build->new(
     recommends         => {
         'Parse::RecDescent'                 => 0,
         'Data::TreeDumper::Renderer::DHTML' => 0,
+        'Data::TreeDumper'                  => 0,
     },
     create_readme      => 1,
     sign               => 0,

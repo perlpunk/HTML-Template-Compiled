@@ -10,6 +10,7 @@ mkdir($cache);
 
 eval {
 	require Data::TreeDumper::Renderer::DHTML;
+    require Data::TreeDumper;
 };
 my $dhtml = $@ ? 0 : 1;
 	my %hash = (
@@ -23,7 +24,7 @@ my $dhtml = $@ ? 0 : 1;
 	);
 SKIP: {
     {
-        skip "no Data::TreeDumper::Renderer::DHTML installed", 2 unless $dhtml;
+        skip "no Data::TreeDumper::Renderer::DHTML/Data::TreeDumper installed", 2 unless $dhtml;
         my $htc = HTML::Template::Compiled->new(
             filename => "t/templates/dhtml.htc",
             debug => 0,
