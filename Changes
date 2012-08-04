@@ -1,5 +1,8 @@
 Revision history for Perl extension HTML::Template::Compiled.
 
+0.99_001 Sat Aug  4 17:32:03 CEST 2012
+- Bugfix: reloading changed includes didn't always work
+
 0.99 Mon Jul  2 21:48:39 CEST 2012
 - fixed tests (deprecation in perl 5.17 and Data::TreeDumper prereq)
 - also see developer version changes

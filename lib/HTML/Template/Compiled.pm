@@ -2,7 +2,7 @@ package HTML::Template::Compiled;
 # $Id: Compiled.pm 1161 2012-05-05 14:00:22Z tinita $
 # doesn't work with make tardist
 #our $VERSION = ($version_pod =~ m/^\$VERSION = "(\d+(?:\.\d+)+)"/m) ? $1 : "0.01";
-our $VERSION = "0.99";
+our $VERSION = "0.99_001";
 use Data::Dumper;
 use Scalar::Util;
 BEGIN {
@@ -1114,7 +1114,7 @@ sub new_from_object {
     $new->set_path($path);
     $new->set_md5_path( $md5path );
     $new->set_perl(undef);
-    if (my $cached = $new->from_cache) {
+    if (my $cached = $new->from_cache($self->get_args)) {
         $cached->set_plugins($self->get_plugins);
         $cached->init_includes;
         return $cached
@@ -1532,7 +1532,7 @@ HTML::Template::Compiled - Template System Compiles HTML::Template files to Perl
 
 =head1 VERSION
 
-$VERSION = "0.99"
+$VERSION = "0.99_001"
 
 =cut
 
