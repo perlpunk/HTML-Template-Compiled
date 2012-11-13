@@ -1,5 +1,8 @@
 Revision history for Perl extension HTML::Template::Compiled.
 
+1.000 Tue Nov 13 20:45:44 CET 2012
+- regular release
+
 0.99_001 Sat Aug  4 17:32:03 CEST 2012
 - Bugfix: reloading changed includes didn't always work
 
