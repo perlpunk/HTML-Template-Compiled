@@ -1611,19 +1611,23 @@ in persistent environments such as FastCGI or mod_perl.
 The goal is to offer more features for flexibility but keep the basic syntax
 as easy as it is.
 
-Some features:
+Features at a glance:
 
 =over 4
 
 =item Dot notation for objects, hashes and arrays
 
-=item Using expressions without any disadvantages like in L<HTML::Template::Expr>
+=item Use expressions without any disadvantages like those in L<HTML::Template::Expr>
 
 =item Write escaping plugins and plugins for new tags
 
 =item Alternate delimiters, e.g. C<[%if %]> and C<< <%if %> >>
 
-=item ELSIF, EACH, WHILE, SET_VAR, COMMENT, WRAPPER, SWITCH/CASE, CHOMP, INCLUDE_VAR
+=item Avoid C<global_vars> option by using the C<SET_VAR> tag to create aliases.
+
+=item Tags ELSIF, EACH, WHILE, COMMENT, WRAPPER, SWITCH/CASE, INCLUDE_VAR
+
+=item Chomp newlines/whitespace
 
 =back
 
