@@ -239,10 +239,14 @@ HTML::Template::Compiled::Expr - Expressions for HTC
 
 =head1 DESCRIPTION
 
-Works like L<HTML::Template::Expr>, with the additional possibility
-to do method calls with parameters.
+The expressions work like in L<HTML::Template::Expr>, with some additional
+possibilities regarding object method calls and arbitrary data structures.
 
-See the option C<use_expressions> in L<HTML::Template::Compiled/"OPTIONS">
+Different from L<HTML::Template::Expr>, you don't use it as the module
+class, but you activate it by passing the option C<use_expressions> with
+a true value.
+
+See C<use_expressions> in L<HTML::Template::Compiled/"OPTIONS">
 
 =cut
 

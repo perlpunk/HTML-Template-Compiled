@@ -1608,6 +1608,25 @@ offers more flexible template delimiters, additional tags and features,
 and by compiling the template into perl code it can run significantly faster
 in persistent environments such as FastCGI or mod_perl.
 
+The goal is to offer more features for flexibility but keep the basic syntax
+as easy as it is.
+
+Some features:
+
+=over 4
+
+=item Dot notation for objects, hashes and arrays
+
+=item Using expressions without any disadvantages like in L<HTML::Template::Expr>
+
+=item Write escaping plugins and plugins for new tags
+
+=item Alternate delimiters, e.g. C<[%if %]> and C<< <%if %> >>
+
+=item ELSIF, EACH, WHILE, SET_VAR, COMMENT, WRAPPER, SWITCH/CASE, CHOMP, INCLUDE_VAR
+
+=back
+
 For a quick reference, see L<HTML::Template::Compiled::Reference>.
 
 As the basic features work like in L<HTML::Template>, please get familiar
