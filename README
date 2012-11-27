@@ -3,7 +3,7 @@ NAME
     to Perl code
 
 VERSION
-    $VERSION = "1.000"
+    $VERSION = "1.000_001"
 
 SYNOPSIS
       use HTML::Template::Compiled;
@@ -63,6 +63,20 @@ DESCRIPTION
     flexible template delimiters, additional tags and features, and by
     compiling the template into perl code it can run significantly faster in
     persistent environments such as FastCGI or mod_perl.
+
+    The goal is to offer more features for flexibility but keep the basic
+    syntax as easy as it is.
+
+    Features at a glance:
+
+    Dot notation for objects, hashes and arrays
+    Use expressions without any disadvantages like those in
+    HTML::Template::Expr
+    Write escaping plugins and plugins for new tags
+    Alternate delimiters, e.g. "[%if %]" and "<%if %>"
+    Avoid "global_vars" option by using the "SET_VAR" tag to create aliases.
+    Tags ELSIF, EACH, WHILE, COMMENT, WRAPPER, SWITCH/CASE, INCLUDE_VAR
+    Chomp newlines/whitespace
 
     For a quick reference, see HTML::Template::Compiled::Reference.
 
@@ -243,8 +257,7 @@ DESCRIPTION
         You can also set aliases with the "SET_VAR" tag. See "SET_VAR"
 
         To use template parameters with a "$" at the beginning (which is not
-        officially suppported, but some are abviously using it), you can
-        set:
+        officially supported, but some are obviously using it), you can set:
 
             local $HTML::Template::Compiled::Compiler::DISABLE_NEW_ALIAS = 1;
 
@@ -746,6 +759,21 @@ DESCRIPTION
         <tmpl_var __key__ >
         </tmpl_each>
 
+    Since 1.000_001 you can also define by which variable you want to sort.
+    If you have a hash with hashes as values:
+
+        $htc->param(
+            letters => {
+                1 => { letter =>'b' },
+                2 => { letter =>'a' },
+                3 => { letter =>'c' },
+            },
+        );
+        <%each letters sort=alpha sortby="letter" %>
+        <%set_var val value=__value__ %>
+        <%= __key__ %> = <%= $val.letter %>
+        <%/each%>
+
   SET_VAR
     Since 0.96_002
 
@@ -985,7 +1013,7 @@ DESCRIPTION
         Now everything will be escaped for HTML unless you explicitly
         specify "ESCAPE=0" (no escaping) or "ESCAPE=URL".
 
-    strict
+    strict (since 0.97_001)
         Default: 1
 
         If set to 0 unknown tags will be ignored and output verbatim:
