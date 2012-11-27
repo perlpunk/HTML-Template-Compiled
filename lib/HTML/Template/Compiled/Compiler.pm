@@ -674,22 +674,32 @@ EOM
             # SORT=ALPHA or SORT not set => cmp
             # SORT=NUM => <=>
             # SORT=0 or anything else => don't sort
+
+            my $sort_key_a = '$a';
+            my $sort_key_b = '$b';
+            if ($attr->{SORTBY}) {
+                my $varstr = $class->parse_var($self,
+                    %var_args,
+                    var   => $attr->{SORTBY},
+                    context => $token,
+                    compiler => $class,
+                );
+                ($sort_key_a, $sort_key_b) = ($varstr, $varstr);
+                $sort_key_a =~ s/\$\$C/\$hash\{\$a\}/g;
+                $sort_key_b =~ s/\$\$C/\$hash\{\$b\}/g;
+            }
+
+            if ($attr->{REVERSE}) {
+                ($sort_key_b, $sort_key_a) = ($sort_key_a, $sort_key_b);
+            }
+            my $sort_op = 'cmp';
             if (!defined $attr->{SORT} or uc $attr->{SORT} eq 'ALPHA') {
-                if ($attr->{REVERSE}) {
-                    $sort_keys = "sort \{ \$b cmp \$a \}";
-                }
-                else {
-                    $sort_keys = "sort \{ \$a cmp \$b \}";
-                }
             }
             elsif (uc $attr->{SORT} eq 'NUM') {
-                if ($attr->{REVERSE}) {
-                    $sort_keys = "sort \{ \$b <=> \$a \}";
-                }
-                else {
-                    $sort_keys = "sort \{ \$a <=> \$b \}";
-                }
+                $sort_op = '<=>';
             }
+            $sort_keys = "sort \{ $sort_key_a $sort_op $sort_key_b \}";
+
             my $global = '';
             my $lexi =
               defined $lexical ? "${indent}local \$HTML::Template::Compiled::_lexi_$lexical = \$\$C;\n" : "";

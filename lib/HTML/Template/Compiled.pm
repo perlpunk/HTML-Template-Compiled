@@ -2427,6 +2427,21 @@ TMPL_EACH expects a ref), then you can set C<context=list>:
     <tmpl_var __key__ >
     </tmpl_each>
 
+Since 1.000_001 you can also define by which variable you want to sort.
+If you have a hash with hashes as values:
+
+    $htc->param(
+        letters => {
+            1 => { letter =>'b' },
+            2 => { letter =>'a' },
+            3 => { letter =>'c' },
+        },
+    );
+    <%each letters sort=alpha sortby="letter" %>
+    <%set_var val value=__value__ %>
+    <%= __key__ %> = <%= $val.letter %>
+    <%/each%>
+
 =head2 SET_VAR
 
 Since 0.96_002

@@ -2,6 +2,7 @@ Revision history for Perl extension HTML::Template::Compiled.
 
 1.000_001
 - Minor optimizations
+- New Feature: attribute sortby for TMPL_EACH
 
 1.000 Tue Nov 13 20:45:44 CET 2012
 - regular release
