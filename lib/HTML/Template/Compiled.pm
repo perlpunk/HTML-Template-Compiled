@@ -2685,7 +2685,7 @@ browse through the stack.
 Now everything will be escaped for HTML unless you explicitly specify C<ESCAPE=0> (no escaping)
 or C<ESCAPE=URL>.
 
-=item strict
+=item strict (since 0.97_001)
 
 Default: 1
 
