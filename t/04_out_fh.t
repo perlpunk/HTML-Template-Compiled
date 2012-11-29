@@ -1,17 +1,16 @@
-# $Id: 04_out_fh.t 1144 2012-04-21 18:59:13Z tinita $
 use Test::More tests => 5;
 BEGIN { use_ok('HTML::Template::Compiled') };
 use lib 't';
 use File::Spec;
-use HTC_Utils qw($cache $cache_lock $tdir &cdir &remove_cache);
-mkdir($cache);
-#my $cache = File::Spec->catfile('t', 'cache');
+use HTC_Utils qw($tdir &cdir &create_cache &remove_cache);
+my $cache_dir = "cache04";
+$cache_dir = create_cache($cache_dir);
 my $out = File::Spec->catfile('t', 'templates', 'out_fh.htc.output');
-HTML::Template::Compiled->clear_filecache($cache);
+HTML::Template::Compiled->clear_filecache($cache_dir);
 test('compile', 'clearcache');
 test('filecache');
 test('memcache', 'clearcache');
-HTML::Template::Compiled->preload($cache);
+HTML::Template::Compiled->preload($cache_dir);
 test('after preload', 'clearcache');
 
 sub test {
@@ -21,7 +20,7 @@ sub test {
 		path => 't/templates',
 		filename => 'out_fh.htc',
 		out_fh => 1,
-		file_cache_dir => 't/cache',
+		file_cache_dir => $cache_dir,
         file_cache => 1,
 	);
 	open my $fh, '>', $out or die $!;
@@ -43,5 +42,5 @@ sub test {
 }
 
 unlink $out;
-HTML::Template::Compiled->clear_filecache($cache);
-remove_cache();
+HTML::Template::Compiled->clear_filecache($cache_dir);
+remove_cache($cache_dir);

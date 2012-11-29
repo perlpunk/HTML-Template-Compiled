@@ -1,13 +1,9 @@
-
-# Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl HTML-Template-Compiled.t'
-# $Id: 25_translate.t 1151 2012-04-21 21:46:30Z tinita $
-
 use Test::More tests => 6;
 BEGIN { use_ok('HTML::Template::Compiled') };
 use lib 't';
-use HTC_Utils qw($cache $cache_lock $tdir &cdir &remove_cache);
-mkdir($cache);
+use HTC_Utils qw($tdir &cdir &create_cache &remove_cache);
+my $cache_dir = "cache25";
+$cache_dir = create_cache($cache_dir);
 use strict;
 use warnings;
 my $class_accessor = eval "use Class::Accessor::Fast; 1";
@@ -36,7 +32,7 @@ for my $filecache (0, 1) {
             filename => $file,
             $filecache ?  (
                 file_cache => 1,
-                file_cache_dir => $cache,
+                file_cache_dir => $cache_dir,
                 cache => 0,
             ) : (
                 cache => 1,
@@ -64,5 +60,5 @@ for my $filecache (0, 1) {
 }
 
 
-HTML::Template::Compiled->clear_filecache($cache);
-remove_cache();
+HTML::Template::Compiled->clear_filecache($cache_dir);
+remove_cache($cache_dir);

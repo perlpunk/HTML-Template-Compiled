@@ -1,12 +1,9 @@
-# Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl HTML-Template-Compiled.t'
-# $Id: 13_loop.t 1077 2008-09-01 19:02:06Z tinita $
-
 use Test::More tests => 10;
 BEGIN { use_ok('HTML::Template::Compiled') };
 use lib 't';
-use HTC_Utils qw($cache $cache_lock $tdir &cdir &remove_cache);
-mkdir($cache);
+use HTC_Utils qw($tdir &cdir &create_cache &remove_cache);
+my $cache_dir = "cache13";
+$cache_dir = create_cache($cache_dir);
 
 for my $new_alias (0,1) {
     local $HTML::Template::Compiled::Compiler::DISABLE_NEW_ALIAS = 1 unless ($new_alias);
@@ -150,7 +147,7 @@ EOM
         path => $tdir,
         cache => 0,
         file_cache => 1,
-        file_cache_dir => $cache,
+        file_cache_dir => $cache_dir,
     );
     $htc->param(
         foo => {
@@ -163,5 +160,5 @@ EOM
     cmp_ok($out, 'eq',' 1 2 3 ', "loop " . ($_ ? "after" : "before") . " caching");
 }
 
-HTML::Template::Compiled->clear_filecache($cache);
-remove_cache();
+HTML::Template::Compiled->clear_filecache($cache_dir);
+remove_cache($cache_dir);

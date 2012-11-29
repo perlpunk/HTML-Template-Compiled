@@ -1,6 +1,3 @@
-# Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl HTML-Template-Compiled.t'
-# $Id: 01_HTML-Template-Compiled.t 1136 2011-11-21 19:35:19Z tinita $
 use strict;
 use warnings;
 use Test::More tests => 6;
@@ -10,8 +7,9 @@ BEGIN { use_ok('HTML::Template::Compiled') };
 use Fcntl qw(:seek);
 use File::Copy qw(copy);
 use lib 't';
-use HTC_Utils qw($cache $cache_lock $tdir &cdir &remove_cache);
-mkdir($cache);
+use HTC_Utils qw($tdir &cdir &create_cache &remove_cache);
+my $cache_dir = "cache01";
+$cache_dir = create_cache($cache_dir);
 
 my $hash = {
 	SELF => '/path/to/script.pl',
@@ -53,7 +51,7 @@ my %args = (
 #	deref => '.',
 #	debug => $ENV{HARNESS_ACTIVE} ? 0 : 1,
 	# for testing without cache comment out
-	file_cache_dir => $cache,
+	file_cache_dir => $cache_dir,
     file_cache => 1,
     #cache => 0,
     #search_path_on_include => 1,
@@ -64,7 +62,7 @@ sleep 2;
 my $subclass = 'HTML::Template::Compiled::subclass';
 sub HTML::Template::Compiled::subclass::method_call { '/' }
 sub HTML::Template::Compiled::subclass::deref { '.' }
-HTML::Template::Compiled->clear_filecache($cache);
+HTML::Template::Compiled->clear_filecache($cache_dir);
 
 my $htc = $subclass->new(%args);
 ok($htc, "template created");
@@ -155,6 +153,6 @@ EOM
 
 }
 
-HTML::Template::Compiled->clear_filecache($cache);
-remove_cache();
+HTML::Template::Compiled->clear_filecache($cache_dir);
+remove_cache($cache_dir);
 unlink $include;

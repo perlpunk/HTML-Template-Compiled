@@ -1,12 +1,9 @@
-# Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl HTML-Template-Compiled.t'
-# $Id: 11_dhtml.t 952 2007-07-30 20:42:25Z tinita $
-
 use Test::More tests => 3;
 BEGIN { use_ok('HTML::Template::Compiled') };
 use lib 't';
-use HTC_Utils qw($cache $cache_lock $tdir &cdir &remove_cache);
-mkdir($cache);
+use HTC_Utils qw($tdir &cdir &create_cache &remove_cache);
+my $cache_dir = "cache11";
+$cache_dir = create_cache($cache_dir);
 
 eval {
 	require Data::TreeDumper::Renderer::DHTML;
@@ -29,7 +26,7 @@ SKIP: {
             filename => "t/templates/dhtml.htc",
             debug => 0,
             plugin => [qw(HTML::Template::Compiled::Plugin::DHTML)],
-            file_cache_dir => $cache,
+            file_cache_dir => $cache_dir,
             file_cache => 1,
             cache => 0,
         );
@@ -45,7 +42,7 @@ SKIP: {
             filename => "t/templates/dhtml.htc",
             debug => 0,
             plugin => [qw(HTML::Template::Compiled::Plugin::DHTML)],
-            file_cache_dir => $cache,
+            file_cache_dir => $cache_dir,
             file_cache => 1,
             cache => 0,
         );
@@ -55,5 +52,5 @@ SKIP: {
         ok($out =~ m/data_treedumper_dhtml/, 'DHTML plugin with file cache');
     }
 }
-HTML::Template::Compiled->clear_filecache($cache);
-remove_cache();
+HTML::Template::Compiled->clear_filecache($cache_dir);
+remove_cache($cache_dir);

@@ -1,10 +1,10 @@
-# $Id: 05_filter.t 1135 2011-11-21 19:25:16Z tinita $
 use Test::More tests => 5;
 BEGIN { use_ok('HTML::Template::Compiled') };
 HTML::Template::Compiled->ExpireTime(1);
 use lib 't';
-use HTC_Utils qw($cache $cache_lock $tdir &cdir &remove_cache);
-mkdir($cache);
+use HTC_Utils qw($tdir &cdir &create_cache &remove_cache);
+my $cache_dir = "cache05";
+$cache_dir = create_cache($cache_dir);
 
 my $filter = sub {
 	for (${$_[0]}) {
@@ -47,7 +47,7 @@ sub test {
             path => 't/templates',
             filename => 'filter.htc',
             filter => $f,
-            file_cache_dir => 't/cache',
+            file_cache_dir => $cache_dir,
             file_cache => 1,
         );
     }
@@ -77,8 +77,8 @@ EOM
     undef *{ 'HTML::Template::Compiled::Filter::filter' };
 }
 
-HTML::Template::Compiled->clear_filecache($cache);
-remove_cache();
+HTML::Template::Compiled->clear_filecache($cache_dir);
+remove_cache($cache_dir);
 
 
 __END__

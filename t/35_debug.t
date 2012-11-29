@@ -1,11 +1,11 @@
-# $Id: 27_chomp.t 977 2007-10-09 18:24:59Z tinita $
 use warnings;
 use strict;
 use lib 't';
 use Test::More tests => 9;
 use_ok('HTML::Template::Compiled');
-use HTC_Utils qw($cache $cache_lock $tdir &cdir &remove_cache);
-mkdir($cache);
+use HTC_Utils qw($tdir &cdir &create_cache &remove_cache);
+my $cache_dir = "cache35";
+$cache_dir = create_cache($cache_dir);
 
 sub HTML::Template::Compiled::Test::bar {
     return $_[0]->[0]
@@ -72,7 +72,7 @@ EOM
     for my $mc (0, 1, 2) {
         my $memcache = 0;
         my $file_cache = 1;
-        my $file_cache_dir = $cache;
+        my $file_cache_dir = $cache_dir;
         if ($mc == 1) {
             $memcache = 1;
             $file_cache = 0;
@@ -100,7 +100,7 @@ EOM
                 );
                 if ($count == 2) {
                     $htc->clear_cache();
-                    HTML::Template::Compiled->clear_filecache($cache);
+                    HTML::Template::Compiled->clear_filecache($cache_dir);
                 }
             }
             $warn =~ s/[\r\n]//g;
@@ -111,5 +111,5 @@ EOM
     }
 }
 
-HTML::Template::Compiled->clear_filecache($cache);
-remove_cache();
+HTML::Template::Compiled->clear_filecache($cache_dir);
+remove_cache($cache_dir);

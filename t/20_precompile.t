@@ -1,14 +1,14 @@
-# $Id: 20_precompile.t 952 2007-07-30 20:42:25Z tinita $
 use warnings;
 use strict;
 use Test::More tests => 4;
 use_ok('HTML::Template::Compiled');
 use lib 't';
-use HTC_Utils qw($cache $cache_lock $tdir &cdir &remove_cache);
-mkdir($cache);
+use HTC_Utils qw($tdir &cdir &create_cache &remove_cache);
+my $cache_dir = "cache20";
+$cache_dir = create_cache($cache_dir);
 
 
-HTML::Template::Compiled->clear_filecache('t/cache');
+HTML::Template::Compiled->clear_filecache($cache_dir);
 {
     my $pre = 'precompiled1.tmpl';
     my $scalar = <<'EOM';
@@ -16,7 +16,7 @@ Precompiled scalarref!
 EOM
     my $templates = HTML::Template::Compiled->precompile(
         path     => $tdir,
-        file_cache_dir => $cache,
+        file_cache_dir => $cache_dir,
         file_cache => 1,
         filenames => [$pre, \$scalar],
     );
@@ -38,5 +38,5 @@ EOM
 
 }
 
-HTML::Template::Compiled->clear_filecache($cache);
-remove_cache();
+HTML::Template::Compiled->clear_filecache($cache_dir);
+remove_cache($cache_dir);

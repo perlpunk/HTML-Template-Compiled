@@ -3,8 +3,9 @@ use strict;
 use Test::More tests => 5;
 
 use lib 't';
-use HTC_Utils qw($cache $cache_lock $tdir &cdir &remove_cache);
-mkdir($cache);
+use HTC_Utils qw($tdir &cdir &create_cache &remove_cache);
+my $cache_dir = "cache19";
+$cache_dir = create_cache($cache_dir);
 # test query() (From HTML::Template test suite)
 use HTML::Template::Compiled;
 use HTML::Template::Compiled::Lazy;
@@ -50,7 +51,7 @@ sub query_template {
     my $template = HTML::Template::Compiled->new(
         path     => 't/templates',
         filename => 'query-test-copy.tmpl',
-        file_cache_dir => 't/cache',
+        file_cache_dir => $cache_dir,
         file_cache => 1,
         expire_time => 1,
         use_query => 1,
@@ -112,5 +113,5 @@ sub query_template {
 
 
 unlink $file_copy;
-HTML::Template::Compiled->clear_filecache($cache);
-remove_cache();
+HTML::Template::Compiled->clear_filecache($cache_dir);
+remove_cache($cache_dir);

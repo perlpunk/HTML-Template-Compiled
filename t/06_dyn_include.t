@@ -4,15 +4,16 @@ use Test::More tests => 19;
 BEGIN { use_ok('HTML::Template::Compiled') };
 
 use lib 't';
-use HTC_Utils qw($cache $cache_lock $tdir &cdir &remove_cache);
-mkdir($cache);
+use HTC_Utils qw($tdir &cdir &create_cache &remove_cache);
+my $cache_dir = "cache06";
+$cache_dir = create_cache($cache_dir);
 my $htc = HTML::Template::Compiled->new(
 	path => 't/templates',
 	filename => 'dyn_include.htc',
 #	debug => 1,
 #    cache_debug => 1,
     file_cache => 1,
-    file_cache_dir => $cache,
+    file_cache_dir => $cache_dir,
 );
 #exit;
 for my $ix (1..2,undef) {
@@ -125,8 +126,8 @@ EOM
     unlink $out;
 }
 
-HTML::Template::Compiled->clear_filecache($cache);
-remove_cache();
+HTML::Template::Compiled->clear_filecache($cache_dir);
+remove_cache($cache_dir);
 __END__
 Dynamic include:
 This is dynamically included file 1.
