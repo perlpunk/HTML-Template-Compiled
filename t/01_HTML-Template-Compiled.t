@@ -131,6 +131,15 @@ EOM
 	$out = $htc->output;
 	$out =~ s/^\s+//mg; $out =~ tr/\n\r//d;
 	cmp_ok($out,"eq", $exp, "output after update & sleep ok");
+    unless ($out eq $exp) {
+        # try to output helpful informations for debugging
+        my $mtime = (stat $include)[9];
+        my $now = time;
+        diag(
+            sprintf "File modification time $include: %s Now: %s",
+            scalar localtime $mtime, scalar localtime $now,
+        );
+    }
 
 	open $fh, '+<', $include or die $!;
 	local $/;
