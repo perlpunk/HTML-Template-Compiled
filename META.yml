@@ -17,7 +17,7 @@ name: HTML-Template-Compiled
 provides:
   HTML::Template::Compiled:
     file: lib/HTML/Template/Compiled.pm
-    version: 1.000_001
+    version: 1.000_002
   HTML::Template::Compiled::Classic:
     file: lib/HTML/Template/Compiled/Classic.pm
     version: 0.06
@@ -78,9 +78,6 @@ provides:
   HTML::Template::Compiled::Plugin::DHTML:
     file: lib/HTML/Template/Compiled/Plugin/DHTML.pm
     version: 0.02
-  HTML::Template::Compiled::Plugin::NumberFormat:
-    file: lib/HTML/Template/Compiled/Plugin/NumberFormat.pm
-    version: 0.01
   HTML::Template::Compiled::Plugin::XMLEscape:
     file: lib/HTML/Template/Compiled/Plugin/XMLEscape.pm
     version: 0.03
@@ -119,4 +116,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: https://github.com/perlpunk/HTML-Template-Compiled
-version: 1.000_001
+version: 1.000_002
