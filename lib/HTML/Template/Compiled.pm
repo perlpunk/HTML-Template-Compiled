@@ -1812,7 +1812,7 @@ See L<"IMPLEMENTATION">
 
 dot-notation for accessing hash values. See L<"EXTENDED VARIABLE ACCESS">
 
-=item rendering objcets
+=item rendering objects
 
 dot-notation for accessing object methods. See L<"RENDERING OBJECTS">
 
@@ -2878,7 +2878,7 @@ At the moment there are the following named tagstyles builtin:
 You deactive a style by saying -stylename. You activate by saying
 +stylename.
 
-Define your own tagstyle by specifying for regexes. For example
+Define your own tagstyle by specifyin regexes. For example
 you want to use {C<{if foo}}{{var bar}}{{/if foo}}>, then your
 definition should be:
 
