@@ -3,7 +3,7 @@ NAME
     to Perl code
 
 VERSION
-    $VERSION = "1.000_002"
+    $VERSION = "1.000_003"
 
 SYNOPSIS
       use HTML::Template::Compiled;

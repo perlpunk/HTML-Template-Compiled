@@ -1,5 +1,8 @@
 Revision history for Perl extension HTML::Template::Compiled.
 
+1.000_003 Mon Dec 31 19:05:54 CET 2012
+- fix test
+
 1.000_002 Sat Dec  1 21:06:57 CET 2012
 - make parallel testing possible
 - remove ::Plugin::NumberFormat (has its own distribution now)
