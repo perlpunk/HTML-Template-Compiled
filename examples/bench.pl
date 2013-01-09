@@ -92,7 +92,10 @@ sub new_htc {
 		debug => $debug,
 		# note that you have to create the cachedir
 		# first, otherwise it will run without cache
-        cache_dir => ($FILE_CACHE ? "cache/htc" : undef),
+#        cache_dir => ($FILE_CACHE ? "cache/htc" : undef),
+        file_cache_dir => ($FILE_CACHE ? "cache/htc" : undef),
+        file_cache => ($FILE_CACHE ? 1 : undef),
+
         cache => $MEM_CACHE,
 		out_fh => $STDOUT ? 1 : 0,
         global_vars => $GLOBAL_VARS,
