@@ -3,7 +3,7 @@ NAME
     to Perl code
 
 VERSION
-    $VERSION = "1.000_003"
+    $VERSION = "1.000_004"
 
 SYNOPSIS
       use HTML::Template::Compiled;
@@ -226,7 +226,7 @@ DESCRIPTION
         dot-notation for accessing hash values. See "EXTENDED VARIABLE
         ACCESS"
 
-    rendering objcets
+    rendering objects
         dot-notation for accessing object methods. See "RENDERING OBJECTS"
 
     output to filehandle
@@ -1020,6 +1020,26 @@ DESCRIPTION
 
             <TMPL_FOOBAR anything ... <TMPL_VAR valid>
 
+    line_info (fixed) (since 1.000_004)
+        Default: 0
+
+          my $htc = HTML::Template::Compiled->new(
+              ...
+              line_info => 1, # default 0
+          );
+
+        If any runtime errors occur, line information will output the
+        template filename and line instead of eval and the geberated perl
+        code line
+
+    warnings (fixed) (since 1.000_004)
+        Default: 0
+
+        If set to 1, runtime warnings (like use of uninitialized value) will
+        be output to stderr.
+
+        If set to 'fatal', any runtime warning will cause the script to die.
+
     no_includes (since 0.92)
         Default is 0. If set to 1, the tags INCLUDE, INCLUDE_VAR and
         INCLUDE_STRING will cause a template syntax error when creating.
@@ -1183,8 +1203,8 @@ DESCRIPTION
         You deactive a style by saying -stylename. You activate by saying
         +stylename.
 
-        Define your own tagstyle by specifying for regexes. For example you
-        want to use {"{if foo}}{{var bar}}{{/if foo}}", then your definition
+        Define your own tagstyle by specifyin regexes. For example you want
+        to use {"{if foo}}{{var bar}}{{/if foo}}", then your definition
         should be:
 
             [
