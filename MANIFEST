@@ -73,6 +73,8 @@ t/35_debug.t
 t/36_default.t
 t/37_with.t
 t/38_vars.t
+t/39_line_info.t
+t/templates/line_info1.html
 t/templates/simple.tmpl
 t/templates/songs.html
 t/templates/wrong.html

@@ -460,11 +460,20 @@ my $test = $self->get_debug->{options};
         $output = $fh_output;
     }
     my @outputs = ($output);
+    my $warnings_string = "no warnings;\n";
+    if (my $warnings = $self->get_warnings) {
+        if ($warnings eq 1) {
+            $warnings_string = "use warnings;\n";
+        }
+        elsif ($warnings eq 'fatal') {
+            $warnings_string = "use warnings FATAL => qw(all);\n";
+        }
+    }
     my $header = <<"EOM";
 sub {
     use vars qw/ \$__ix__ \$__key__ \$__value__ \$__break__ \$__size__ /;
     use strict;
-    no warnings;
+$warnings_string
 $anon
     my (\$t, \$P, \$C, \$OFH, \$args) = \@_;
     my \$OUT = '';
@@ -493,12 +502,14 @@ EOM
     if ($self->get_global_vars) {
         $globalstack = '$new->set_globalstack($t->get_globalstack);';
     }
+    my $line_info = $self->get_line_info;
     for my $token (@p) {
         @use_vars{ @lexicals } = () if @lexicals;
         my ($text, $line, $open_close, $tname, $attr, $f, $nlevel) = @$token;
         #print STDERR "tags: ($text, $line, $open_close, $tname, $attr)\n";
         #print STDERR "p: '$text'\n";
         my $indent = INDENT x $nlevel;
+        $code .= "#line $line $fname\n" if $line_info;
         if (!$token->is_tag) {
             if ( length $text ) {
                 # don't ask me about this line. i tried to get HTC
