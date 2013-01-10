@@ -538,7 +538,7 @@ my %args = (
             process_ta => sub {output_tt($global_ta)},
             $MEM_CACHE
                 ? ()
-                : (all_tt_new_object => sub {my $t = new_tt();output_tt($t)}),
+                : (all_ta_new_object => sub {my $t = new_ta();output_tt($t)}),
         ): (),
         $use{'Template::AutoFilter'} ? (
             #new_ttaf => sub {my $t = new_ttaf();},
