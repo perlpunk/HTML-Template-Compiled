@@ -65,7 +65,7 @@ my $ht_file = 'test.htc';
 my $htcc_file = $ht_file . 'c';
 my $tt_file = "test.tt";
 my $tst_file = "test.tst";
-my $xslfile = "text.xslate";
+my $xslfile = "test.xslate";
 $template_size =~ tr/0-9//cd;
 if ($template_size > 1) {
     for my $file ($ht_file, $htcc_file, $tt_file, $tst_file, $xslfile) {
