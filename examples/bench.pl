@@ -309,15 +309,13 @@ sub new_tth {
 }
 
 sub new_xslate {
-	my $t = Text::Xslate->new(
-        cache_dir => ($FILE_CACHE ? "cache/xslate" : undef),
-        cache => $MEM_CACHE,
-		path => 'examples',
+    # Text::Xslate has no file caching
+    my $t = Text::Xslate->new(
+        $MEM_CACHE ? (cache => 2, cache_dir => "cache/xslate") : (),
+        path => 'examples',
         syntax => 'TTerse',
-	);
-	#my $size = total_size($tt);
-	#print "size tt  = $size\n";
-	return $t;
+    );
+    return $t;
 }
 
 sub new_cet {
@@ -582,14 +580,20 @@ my %args = (
 						all_tst => sub {my $t = new_tst();output_tst($t)},
         ): (),
 );
+# try to align table correctly also for longer strings
+my %args_new;
+for my $key (keys %args) {
+    my $new_key = sprintf "%21s", $key;
+    $args_new{ $new_key } = $args{ $key };
+}
 if ($bench eq 'timethese') {
     timethese ($iterations||-1, {
-        %args
+        %args_new
  	});
 }
 elsif ($bench eq 'cmpthese') {
     cmpthese ($iterations||-1, {
-        %args
+        %args_new
  	});
 }
 }
