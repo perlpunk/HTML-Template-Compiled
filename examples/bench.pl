@@ -23,6 +23,7 @@ my %use = (
 	'HTML::Template::Compiled::Classic' => 0,
 #	'HTML::Template::JIT'      => 0,
 	'Template'                 => 0,
+    'Template::Alloy'                 => 0,
     'Template::HTML'           => 0,
     'Template::AutoFilter'     => 0,
     'Template::Like'           => 0,
@@ -252,6 +253,24 @@ sub new_tt {
 	return $tt;
 }
 
+sub new_ta {
+    my $tt = Template::Alloy->new(
+        $FILE_CACHE
+            ? (
+                COMPILE_EXT => '.ttc',
+                COMPILE_DIR => 'cache/tt',
+            )
+            : (),
+        $MEM_CACHE
+            ? ()
+            : (CACHE_SIZE => 0),
+        INCLUDE_PATH => 'examples',
+    );
+	#my $size = total_size($tt);
+	#print "size tt  = $size\n";
+    return $tt;
+}
+
 sub new_ttaf {
 	my $tt= Template::AutoFilter->new(
         $FILE_CACHE
@@ -455,6 +474,7 @@ my $global_htp = $use{'HTML::Template::Pro'} ? new_htp : undef;
 my $global_htpl = $use{'HTML::Template::Pluggable'} ? new_htpl : undef;
 my $global_htj = $use{'HTML::Template::JIT'} ? new_htj : undef;
 my $global_tt = $use{'Template'} ? new_tt : undef;
+my $global_ta = $use{'Template::Alloy'} ? new_ta : undef;
 my $global_ttaf = $use{'Template::AutoFilter'} ? new_ttaf : undef;
 my $global_tth = $use{'Template::HTML'} ? new_tth : undef;
 my $global_xslate = $use{'Text::Xslate'} ? new_xslate : undef;
@@ -508,6 +528,14 @@ my %args = (
             #new_tt => sub {my $t = new_tt();},
             #output_tt => sub {output_tt($global_tt)},
             process_tt => sub {output_tt($global_tt)},
+            $MEM_CACHE
+                ? ()
+                : (all_tt_new_object => sub {my $t = new_tt();output_tt($t)}),
+        ): (),
+        $use{'Template::Alloy'} ? (
+            #new_tt => sub {my $t = new_tt();},
+            #output_tt => sub {output_tt($global_tt)},
+            process_ta => sub {output_tt($global_ta)},
             $MEM_CACHE
                 ? ()
                 : (all_tt_new_object => sub {my $t = new_tt();output_tt($t)}),
