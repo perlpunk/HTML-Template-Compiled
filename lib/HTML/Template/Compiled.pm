@@ -2727,7 +2727,7 @@ Default: 0
   );
 
 If any runtime errors occur, line information will output the template
-filename and line instead of eval and the geberated perl code line
+filename and line (instead of "eval" and the generated perl code line)
 
 =item warnings (fixed) (since 1.000_004)
 
