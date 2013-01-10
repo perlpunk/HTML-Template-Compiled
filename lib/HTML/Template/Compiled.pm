@@ -363,6 +363,9 @@ sub from_cache {
             ? $self->get_filename
             : $self->createFilename( $self->get_path, \$self->get_filename );
         my $dir     = $self->get_cache_dir;
+        if (defined $dir and not -d $dir) {
+            croak "Cachedir '$dir' does not exist";
+        }
         $t = $self->from_file_cache($dir, $file);
         if ($t) {
             $t->set_args($args);
@@ -561,6 +564,9 @@ sub add_file_cache {
     my ( $self, $source, %times ) = @_;
     $self->lock;
     my $cache    = $self->get_cache_dir;
+    if (defined $cache and not -d $cache) {
+        croak "Cachedir '$cache' does not exist";
+    }
     my $plfile   = $self->escape_filename( $self->get_file );
     my $filename = $self->get_filename;
     my $lmtime   = localtime $times{mtime};
@@ -568,6 +574,8 @@ sub add_file_cache {
     my $cachefile = "$cache/$plfile";
     D && $self->log("add_file_cache() $cachefile");
     {
+        require Storable;
+        require B::Deparse;
         local $Storable::Deparse = 1;
         my $clone = $self->clone;
         $clone->prepare_for_cache;
@@ -610,7 +618,8 @@ sub include_file {
     my $r;
     my $t;
     {
-        #require Storable;
+        require Storable;
+        require B::Deparse;
         local $Storable::Eval = 1;
         my $cache;
         eval {
@@ -700,13 +709,7 @@ sub init_cache {
     my ($self, $args) = @_;
     my $cachedir = $args->{file_cache_dir};
     if ($args->{file_cache}) {
-        unless (require_storable()) {
-            croak "Storable and B::Deparse needed for file cache";
-        }
         $self->set_cache_dir($cachedir) if $args->{file_cache};
-        if (defined $cachedir and not -d $cachedir) {
-            croak "Cachedir '$cachedir' does not exist";
-        }
     }
     $self->set_cache( exists $args->{cache} ? $args->{cache} : 1 );
 }
