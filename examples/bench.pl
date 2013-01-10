@@ -65,9 +65,10 @@ my $ht_file = 'test.htc';
 my $htcc_file = $ht_file . 'c';
 my $tt_file = "test.tt";
 my $tst_file = "test.tst";
+my $xslfile = "text.xslate";
 $template_size =~ tr/0-9//cd;
 if ($template_size > 1) {
-    for my $file ($ht_file, $htcc_file, $tt_file, $tst_file) {
+    for my $file ($ht_file, $htcc_file, $tt_file, $tst_file, $xslfile) {
         open my $fh, "<", "examples/$file" or die "examples/$file: $!";
         my $data = do { local $/; <$fh> };
         my $new_file = "$file.n$template_size";
@@ -460,7 +461,7 @@ sub output_xslate {
 	#my $size = total_size($t);
 	#print "size $t = $size\n";
 	#print $t->{code} if exists $t->{code};
-    my $out = $t->render('test.xslate', \%params);
+    my $out = $t->render($xslfile, \%params);
     #my $out = $t->output;
     if ($STDOUT) {
         print OUT $out;
