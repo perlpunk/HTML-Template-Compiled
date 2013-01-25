@@ -13,7 +13,6 @@ lib/HTML/Template/Compiled/Token.pm
 lib/HTML/Template/Compiled/Exception.pm
 lib/HTML/Template/Compiled/Expr.pm
 lib/HTML/Template/Compiled/Compiler/Classic.pm
-lib/HTML/Template/Compiled/Plugin/DHTML.pm
 lib/HTML/Template/Compiled/Plugin/XMLEscape.pm
 lib/HTML/Template/Compiled/Expression/Expressions.pm
 lib/HTML/Template/Compiled/Expression.pm
@@ -33,7 +32,6 @@ examples/bench.pl
 examples/bench_mem.pl
 examples/test.tt
 examples/test.tst
-examples/dhtml.html
 t/HTC_Utils.pm
 t/HTC_Plugin.pm
 t/01_HTML-Template-Compiled.t
@@ -46,7 +44,6 @@ t/07_formatter.t
 t/08_global_vars.t
 t/09_wrong.t
 t/10_if_else.t
-t/11_dhtml.t
 t/12_path.t
 t/13_loop.t
 t/14_scalarref.t
@@ -79,8 +76,6 @@ t/templates/simple.tmpl
 t/templates/songs.html
 t/templates/wrong.html
 t/templates/include.html
-t/templates/dhtml.htc
-t/templates/inc.html
 t/templates/out_fh.htc
 t/templates/filter.htc
 t/templates/filter_included.htc
