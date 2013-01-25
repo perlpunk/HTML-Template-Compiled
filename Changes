@@ -1,6 +1,6 @@
 Revision history for Perl extension HTML::Template::Compiled.
 
-1.000_005 Fri Jan 25 22:57:24 CET 2013
+1.000_006 Fri Jan 25 22:57:24 CET 2013
 - Minor optimizations for file cache
 - Remove ::Plugin::DHTML (own distribution)
 
