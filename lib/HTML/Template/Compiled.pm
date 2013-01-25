@@ -1668,7 +1668,7 @@ startup to be sure that it is in shared memory. At the moment HTC is not fully t
 keeping all data in shared memory (e.g. when a copy-on-write occurs),
 but it seems like it's behaving well.
 For preloading you can use
-  HTML::Template::Compiled->preload($dir).
+  HTML::Template::Compiled->preload($cache_dir).
 
 Generating code, writing it on disk and later eval() it can open security holes, for example
 if you have more users on the same machine that can access the same files (usually an
@@ -1974,7 +1974,7 @@ Maybe
 
 default is 1 (on).
 
-Deactivate by passing option expire_time 0.
+Deactivate by passing option case_sensitive 0.
 
 Note (again): this will slow down templating a lot (50%).
 
