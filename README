@@ -1029,8 +1029,8 @@ DESCRIPTION
           );
 
         If any runtime errors occur, line information will output the
-        template filename and line instead of eval and the geberated perl
-        code line
+        template filename and line (instead of "eval" and the generated perl
+        code line)
 
     warnings (fixed) (since 1.000_004)
         Default: 0
