@@ -47,8 +47,6 @@ my %args = (
 	loop_context_vars => 1,
 	line_numbers => 1,
 	filename => 'songs.html',
-#	method_call => '/',
-#	deref => '.',
 #	debug => $ENV{HARNESS_ACTIVE} ? 0 : 1,
 	# for testing without cache comment out
 	file_cache_dir => $cache_dir,
@@ -57,7 +55,7 @@ my %args = (
     #search_path_on_include => 1,
     expire_time => 2,
 );
-sleep 2;
+sleep 3;
 @HTML::Template::Compiled::subclass::ISA = qw(HTML::Template::Compiled);
 my $subclass = 'HTML::Template::Compiled::subclass';
 sub HTML::Template::Compiled::subclass::method_call { '/' }
@@ -126,6 +124,8 @@ EOM
     $exp =~ s/INCLUDED/INCLUDED_NEW/;
 
 	sleep 2;
+    my $mtime = (stat $include)[9];
+    my $now = time;
 	$htc = $subclass->new(%args);
 	$htc->param(%$hash);
 	$out = $htc->output;
@@ -133,8 +133,6 @@ EOM
 	cmp_ok($out,"eq", $exp, "output after update & sleep ok");
     unless ($out eq $exp) {
         # try to output helpful informations for debugging
-        my $mtime = (stat $include)[9];
-        my $now = time;
         diag(
             sprintf "File modification time $include: %s Now: %s",
             scalar localtime $mtime, scalar localtime $now,
