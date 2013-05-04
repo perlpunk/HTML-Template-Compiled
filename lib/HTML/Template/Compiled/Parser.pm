@@ -327,7 +327,7 @@ sub find_attributes {
         ]);
         push @{$arg->{tags}}, $token;
         if ($token->is_open &&
-            not exists
+            exists
                 $self->get_tagnames->{CLOSING_TAG()}->{ $arg->{name} }) {
             $arg->{level}++
         }
