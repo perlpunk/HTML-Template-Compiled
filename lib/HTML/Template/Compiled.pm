@@ -1,7 +1,7 @@
 package HTML::Template::Compiled;
 # doesn't work with make tardist
 #our $VERSION = ($version_pod =~ m/^\$VERSION = "(\d+(?:\.\d+)+)"/m) ? $1 : "0.01";
-our $VERSION = "1.000_006";
+our $VERSION = "1.001";
 use Data::Dumper;
 use Scalar::Util;
 BEGIN {
@@ -1542,7 +1542,7 @@ HTML::Template::Compiled - Template System Compiles HTML::Template files to Perl
 
 =head1 VERSION
 
-$VERSION = "1.000_006"
+$VERSION = "1.001"
 
 =cut
 
