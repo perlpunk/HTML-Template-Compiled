@@ -228,6 +228,12 @@ sub parse_var {
     my $root         = 0;
     my $up_stack = 0;
     my $initial_var = '$$C';
+    my $is_object_var = '$C_IS_OBJECT';
+    my $root_hash = 0;
+    my $OPT_INITIAL_VAR = $t->get_optimize->{initial_var};
+    my $OPT_IS_OBJECT = $t->get_optimize->{is_object};
+    my $OPT_ROOT_HASH = $t->get_optimize->{root_hash};
+    my $use_initial_var = $OPT_INITIAL_VAR ? 1 : 0;
     if ( $t->get_loop_context && $args{var} =~ m/^__(\w+)__$/ ) {
         if (exists $loop_context{ lc $args{var} }) {
             my $lc = $loop_context{ lc $args{var} };
@@ -237,13 +243,16 @@ sub parse_var {
     # explicitly use aliases with '$' at the beginning
     if (not $DISABLE_NEW_ALIAS and $args{var} =~ s/^\$(\w+)//) {
         $initial_var = "\$HTML::Template::Compiled::_lexi_$1";
+        $is_object_var = '';
     }
     elsif ($lexi and $args{var} =~ s/^($lexi)($re)/$2/) {
         $initial_var = "\$HTML::Template::Compiled::_lexi_$1";
+        $is_object_var = '';
     }
     elsif ( $args{var} =~ m/^_/ && $args{var} !~ m/^__(\w+)__$/ ) {
         $args{var} =~ s/^_//;
         $root = 0;
+        $is_object_var = '';
     }
     elsif ( my @roots = $args{var} =~ m/\G($re)/gc) {
         #print STDERR "ROOTS: (@roots)\n";
@@ -253,9 +262,13 @@ sub parse_var {
             croak "Cannot navigate up the stack" if !$t->get_global_vars & 2;
             $up_stack = $#roots;
             $initial_var = "\$t->get_globalstack->[-$up_stack]";
+            $use_initial_var = 0;
+            $is_object_var = '';
         }
         elsif (@roots == 1) {
             $initial_var = '$P';
+            $is_object_var = '$P_IS_OBJECT';
+            $root_hash = 1 if $OPT_ROOT_HASH;
         }
     }
     my @split = split m/(?=$re)/, $args{var};
@@ -294,6 +307,7 @@ sub parse_var {
     if (@split == 1) {
         $varname = $initial_var;
     }
+    my $used_initial_var = 0;
     for my $i (0 .. $#split) {
         if ($i == $#split and defined $args{method_args}) {
             $method_args = $args{method_args};
@@ -372,11 +386,27 @@ sub parse_var {
 
         elsif ( $method_call || $guess) {
             # maybe method call
-            if ($strict) {
-                $code = "(UNIVERSAL::can($varname,'can') ? $varname->$p($method_args) : $varname\->\{'$path'\})";
+            my $check_object = "UNIVERSAL::can($varname,'can')";
+            my $local_varname = $varname;
+            if ($i == 0) {
+                if ($use_initial_var) {
+                    $local_varname = $initial_var;
+                    $used_initial_var = 1;
+                    $check_object = "UNIVERSAL::can($local_varname,'can')";
+                }
+                if ($OPT_IS_OBJECT and $is_object_var) {
+                    $check_object = $is_object_var;
+                }
+
+            }
+            if ($i == 0 and $root_hash) {
+                $code = "$local_varname\->\{'$path'\}";
+            }
+            elsif ($strict) {
+                $code = "($check_object ? $local_varname->$p($method_args) : $local_varname\->\{'$path'\})";
             }
             else {
-                $code = "(Scalar::Util::blessed($varname) ? $varname->can('$p') ? $varname->$p($method_args) : undef : $varname\->\{'$path'\})";
+                $code = "(Scalar::Util::blessed($local_varname) ? $local_varname->can('$p') ? $local_varname->$p($method_args) : undef : $local_varname\->\{'$path'\})";
             }
         }
 
@@ -389,7 +419,12 @@ sub parse_var {
         }
         $code = $around->[0] . $code . $around->[1];
         if (0 or @split > 1) {
-            $varstr .= "$varname = $code;";
+            if ($used_initial_var and $i==0) {
+                $varstr .= "my $varname = $code;";
+            }
+            else {
+                $varstr .= "$varname = $code;";
+            }
         }
         else {
             $varstr = $code;
@@ -399,7 +434,12 @@ sub parse_var {
     }
     #my $final = $context->get_name eq 'VAR' ? 1 : 0;
     if (0 or @split > 1) {
-        $varstr = "do { my $varname = $initial_var; $varstr $varname }";
+        if ($used_initial_var) {
+            $varstr = "do { $varstr $varname }";
+        }
+        else {
+            $varstr = "do { my $varname = $initial_var; $varstr $varname }";
+        }
     }
     else {
         $varstr = $initial_var unless length $varstr;
@@ -469,6 +509,8 @@ my $test = $self->get_debug->{options};
             $warnings_string = "use warnings FATAL => qw(all);\n";
         }
     }
+    my $OPT_IS_OBJECT = $self->get_optimize->{is_object};
+    my $OPT_ROOT_HASH = $self->get_optimize->{root_hash};
     my $header = <<"EOM";
 sub {
     use vars qw/ \$__ix__ \$__key__ \$__value__ \$__break__ \$__size__ /;
@@ -478,6 +520,21 @@ $anon
     my (\$t, \$P, \$C, \$OFH, \$args) = \@_;
     my \$OUT = '';
 EOM
+    if ($OPT_IS_OBJECT) {
+        if ($OPT_ROOT_HASH) {
+            $header .= <<"EOM";
+    my \$P_IS_OBJECT = 1;
+EOM
+        }
+        else {
+            $header .= <<"EOM";
+    my \$P_IS_OBJECT = UNIVERSAL::can(\$P, 'can');
+EOM
+        }
+        $header .= <<"EOM";
+    my \$C_IS_OBJECT = UNIVERSAL::can(\$\$C, 'can');
+EOM
+    }
 
     my @lexicals;
     my @switches;
@@ -589,6 +646,11 @@ EOM
 ${indent}    my \$C = \\$varstr;
 ${indent}    if (defined \$\$C) {
 EOM
+            if ($OPT_IS_OBJECT) {
+            $code .= <<"EOM";
+${indent}    my \$C_IS_OBJECT = UNIVERSAL::can(\$\$C, 'can');
+EOM
+            }
         }
 
         if ( $tname eq T_USE_VARS ) {
@@ -733,6 +795,11 @@ ${indent}${indent}\$__ix__++;
 ${indent}${indent}my \$C = \\\$next;
 $lexi
 EOM
+                if ($OPT_IS_OBJECT) {
+                    $code .= <<"EOM";
+    ${indent}    my \$C_IS_OBJECT = UNIVERSAL::can(\$\$C, 'can');
+EOM
+                }
             }
             elsif ($tname eq T_EACH) {
                 # bug in B::Deparse, so do double ref
@@ -774,6 +841,11 @@ $insert_break
 $lexi
 $join_code
 EOM
+                if ($OPT_IS_OBJECT) {
+                    $code .= <<"EOM";
+    ${indent}    my \$C_IS_OBJECT = UNIVERSAL::can(\$\$C, 'can');
+EOM
+                }
             }
         }
 
