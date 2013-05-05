@@ -231,7 +231,7 @@ sub parse_var {
     my $is_object_var = '$C_IS_OBJECT';
     my $root_hash = 0;
     my $OPT_INITIAL_VAR = $t->get_optimize->{initial_var};
-    my $OPT_IS_OBJECT = $t->get_optimize->{is_object};
+    my $OPT_IS_OBJECT = $t->get_optimize->{object_check};
     my $OPT_ROOT_HASH = $t->get_optimize->{root_hash};
     my $use_initial_var = $OPT_INITIAL_VAR ? 1 : 0;
     if ( $t->get_loop_context && $args{var} =~ m/^__(\w+)__$/ ) {
@@ -509,7 +509,7 @@ my $test = $self->get_debug->{options};
             $warnings_string = "use warnings FATAL => qw(all);\n";
         }
     }
-    my $OPT_IS_OBJECT = $self->get_optimize->{is_object};
+    my $OPT_IS_OBJECT = $self->get_optimize->{object_check};
     my $OPT_ROOT_HASH = $self->get_optimize->{root_hash};
     my $header = <<"EOM";
 sub {

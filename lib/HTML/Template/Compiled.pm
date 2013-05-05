@@ -774,9 +774,9 @@ sub init_args {
         cache   => $debug_cache,
     };
     my %optimize = (
-        initial_var => 1,
-        is_object   => 0,
-        root_hash   => 0,
+        initial_var  => 1,
+        object_check => 0,
+        root_hash    => 0,
         %{ $args->{optimize} || {} },
     );
 
@@ -2763,6 +2763,69 @@ If set to 'start,short', 'end,short' or 'start,end,short' the path
 to the templates will be stripped:
     <!-- start path/filename.html -->
     <!-- end path/filename.html -->
+
+=item optimize (fixed) (since 1.001_001)
+
+Hashref with compiler hints.
+
+Every access to the parameter stash hash to check if the current var is
+an object or a hash. This allows you to use the same notation for hash accesses
+and method calls without caring about the data.
+But this is quite expensive. You can give the compiler hints:
+
+    HTML::Template::Compiled->new(
+        optimize => {
+            initial_var  => 1, # defaults
+            object_check => 0,
+            root_hash    => 0,
+        },
+
+=over 4
+
+=item initial_var
+
+Default: 1
+
+Might become a default in the code itself and removed as an option. Report if
+you have problems and set it to 0.
+This is just a minor internal optimization for variable accesses like
+C<[%= foo.bar.baz %]>
+
+=item object_check
+
+Default: 0
+
+If you are in a loop and make several accesses to the same var, it always
+checks if it is an object or not:
+
+    [%loop threads %]
+    [%= id %]
+    [%= title %]
+    [%= ctime %]
+    ...
+    [%/loop threads %]
+
+If you set this to true, the check will be done at the beginning of the loop
+and saved into a variable, so that subsequent accesses only use the check
+variable.
+Same for TMPL_WITH, TMPL_WHILE.
+
+If you only have one access in a loop, this might be unnecessary overhead.
+Also, theoretically, a variable can change during calls.
+
+In the most cases this option should be fine. I will set the default to 1
+someday probably.
+
+=item root_hash
+
+It is possible to pass an object to param() instead of a hash.
+So even every access to the root of the parameter stash has to check if
+it is an object or a hashref.
+In the most cases the parameter stash is a hashref. If you are sure that you
+always have a parameter hash and activate this option, the compiler can
+avoid this check.
+
+=back
 
 =item objects (fixed) (since 0.91_001)
 
