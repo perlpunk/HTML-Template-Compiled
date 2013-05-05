@@ -2768,7 +2768,7 @@ to the templates will be stripped:
 
 Hashref with compiler hints.
 
-Every access to the parameter stash hash to check if the current var is
+Every access to the parameter stash has to check if the current var is
 an object or a hash. This allows you to use the same notation for hash accesses
 and method calls without caring about the data.
 But this is quite expensive. You can give the compiler hints:
