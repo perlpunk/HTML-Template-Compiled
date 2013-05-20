@@ -926,7 +926,8 @@ EOM
                 $code .= qq#${indent}if (1) \{\n#;
             }
             else {
-                my @splitted = split ",", $val;
+                $val =~ tr/'//d;
+                my @splitted = split /,/, $val;
                 my $is_default = '';
                 @splitted = grep {
                     uc $_ eq 'DEFAULT'
@@ -937,8 +938,14 @@ EOM
                         : 1
                 } @splitted;
                 my $values = join ",", map { qq#'$_'# } @splitted;
-                $code .=
+                if ($is_default or @splitted > 1) {
+                    $code .=
 qq#${indent}if (grep \{ \$_switch eq \$_ \} $values $is_default) \{\n#;
+                }
+                else {
+                    $code .=
+qq#${indent}if ( \$_switch eq $values) \{\n#;
+                }
             }
         }
 
