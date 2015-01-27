@@ -17,7 +17,7 @@ my $re = qr# (?:
     ) #x;
 
 my $GRAMMAR = <<'END';
-expression : paren /^$/  { $return = $item[1] } 
+expression : paren /^$/  { $return = $item[1] }
 
 paren         : '(' binary_op ')'     { $item[2] }
               | '(' subexpression ')' { $item[2] }
@@ -26,6 +26,7 @@ paren         : '(' binary_op ')'     { $item[2] }
 
 subexpression : function_call
             | method_call
+            | regexp
             | var_deref
             | var
             | literal
@@ -41,7 +42,7 @@ op            : />=?|<=?|!=|==/      { [ 'BIN_OP',  $item[1] ] }
 
 method_call : var '(' args ')' { [ 'METHOD_CALL', $item[1], $item[3] ] }
 
-function_call : function_name '(' args ')'  
+function_call : function_name '(' args ')'
             { [ 'FUNCTION_CALL', $item[1], $item[3] ] }
             | function_name ...'(' paren
             { [ 'FUNCTION_CALL', $item[1], [ $item[3] ] ] }
@@ -51,6 +52,11 @@ function_call : function_name '(' args ')'
 function_name : /[A-Za-z_][A-Za-z0-9_]*/
 
 args          : <leftop: paren ',' paren>
+
+regexp        : var /=~|!~|like|unlike/i pattern { [ 'REGEXP', $item[1][1], $item[2], $item[3] ] }
+
+pattern       : /\/(.|\\\/)*\// { $item[1] }
+              | /m(.)(.|\\\1)*\1/ { $item[1] }
 
 var           : /[.\/A-Za-z_][.\/A-Za-z0-9_]*/ { [ 'VAR', $item[1] ] }
               | /\$[.\/A-Za-z_][.\/A-Za-z0-9_]*/ { [ 'VAR', $item[1] ] }
@@ -214,7 +220,6 @@ sub sub_expression {
         $str = '->[' . $str . ']';
         return $str;
     }
-
     elsif ($type eq 'FUNCTION_CALL') {
         my $name = shift @args;
         @args = @{ $args[0] || [] };
@@ -224,6 +229,20 @@ sub sub_expression {
         }
         $expr .= ")";
         return $expr;
+    }
+    elsif ($type eq 'REGEXP') {
+       my ($var, $op, $pattern) = @args;
+       my $v = $compiler->parse_var($htc, %args, var => $var);
+       if ($op =~ m/=~|like/i) {
+           return "$v =~ $pattern"
+       }
+       elsif ($op =~ m/!~|unlike/i) {
+           return "$v !~ $pattern";
+
+       }
+       else {
+           die "invalid regexp operator $op";
+       }
     }
 }
 
