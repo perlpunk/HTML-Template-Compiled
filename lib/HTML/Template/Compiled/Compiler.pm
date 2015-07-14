@@ -1140,10 +1140,11 @@ EOM
             my $var = $attr->{NAME};
             $var = '' unless defined $var;
             #print STDERR "============ IF ($text)\n";
-            $code .= "\}" . ($tname eq 'WITH' ? "\}" : '') . qq{\n};
+            $code .= "\}" ;
             if ($self->get_global_vars && $tname eq 'WITH') {
-                $code .= $indent . qq#\$t->popGlobalstack;\n#;
+                $code .= qq{\n} . $indent . qq#\$t->popGlobalstack;\n#;
             }
+            $code .= ($tname eq 'WITH' ? "\}" : '') . qq{\n};
         }
 
         # --------- / TMPL_SWITCH
@@ -1163,12 +1164,11 @@ EOM
             if ($self->get_use_query) {
                 pop @$info_stack;
             }
-            $code .= "\}\n\} # end loop\n";
+            $code .= "\}";
             if ($self->get_global_vars) {
-            $code .= <<"EOM";
-${indent}\$t->popGlobalstack;
-EOM
+                $code .= qq{\n} . $indent . qq#\$t->popGlobalstack;\n#;
             }
+            $code .= "\} # end loop\n";
         }
         elsif ($tname eq T_WRAPPER) {
             $code .= $wrapped[-1];
