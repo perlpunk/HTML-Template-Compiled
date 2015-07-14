@@ -68,6 +68,7 @@ EOM
 __DATA__
 global: <tmpl_var global>
 <tmpl_loop outer>
+ <tmpl_with undefined1></tmpl_with><tmpl_loop undefined2></tmpl_loop><tmpl_if undefined3></tmpl_if><tmpl_unless undefined4></tmpl_unless>
  loopvar: <tmpl_var loopvar>
  global: <tmpl_var global>
  included: <tmpl_include include_w_global.htc >
