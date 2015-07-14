@@ -1157,6 +1157,7 @@ sub prepare_for_cache {
     $self->set_parser(undef);
     $self->set_compiler(undef);
     $self->set_args(undef);
+    $self->set_globalstack(undef);
 }
 
 sub preload {
