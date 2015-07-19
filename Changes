@@ -1,5 +1,8 @@
 Revision history for Perl module HTML::Template::Compiled.
 
+1.001_002
+- Bugfix: Issues with globalstack #6, #7 (rpv-tomsk++)
+
 1.001_001 Tue May 21 00:50:22 CEST 2013
 - New option: optimize
 - Minor optimization
