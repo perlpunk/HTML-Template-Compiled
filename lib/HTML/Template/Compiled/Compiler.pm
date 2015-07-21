@@ -8,7 +8,7 @@ use HTML::Template::Compiled::Expression qw(:expressions);
 use HTML::Template::Compiled::Utils qw(:walkpath);
 use File::Basename qw(dirname);
 
-our $VERSION = '0.20';
+our $VERSION = '0.000'; # VERSION
 
 our $DISABLE_NEW_ALIAS = 0;
 

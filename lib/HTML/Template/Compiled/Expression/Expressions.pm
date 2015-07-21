@@ -3,7 +3,7 @@ package HTML::Template::Compiled::Expression::Expressions;
 use strict;
 use warnings;
 
-our $VERSION = 0.02;
+our $VERSION = '0.000'; # VERSION
 
 package HTML::Template::Compiled::Expression::Defined;
 use base qw(HTML::Template::Compiled::Expression);

@@ -9,7 +9,7 @@ our %EXPORT_TAGS = (
     tagtypes => [qw(&NO_TAG &OPENING_TAG &CLOSING_TAG)],
 );
 
-our $VERSION = '0.02';
+our $VERSION = '0.000'; # VERSION
 
 use constant ATTR_TEXT       => 0;
 use constant ATTR_LINE       => 1;

@@ -6,7 +6,7 @@ use warnings;
 use constant OPERANDS => 0;
 use constant ATTRIBUTES => 1;
 use base 'Exporter';
-our $VERSION = 0.04;
+our $VERSION = '0.000'; # VERSION
 use  HTML::Template::Compiled::Expression::Expressions;
 my @expressions = qw(
     &_expr_literal

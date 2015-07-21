@@ -6,7 +6,7 @@ use Carp qw(croak carp);
 #use HTML::Template::Compiled::Expression qw(:expressions);
 use HTML::Template::Compiled;
 use Parse::RecDescent;
-our $VERSION = '0.06';
+our $VERSION = '0.000'; # VERSION
 
 my $re = qr# (?:
     \b(?:eq | ne | ge | le | gt | lt )\b

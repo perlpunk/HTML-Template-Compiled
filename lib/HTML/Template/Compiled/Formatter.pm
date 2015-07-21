@@ -2,7 +2,7 @@ package HTML::Template::Compiled::Formatter;
 # $Id: Formatter.pm 750 2006-10-11 21:52:24Z tinita $
 use strict;
 use warnings;
-our $VERSION = "0.01";
+our $VERSION = '0.000'; # VERSION
 
 use base 'HTML::Template::Compiled';
 

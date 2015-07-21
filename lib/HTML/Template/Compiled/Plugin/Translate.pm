@@ -9,7 +9,7 @@ __PACKAGE__->mk_ro_accessors(qw/ map lang /);
 __PACKAGE__->follow_best_practice;
 __PACKAGE__->mk_wo_accessors(qw/ map lang /);
 
-our $VERSION = '0.01';
+our $VERSION = '0.000'; # VERSION
 HTML::Template::Compiled->register(__PACKAGE__);
 #use Devel::Peek;
 

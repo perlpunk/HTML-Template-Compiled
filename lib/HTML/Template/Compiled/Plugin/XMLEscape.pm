@@ -5,7 +5,7 @@ use warnings;
 use Carp qw(croak carp);
 use HTML::Template::Compiled;
 HTML::Template::Compiled->register(__PACKAGE__);
-our $VERSION = '0.03';
+our $VERSION = '0.000'; # VERSION
 
 sub register {
     my ($class) = @_;
