@@ -1,12 +1,11 @@
 package HTML::Template::Compiled::Expr;
-# $Id: Expr.pm 1050 2008-06-16 20:27:20Z tinita $
 use strict;
 use warnings;
 use Carp qw(croak carp);
 #use HTML::Template::Compiled::Expression qw(:expressions);
 use HTML::Template::Compiled;
 use Parse::RecDescent;
-our $VERSION = '0.06';
+our $VERSION = '0.000'; # VERSION
 
 my $re = qr# (?:
     \b(?:eq | ne | ge | le | gt | lt )\b

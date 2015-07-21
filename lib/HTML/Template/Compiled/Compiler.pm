@@ -1,5 +1,4 @@
 package HTML::Template::Compiled::Compiler;
-# $Id: Compiler.pm 1161 2012-05-05 14:00:22Z tinita $
 use strict;
 use warnings;
 use Data::Dumper;
@@ -8,7 +7,7 @@ use HTML::Template::Compiled::Expression qw(:expressions);
 use HTML::Template::Compiled::Utils qw(:walkpath);
 use File::Basename qw(dirname);
 
-our $VERSION = '0.20';
+our $VERSION = '0.000'; # VERSION
 
 our $DISABLE_NEW_ALIAS = 0;
 

@@ -1,8 +1,6 @@
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl HTML-Template-Compiled.t'
-# $Id: 13_loop.t 1042 2008-05-10 21:51:45Z tinita $
 
-use lib 'blib/lib';
 use Test::More tests => 2;
 BEGIN { use_ok('HTML::Template::Compiled') };
 use lib 't';

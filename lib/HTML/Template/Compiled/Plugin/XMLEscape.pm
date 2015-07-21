@@ -1,11 +1,10 @@
 package HTML::Template::Compiled::Plugin::XMLEscape;
-# $Id: XMLEscape.pm 969 2007-09-10 20:08:42Z tinita $
 use strict;
 use warnings;
 use Carp qw(croak carp);
 use HTML::Template::Compiled;
 HTML::Template::Compiled->register(__PACKAGE__);
-our $VERSION = '0.03';
+our $VERSION = '0.000'; # VERSION
 
 sub register {
     my ($class) = @_;

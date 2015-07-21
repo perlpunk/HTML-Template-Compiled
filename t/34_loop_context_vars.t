@@ -1,7 +1,6 @@
 
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl HTML-Template-Compiled.t'
-# $Id: 08_global_vars.t 702 2006-10-05 15:37:41Z tinita $
 
 use Test::More tests => 17;
 BEGIN { use_ok('HTML::Template::Compiled') };

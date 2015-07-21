@@ -1,5 +1,3 @@
-# $Id: 10_if_else.t 1079 2008-11-03 18:57:01Z tinita $
-use lib 'blib/lib';
 use Test::More tests => 3;
 BEGIN { use_ok('HTML::Template::Compiled') };
 

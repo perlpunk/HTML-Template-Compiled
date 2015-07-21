@@ -1,4 +1,3 @@
-# $Id: 26_expr.t 1157 2012-05-04 15:17:31Z tinita $
 use warnings;
 use strict;
 use lib 't';

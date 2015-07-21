@@ -2,7 +2,7 @@ use strict;
 use warnings;
 {
 package HTML::Template::Compiled::Exception;
-our $VERSION = '0.01';
+our $VERSION = '0.000'; # VERSION
 use Data::Dumper;
 use Carp qw(croak carp);
 

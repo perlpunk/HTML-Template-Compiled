@@ -1,4 +1,3 @@
-# $Id: 29_encoding.t 1151 2012-04-21 21:46:30Z tinita $
 use warnings;
 use strict;
 use lib 't';

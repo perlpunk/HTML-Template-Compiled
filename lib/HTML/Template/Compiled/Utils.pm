@@ -1,6 +1,5 @@
 package HTML::Template::Compiled::Utils;
-# $Id: Utils.pm 1132 2011-11-12 14:26:03Z tinita $
-$VERSION = "0.07";
+our $VERSION = '0.000'; # VERSION
 use strict;
 use warnings;
 use Data::Dumper qw(Dumper);

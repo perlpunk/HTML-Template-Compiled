@@ -1,6 +1,5 @@
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl HTML-Template-Compiled.t'
-# $Id: 17_escape.t 1132 2011-11-12 14:26:03Z tinita $
 
 use Test::More tests => 6;
 use Data::Dumper;

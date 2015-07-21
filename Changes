@@ -1,7 +1,8 @@
 Revision history for Perl module HTML::Template::Compiled.
 
-1.001_002
-- Bugfix: Issues with globalstack #6, #7 (rpv-tomsk++)
+1.001_002 Tue Jul 21 20:48:37 CEST 2015
+- Bugfix: Issues with global_vars #6, #7 (rpv-tomsk++)
+- Changed to Dist::Zilla
 
 1.001_001 Tue May 21 00:50:22 CEST 2013
 - New option: optimize

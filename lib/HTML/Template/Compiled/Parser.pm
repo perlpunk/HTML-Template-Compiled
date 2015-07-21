@@ -1,12 +1,11 @@
 package HTML::Template::Compiled::Parser;
-# $Id: Parser.pm 1154 2012-04-22 17:21:53Z tinita $
 use Carp qw(croak carp confess);
 use strict;
 use warnings;
 use base qw(Exporter);
 use HTML::Template::Compiled::Token qw(:tagtypes);
 use Scalar::Util;
-our $VERSION = 0.14;
+our $VERSION = '0.000'; # VERSION
 my @vars;
 BEGIN {
 @vars = qw(

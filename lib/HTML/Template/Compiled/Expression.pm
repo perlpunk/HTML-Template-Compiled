@@ -1,12 +1,11 @@
 package HTML::Template::Compiled::Expression;
-# $Id: Expression.pm 1140 2011-11-28 00:25:38Z tinita $
 use strict;
 use warnings;
 
 use constant OPERANDS => 0;
 use constant ATTRIBUTES => 1;
 use base 'Exporter';
-our $VERSION = 0.04;
+our $VERSION = '0.000'; # VERSION
 use  HTML::Template::Compiled::Expression::Expressions;
 my @expressions = qw(
     &_expr_literal

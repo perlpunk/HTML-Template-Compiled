@@ -1,8 +1,7 @@
 package HTML::Template::Compiled::Lazy;
-# $Id: Lazy.pm 693 2006-10-04 20:29:26Z tinita $
 use strict;
 use warnings;
-our $VERSION = "0.01";
+our $VERSION = '0.000'; # VERSION
 
 use base 'HTML::Template::Compiled';
 
