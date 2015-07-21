@@ -3341,7 +3341,7 @@ With CGI HTC is slower.
 See the C<examples/bench.pl> contained in this distribution.
 
 Here are some examples from the benchmark script. I'm showing only Template::AutoFilter,
-Template::HTML, HTML::Template and HTC. These four modules allow to set
+Template::HTML, HTML::Template and HTC. These four modules allow you to set
 automatic HTML escaping ('filter') for all variables.
 
  loop_context_vars 1
