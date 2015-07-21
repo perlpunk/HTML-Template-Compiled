@@ -1,5 +1,4 @@
 package HTML::Template::Compiled::Token;
-# $Id: Token.pm 1140 2011-11-28 00:25:38Z tinita $
 use strict;
 use warnings;
 use Carp qw(croak carp);

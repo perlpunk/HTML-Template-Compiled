@@ -1,4 +1,3 @@
-# $Id: 32_compile_plugin.t 966 2007-08-13 12:30:10Z tinita $
 use warnings;
 use strict;
 use lib 't';

@@ -1,5 +1,4 @@
 package HTML::Template::Compiled::Compiler;
-# $Id: Compiler.pm 1161 2012-05-05 14:00:22Z tinita $
 use strict;
 use warnings;
 use Data::Dumper;

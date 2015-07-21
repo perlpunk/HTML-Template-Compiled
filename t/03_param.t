@@ -1,4 +1,3 @@
-# $Id: 03_param.t 1128 2011-10-31 19:59:56Z tinita $
 
 use Test::More tests => 12;
 BEGIN {

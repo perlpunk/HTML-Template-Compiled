@@ -1,5 +1,4 @@
 
-# $Id: 33_plugins.t 1104 2009-08-31 08:46:36Z tinita $
 use warnings;
 use strict;
 use lib 't';

@@ -1,4 +1,3 @@
-# $Id: 13_loop.t 1077 2008-09-01 19:02:06Z tinita $
 
 use Test::More tests => 3;
 BEGIN { use_ok('HTML::Template::Compiled') };

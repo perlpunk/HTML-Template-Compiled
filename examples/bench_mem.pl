@@ -1,8 +1,6 @@
 #!/usr/bin/perl
-# $Id: bench_mem.pl 1086 2009-07-03 16:45:27Z tinita $
 use strict;
 use warnings;
-use lib "blib/lib";
 $|=1;
 use File::Copy;
 use FindBin qw/ $RealBin /;

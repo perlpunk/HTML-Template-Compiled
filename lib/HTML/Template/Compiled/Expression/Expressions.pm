@@ -1,5 +1,4 @@
 package HTML::Template::Compiled::Expression::Expressions;
-# $Id: Expressions.pm 1115 2011-08-28 16:41:52Z tinita $
 use strict;
 use warnings;
 

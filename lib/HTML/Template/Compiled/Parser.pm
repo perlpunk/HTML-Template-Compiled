@@ -1,5 +1,4 @@
 package HTML::Template::Compiled::Parser;
-# $Id: Parser.pm 1154 2012-04-22 17:21:53Z tinita $
 use Carp qw(croak carp confess);
 use strict;
 use warnings;

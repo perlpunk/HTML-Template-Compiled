@@ -1,4 +1,3 @@
-# $Id: 23_tagstyles.t 1144 2012-04-21 18:59:13Z tinita $
 use warnings;
 use strict;
 use lib qw(t);

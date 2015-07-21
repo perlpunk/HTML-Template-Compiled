@@ -1,5 +1,4 @@
 package HTML::Template::Compiled::Plugin::XMLEscape;
-# $Id: XMLEscape.pm 969 2007-09-10 20:08:42Z tinita $
 use strict;
 use warnings;
 use Carp qw(croak carp);

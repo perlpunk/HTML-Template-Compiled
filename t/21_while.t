@@ -1,4 +1,3 @@
-# $Id: 21_while.t 1078 2008-09-09 20:44:07Z tinita $
 use warnings;
 use strict;
 use lib qw(t);

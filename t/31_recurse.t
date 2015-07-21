@@ -1,4 +1,3 @@
-# $Id: 31_recurse.t 1089 2009-07-11 15:21:02Z tinita $
 use warnings;
 use strict;
 use lib 't';

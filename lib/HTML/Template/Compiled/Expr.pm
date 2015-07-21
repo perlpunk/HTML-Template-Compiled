@@ -1,5 +1,4 @@
 package HTML::Template::Compiled::Expr;
-# $Id: Expr.pm 1050 2008-06-16 20:27:20Z tinita $
 use strict;
 use warnings;
 use Carp qw(croak carp);

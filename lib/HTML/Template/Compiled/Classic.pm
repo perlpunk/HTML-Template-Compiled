@@ -1,5 +1,4 @@
 package HTML::Template::Compiled::Classic;
-# $Id: Classic.pm 746 2006-10-11 20:54:09Z tinita $
 use strict;
 use warnings;
 our $VERSION = '0.000'; # VERSION

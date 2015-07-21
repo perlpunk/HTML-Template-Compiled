@@ -1,4 +1,3 @@
-# $Id: 27_chomp.t 1153 2012-04-22 15:28:28Z tinita $
 use warnings;
 use strict;
 use lib 't';

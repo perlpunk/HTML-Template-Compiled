@@ -1,4 +1,3 @@
-# $Id: 30_arrays.t 991 2007-11-14 22:35:56Z tinita $
 use warnings;
 use strict;
 use lib 't';

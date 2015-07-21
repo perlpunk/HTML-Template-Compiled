@@ -1,9 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use lib 'blib/lib';
 
-# $Id: htprecompile.pl 295 2006-04-24 21:18:32Z tinita $
 use HTML::Template::Compiled;
 
 use Archive::Tar;

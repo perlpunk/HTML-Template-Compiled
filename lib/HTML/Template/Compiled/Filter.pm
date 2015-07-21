@@ -1,5 +1,4 @@
 package HTML::Template::Compiled::Filter;
-# $Id: Filter.pm 125 2005-10-03 21:43:49Z tinita $
 our $VERSION = '0.000'; # VERSION
 use strict;
 use warnings;

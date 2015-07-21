@@ -1,5 +1,4 @@
 #!/usr/bin/perl
-# $Id: bench.pl 1126 2011-10-31 19:56:35Z tinita $
 use strict;
 use warnings;
 use Getopt::Long;

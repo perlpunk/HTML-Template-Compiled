@@ -1,6 +1,4 @@
-# $Id: 18_objects.t 1019 2008-03-02 16:26:48Z tinita $
 
-use lib 'blib/lib';
 use Test::More tests => 4;
 use strict;
 use warnings;
