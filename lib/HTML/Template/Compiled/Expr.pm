@@ -52,10 +52,10 @@ function_name : /[A-Za-z_][A-Za-z0-9_]*/
 
 args          : <leftop: paren ',' paren>
 
-regexp        : var /=~|!~|like|unlike/i pattern { [ 'REGEXP', $item[1][1], $item[2], $item[3] ] }
+regexp        : var /like|unlike/i pattern { [ 'REGEXP', $item[1][1], $item[2], $item[3] ] }
 
-pattern       : /\/(.|\\\/)*\// { $item[1] }
-              | /m(.)(.|\\\1)*\1/ { $item[1] }
+pattern       : /\/(\\\/|.)*?\// { $item[1] }
+              | /m(.)(\\\1|.)*?\1/ { $item[1] }
 
 var           : /[.\/A-Za-z_][.\/A-Za-z0-9_]*/ { [ 'VAR', $item[1] ] }
               | /\$[.\/A-Za-z_][.\/A-Za-z0-9_]*/ { [ 'VAR', $item[1] ] }
@@ -231,11 +231,24 @@ sub sub_expression {
     }
     elsif ($type eq 'REGEXP') {
        my ($var, $op, $pattern) = @args;
+
        my $v = $compiler->parse_var($htc, %args, var => $var);
-       if ($op =~ m/=~|like/i) {
+
+       $pattern =~ s/^m?.(.*)./$1/;
+       print "PATTERN: $pattern\n";
+       $pattern =~ s{\\}{\\\\}g;
+       print "PATTERN: $pattern\n";
+       $pattern =~ s{/}{\\/}g;
+       print "PATTERN: $pattern\n";
+       $pattern = <<"EOM";
+do { my \$re = q/$pattern/; my \$qr = qr/\$re/; warn "=== RE=\$re QR:\$qr";\$qr }
+EOM
+
+       if ($op =~ m/like/i) {
+           warn __PACKAGE__.':'.__LINE__.": !!! $v =~ $pattern\n";
            return "$v =~ $pattern"
        }
-       elsif ($op =~ m/!~|unlike/i) {
+       elsif ($op =~ m/unlike/i) {
            return "$v !~ $pattern";
 
        }
