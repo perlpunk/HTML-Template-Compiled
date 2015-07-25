@@ -1,5 +1,8 @@
 Revision history for Perl module HTML::Template::Compiled.
 
+1.002 Sun Jul 26 01:43:26 CEST 2015
+- Regular release, see developer versions
+
 1.001_002 Tue Jul 21 20:48:37 CEST 2015
 - Bugfix: Issues with global_vars #6, #7 (rpv-tomsk++)
 - Changed to Dist::Zilla
