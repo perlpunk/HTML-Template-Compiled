@@ -2246,7 +2246,7 @@ in the parameter hash.
 
 =item __ROOT__
 
-Turned into the variable containig the parameter hash.
+Turned into the variable containing the parameter hash.
 
 =item __INDEX__
 
@@ -2454,7 +2454,7 @@ C<value=..> behaves like a variable name from the parameter stash.
 The variable name to set must match /[0-9a-z_]+/i
 
 You can refer to an alias via C<$alias> or simply C<alias>. Note that
-the latter syntax is not recommeded any more since it can conflict
+the latter syntax is not recommended any more since it can conflict
 with parameters from the stash.
 
 If you want to use aliases in includes, you need to use the C<$alias>
@@ -2616,7 +2616,7 @@ in future versions.
 
 =item cache
 
-Is 1 by default. If set to 0, no memory cacheing is done. Only recommendable if
+Is 1 by default. If set to 0, no memory caching is done. Only recommendable if
 you have a dynamic template content (with scalarref, arrayre for example).
 
 =item expire_time
@@ -2668,7 +2668,7 @@ Note that I don't recommend using global_vars. For referring to parameters
 up in the stash you can use aliases via C<alias=...> or C<SET_VAR>.
 See L<"ALIAS"> and L<"SET_VAR">.
 
-If yoy still would like to be able to navigate up the parameter stash, you
+If you still would like to be able to navigate up the parameter stash, you
 have the following option:
 
 If set to 2, you don't have global vars, but have the possibility to go
@@ -2740,7 +2740,7 @@ If the option is set to 'start', at the start of every template will be added:
 If set to 'end', at the end will be added:
     <!-- end templates/path/filename.html -->
 
-If set to 'start,end', both coments will be added.
+If set to 'start,end', both comments will be added.
 
 If set to 'start,short', 'end,short' or 'start,end,short' the path
 to the templates will be stripped:
@@ -2866,7 +2866,7 @@ this option.
 
 =item line_numbers
 
-NOTE: This option does not exist any more; line numbers will alway be reported.
+NOTE: This option does not exist any more; line numbers will always be reported.
 
 For debugging: prints the line number of the wrong tag, e.g. if you have
 a /TMPL_IF that does not have an opening tag.
@@ -2879,7 +2879,7 @@ this can slow down your program a lot (50%).
 =item dumper
 
 This option is deprecated as of version 0.76. You must now use a plugin instead, like
-L<HTML::Template::Compiled::Plugin::DHTML>, for examle.
+L<HTML::Template::Compiled::Plugin::DHTML>, for example.
 
   my $t = HTML::Template::Compiled->new(
     ...
@@ -2954,7 +2954,7 @@ At the moment there are the following named tagstyles builtin:
     # tt (not active by default)
     [%if foo%][%var bar%][%/if foo%]
 
-You deactive a style by saying -stylename. You activate by saying
+You deactivate a style by saying -stylename. You activate by saying
 +stylename.
 
 Define your own tagstyle by specifyin regexes. For example
@@ -3083,7 +3083,7 @@ on the template HTC has to do extra-work while compiling and
 uses extra-memory, so you can choose to save HTC work by
 setting use_query to 0 (default) or letting HTC do the extra
 work by setting it to 1. If you would like 1 to be the default,
-write me. If enough people write me, I'll think abou it =)
+write me. If enough people write me, I'll think about it =)
 
 =item use_perl
 
