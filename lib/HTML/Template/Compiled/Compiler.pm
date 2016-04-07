@@ -449,8 +449,8 @@ sub parse_var {
 
 sub dump_string {
     my ($self, $string) = @_;
-    my $dump = Data::Dumper->Dump([\$string], ['string']);
-    $dump =~ s#^\$string *= *\\##;
+    my $dump = HTML::Template::Compiled->dump_var($string, 'string');
+    $dump =~ s#^\$string *= *## or die "dump_string() failed";
     $dump =~ s/;$//;
     return $dump;
 }
@@ -816,8 +816,9 @@ EOM
 
                 my $join_code = '';
                 if (defined (my $join = $attr->{JOIN})) {
-                    my $dump = Data::Dumper->Dump([$join], ['join']);
-                    $dump =~ s{\$join = }{};
+                    my $dump = HTML::Template::Compiled->dump_var($join, 'join');
+                    $dump =~ s{\$join *= *}{};
+                    $dump =~ s{;$}{};
                     $join_code = <<"EOM";
 \{
   unless (\$__ix__ == \$[) \{

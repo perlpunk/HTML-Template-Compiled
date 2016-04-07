@@ -703,6 +703,23 @@ sub dump {
     return Data::Dumper->Dump( [$var], ['DUMP'] );
 }
 
+sub dump_var {
+    my ($class, $var, $varname) = @_;
+    local $Data::Dumper::Terse = 0;
+    local $Data::Dumper::Indent = 2;
+    local $Data::Dumper::Purity = 0;
+    local $Data::Dumper::Pad = "";
+    local $Data::Dumper::Useqq = 0;
+    local $Data::Dumper::Deepcopy = 0;
+    local $Data::Dumper::Quotekeys = 1;
+    local $Data::Dumper::Bless = 'bless';
+    local $Data::Dumper::Pair = ' => ';
+    local $Data::Dumper::Maxdep = 0;
+    local $Data::Dumper::Useperl = 0;
+    local $Data::Dumper::Sortkeys = 1;
+    return Data::Dumper->Dump( [$var], [$varname] );
+}
+
 sub init_cache {
     my ($self, $args) = @_;
     my $cachedir = $args->{file_cache_dir};
