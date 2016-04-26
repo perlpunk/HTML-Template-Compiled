@@ -2974,8 +2974,8 @@ At the moment there are the following named tagstyles builtin:
 You deactivate a style by saying -stylename. You activate by saying
 +stylename.
 
-Define your own tagstyle by specifyin regexes. For example
-you want to use {C<{if foo}}{{var bar}}{{/if foo}}>, then your
+Define your own tagstyle by specifying regexes. For example
+you want to use {C<{{if foo}}{{var bar}}{{/if foo}}>, then your
 definition should be:
 
     [
