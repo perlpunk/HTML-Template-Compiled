@@ -5,7 +5,7 @@ use File::Spec;
 use HTC_Utils qw($tdir &cdir &create_cache &remove_cache);
 my $cache_dir = "cache04";
 $cache_dir = create_cache($cache_dir);
-my $out = File::Spec->catfile('t', 'templates', 'out_fh.htc.output');
+my $out = File::Spec->catfile('t', 'templates', 'out_fh.htc.output04');
 HTML::Template::Compiled->clear_filecache($cache_dir);
 test('compile', 'clearcache');
 test('filecache');
@@ -27,7 +27,7 @@ sub test {
 	$htc->output($fh);
 	close $fh;
 	open my $f, '<', File::Spec->catfile('t', 'templates', 'out_fh.htc') or die $!;
-	open my $t, '<', File::Spec->catfile('t', 'templates', 'out_fh.htc.output') or die $!;
+	open my $t, '<', $out or die $!;
 	local $/;
 	my $orig = <$f>;
 	my $test = <$t>;

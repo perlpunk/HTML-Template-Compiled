@@ -100,7 +100,7 @@ EOM
         tr/ / /s;
     }
     cmp_ok($out, 'eq', $exp, "wrapper");
-    $out = File::Spec->catfile('t', 'templates', 'out_fh.htc.output');
+    $out = File::Spec->catfile('t', 'templates', 'out_fh.htc.output06');
 	open my $fh, '>', $out or die $!;
     $htc = HTML::Template::Compiled->new(
         filename => "wrapped.html",
