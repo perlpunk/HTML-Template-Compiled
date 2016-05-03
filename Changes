@@ -1,10 +1,11 @@
 Revision history for Perl module HTML::Template::Compiled.
 
-1.002_001 Fri Apr  8 21:23:29 CEST 2016
-- Bugfix: prevent unexpcted Data::Dumper config to mess with the output
-  (github issue #10)
-- Fixed typos (github PR #9)
+1.003 2016-05-03 14:06:00
+- Bugfix: prevent unexpected Data::Dumper config to mess with the output
+  (github issue #10 bittrine++)
+- Fixed typos (github PR #9 zhouzhen1++)
 - Storable >= 2.05 (CODE refs)
+- fixed issue with parallel testing
 
 1.002 Sun Jul 26 01:43:26 CEST 2015
 - Regular release, see developer versions
